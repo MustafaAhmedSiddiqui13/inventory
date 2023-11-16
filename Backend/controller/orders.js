@@ -5,27 +5,32 @@ const StockHistory = require("../models/stockHistory");
 // Add Purchase Details
 const addOrder = async (req, res) => {
   try {
-    const productId = req.body.productID;
-    const quantityToSubtract = req.body.stockOrdered;
+    console.log(req.body);
+    const products = req.body.products;
 
-    const product = await Product.findById(productId);
+    for (i = 0; i < products.length; i++) {
+      const product = products[i].product;
+      const quantityToSubtract = products[i].stockOrdered;
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      if (product.stock < quantityToSubtract) {
+        return res
+          .status(400)
+          .json({ message: "Insufficient quantity to subtract" });
+      }
     }
 
-    if (product.stock < quantityToSubtract) {
-      return res.status(400).json({ message: "Insufficient quantity to subtract" });
+    for (j = 0; j < products.length; j++) {
+      const product = products[j].product;
+      const quantityToSubtract = products[j].stockOrdered;
+      const newQuantity = product.stock - quantityToSubtract;
+
+      await Product.findByIdAndUpdate(product._id, { stock: newQuantity });
     }
-
-    const newQuantity = product.stock - quantityToSubtract;
-
-    await Product.findByIdAndUpdate(productId, { stock: newQuantity });
 
     await Orders.create({
       userID: req.body.userID,
-      ProductID: req.body.productID,
-      stockOrdered: req.body.stockOrdered,
+      products: req.body.products,
+      StoreID: req.body.storeID,
       orderDate: req.body.orderDate,
       totalAmount: req.body.totalAmount,
       riderName: req.body.riderName,
@@ -40,33 +45,58 @@ const addOrder = async (req, res) => {
 // Get All Orders Data
 const getOrderData = async (req, res) => {
   const findAllPurchaseData = await Orders.find()
-    .sort({ _id: -1 })
-    .populate("ProductID"); // -1 for descending order
+    .sort({ _id: -1 }) // -1 for descending order
+    .populate("StoreID")
+    .populate("userID");
   res.json(findAllPurchaseData);
 };
 
-const resolveOrder = async (req,res) => {
+const resolveOrder = async (req, res) => {
   //order should be removed from the orders table
   const orderId = req.params.id;
   console.log(orderId);
   let result = await Orders.findByIdAndDelete(orderId);
-  console.log(result);
-  if(!result){
+  console.log("Result: ", result);
+  if (!result) {
+    console.log("results empty");
     res.send("No order available");
-  }else{
+  } else {
     res.send(result);
     await StockHistory.create({
       userID: result.userID,
-      ProductID: result.ProductID,
-      stockOrdered: result.stockOrdered,
+      products: result.products,
+      StoreID: result.StoreID,
       orderDate: result.orderDate,
       totalAmount: result.totalAmount,
       riderName: result.riderName,
-    })
+      requestType: "Completed",
+    });
   }
   //order should be added to order history table
+};
 
-}
+const cancelOrder = async (req, res) => {
+  //order should be removed from the orders table
+  const orderId = req.params.id;
+  console.log(orderId);
+  let result = await Orders.findByIdAndDelete(orderId);
+  console.log("Result: ", result);
+  if (!result) {
+    console.log("results empty");
+    res.send("No order available");
+  } else {
+    res.send(result);
+    await StockHistory.create({
+      userID: result.userID,
+      products: result.products,
+      StoreID: result.StoreID,
+      orderDate: result.orderDate,
+      totalAmount: result.totalAmount,
+      riderName: result.riderName,
+      requestType: "Cancelled",
+    });
+  }
+  //order should be added to order history table
+};
 
-
-module.exports = { addOrder, getOrderData, resolveOrder };
+module.exports = { addOrder, getOrderData, resolveOrder, cancelOrder };

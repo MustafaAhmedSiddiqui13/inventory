@@ -4,10 +4,10 @@ const productRoute = require("./router/product");
 const storeRoute = require("./router/store");
 const orderRoute = require("./router/orders");
 const stockHistoryRoute = require("./router/stockHistory");
+const productHistoryRoute = require("./router/productHistory");
 const cors = require("cors");
 const User = require("./models/users");
 const Product = require("./models/product");
-
 
 const app = express();
 const PORT = 4000;
@@ -21,11 +21,14 @@ app.use("/api/store", storeRoute);
 // Products API
 app.use("/api/product", productRoute);
 
-// Purchase API
+// Orders API
 app.use("/api/order", orderRoute);
 
-// Sales API
+// Stock History API
 app.use("/api/stockHistory", stockHistoryRoute);
+
+// Product History API
+app.use("/api/productHistory", productHistoryRoute);
 
 // ------------- Signin --------------
 let userAuthCheck;
@@ -75,13 +78,6 @@ app.post("/api/register", (req, res) => {
     .catch((err) => console.log("Signup: ", err));
   console.log("request: ", req.body);
 });
-
-
-// app.get("/testget", async (req,res)=>{
-//   const result = await Product.findOne({ _id: '6429979b2e5434138eda1564'})
-//   res.json(result)
-
-// })
 
 // Here we are listening to the server
 app.listen(PORT, () => {

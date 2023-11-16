@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
-import AddOrderDetails from "../components/AddOrderDetails";
 import AuthContext from "../AuthContext";
 
 function StockHistory() {
-  const [showOrderModal, setOrderModal] = useState(false);
   const [stockHistory, setAllStockHistoryData] = useState([]);
-  const [products, setAllProducts] = useState([]);
-  const [updatePage, setUpdatePage] = useState(true);
+  const [productHistory, setAllProductHistoryData] = useState([]);
 
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     fetchStockHistoryData();
-    fetchProductsData();
-  }, [updatePage]);
+    fetchProductHistoryData();
+  }, []);
 
   // Fetching Data of All Order History items
   const fetchStockHistoryData = () => {
@@ -25,48 +22,32 @@ function StockHistory() {
       .catch((err) => console.log(err));
   };
 
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+  // Fetching Data of All Order History items
+  const fetchProductHistoryData = () => {
+    fetch(`http://localhost:4000/api/productHistory/get/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllProducts(data);
+        setAllProductHistoryData(data);
       })
       .catch((err) => console.log(err));
-  };
-
-  // Modal for Sale Add
-  const addSaleModalSetting = () => {
-    setOrderModal(!showOrderModal);
-  };
-
-  
-  // Handle Page Update
-  const handlePageUpdate = () => {
-    setUpdatePage(!updatePage);
   };
 
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
-        {showOrderModal && (
-          <AddOrderDetails
-            addSaleModalSetting={addSaleModalSetting}
-            products={products}
-            handlePageUpdate={handlePageUpdate}
-            authContext = {authContext}
-          />
-        )}
-        {/* Table  */}
+        {/* Order History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Stock History</span>
+              <span className="font-bold">Order History</span>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Store Name
+                </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Product Name
                 </th>
@@ -77,10 +58,13 @@ function StockHistory() {
                   Order Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Total Amount in Rs
+                  Total Amount (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Rider's Name
+                  Rider
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Order Created By
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   More
@@ -93,10 +77,17 @@ function StockHistory() {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.ProductID?.name}
+                      {element.StoreID?.name}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.products.map((product) => {
+                        return <p>{product.product.name}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stockOrdered}
+                      {element.products.map((product) => {
+                        return <p>{product.stockOrdered}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {new Date(element.PurchaseDate).toLocaleDateString() ==
@@ -110,12 +101,90 @@ function StockHistory() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.riderName}
                     </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.userID?.firstName} {element.userID?.lastName}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.requestType}
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
         </div>
+        {/* Product History Table  */}
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+          <div className="flex justify-between pt-5 pb-3 px-3">
+            <div className="flex gap-4 justify-center items-center ">
+              <span className="font-bold">Product History</span>
+            </div>
+          </div>
+          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+            <thead>
+              <tr>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Product Name
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Category
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Stock
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Unit Price (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Purchase Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Expiration Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  User's Name
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Request Type
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-200">
+              {productHistory.map((element, index) => {
+                return (
+                  <tr key={element._id}>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.name}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.category}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.stock}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.unitPrice}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.purchaseDate}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.expirationDate}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.userID?.firstName} {element.userID?.lastName}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.requestType}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div></div>
       </div>
     </div>
   );

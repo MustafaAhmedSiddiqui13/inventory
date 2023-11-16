@@ -1,28 +1,34 @@
 const Product = require("../models/product");
-const Orders = require("../models/orders");
-const StockHistory = require("../models/stockHistory");
+const ProductHistory = require("../models/productHistory");
 
 // Add Post
-const addProduct = (req, res) => {
-  console.log("req: ", req.body.userId);
-  const addProduct = new Product({
-    userID: req.body.userId,
-    name: req.body.name,
-    category: req.body.category,
-    stock: req.body.stock,
-    unitPrice: req.body.unitPrice,
-    purchaseDate: req.body.purchaseDate,
-    expirationDate: req.body.expirationDate,
-  });
-
-  addProduct
-    .save()
-    .then((result) => {
-      res.status(200).send(result);
-    })
-    .catch((err) => {
-      res.status(402).send(err);
+const addProduct = async (req, res) => {
+  try {
+    await Product.create({
+      userID: req.body.userId,
+      name: req.body.name,
+      category: req.body.category,
+      stock: req.body.stock,
+      unitPrice: req.body.unitPrice,
+      purchaseDate: req.body.purchaseDate,
+      expirationDate: req.body.expirationDate,
     });
+
+    await ProductHistory.create({
+      userID: req.body.userId,
+      name: req.body.name,
+      category: req.body.category,
+      stock: req.body.stock,
+      unitPrice: req.body.unitPrice,
+      purchaseDate: req.body.purchaseDate,
+      expirationDate: req.body.expirationDate,
+      requestType: "Product Added",
+    });
+
+    res.status(200).send({ message: "Product and History it's Created" });
+  } catch (e) {
+    res.status(402).send({ message: e.message });
+  }
 };
 
 // Get All Products
@@ -33,25 +39,33 @@ const getAllProducts = async (req, res) => {
 
 // Delete Selected Product
 const deleteSelectedProduct = async (req, res) => {
-  const deleteProduct = await Product.deleteOne(
-    { _id: req.params.id }
-  );
-  const deletePurchaseProduct = await Orders.deleteOne(
-    { ProductID: req.params.id }
-  );
-
-  const deleteSaleProduct = await StockHistory.deleteOne(
-    { ProductID: req.params.id }
-  );
-  res.json({ deleteProduct, deletePurchaseProduct, deleteSaleProduct });
+  try {
+    const productId = req.params.id;
+    const result = await Product.findByIdAndDelete(productId);
+    res.send(result);
+    await ProductHistory.create({
+      userID: result.userID,
+      name: result.name,
+      category: result.category,
+      stock: result.stock,
+      unitPrice: result.unitPrice,
+      purchaseDate: result.purchaseDate,
+      expirationDate: result.expirationDate,
+      requestType: "Product Deleted",
+    });
+  } catch (e) {
+    res.status(402).send(e);
+  }
 };
 
 // Update Selected Product
 const updateSelectedProduct = async (req, res) => {
   try {
+    const userId = req.body.userId;
     const updatedResult = await Product.findByIdAndUpdate(
       { _id: req.body.productID },
       {
+        userID: req.body.userId,
         name: req.body.name,
         category: req.body.category,
         stock: req.body.stock,
@@ -61,6 +75,17 @@ const updateSelectedProduct = async (req, res) => {
       },
       { new: true }
     );
+    await ProductHistory.create({
+      userID: userId,
+      name: updatedResult.name,
+      category: updatedResult.category,
+      stock: updatedResult.stock,
+      unitPrice: updatedResult.unitPrice,
+      purchaseDate: updatedResult.purchaseDate,
+      expirationDate: updatedResult.expirationDate,
+      requestType: "Product Updated",
+    });
+
     console.log(updatedResult);
     res.json(updatedResult);
   } catch (error) {

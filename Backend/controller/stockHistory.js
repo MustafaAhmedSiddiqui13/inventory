@@ -1,10 +1,11 @@
-const Sales = require("../models/stockHistory");
+const StockHistory = require("../models/stockHistory");
 
 const getStockHistoryData = async (req, res) => {
-  const findAllStockHistoryData = await Sales.find()
-    .sort({ _id: -1 })
-    .populate("ProductID"); // -1 for descending order
+  const findAllStockHistoryData = await StockHistory.find()
+    .sort({ _id: -1 }) // -1 for descending order
+    .populate("StoreID")
+    .populate("userID");
   res.json(findAllStockHistoryData);
 };
 
-module.exports = { getStockHistoryData};
+module.exports = { getStockHistoryData };

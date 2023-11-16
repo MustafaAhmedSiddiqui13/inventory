@@ -11,4 +11,7 @@ app.get("/get/:userID", order.getOrderData);
 // Remove Order and update History
 app.post("/post/:id", order.resolveOrder);
 
+// Remove Order and update History
+app.post("/post/cancel/:id", order.cancelOrder);
+
 module.exports = app;

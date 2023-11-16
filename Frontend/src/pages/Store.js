@@ -5,12 +5,13 @@ import AuthContext from "../AuthContext";
 function Store() {
   const [showModal, setShowModal] = useState(false);
   const [stores, setAllStores] = useState([]);
+  const [updatePage, setUpdatePage] = useState(true);
 
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [updatePage]);
 
   // Fetching all stores data
   const fetchData = () => {
@@ -21,13 +22,18 @@ function Store() {
       });
   };
 
+  // Handle Page Update
+  const handlePageUpdate = () => {
+    setUpdatePage(!updatePage);
+  };
+
   const modalSetting = () => {
     setShowModal(!showModal);
   };
 
   return (
     <div className="col-span-12 lg:col-span-10 flex justify-center ">
-      <div className=" flex flex-col gap-5 w-11/12 border-2">
+      <div className=" flex flex-col gap-1 w-11/12 border-2">
         <div className="flex justify-between">
           <span className="font-bold">Manage Store</span>
           <button
@@ -37,20 +43,13 @@ function Store() {
             Add Store
           </button>
         </div>
-        {showModal && <AddStore />}
+        {showModal && <AddStore handlePageUpdate={handlePageUpdate} />}
         {stores.map((element, index) => {
           return (
             <div
               className="bg-white w-50 h-fit flex flex-col gap-4 p-4 "
               key={element._id}
             >
-              <div>
-                <img
-                  alt="store"
-                  className="h-60 w-full object-cover"
-                  src={element.image}
-                />
-              </div>
               <div className="flex flex-col gap-3 justify-between items-start">
                 <span className="font-bold">{element.name}</span>
                 <div className="flex">

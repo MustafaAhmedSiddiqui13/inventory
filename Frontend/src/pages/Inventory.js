@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { Fragment, useState, useEffect, useContext } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 import AddProduct from "../components/AddProduct";
 import UpdateProduct from "../components/UpdateProduct";
 import AuthContext from "../AuthContext";
-
 
 function Inventory() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -14,11 +14,13 @@ function Inventory() {
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
   const [stores, setAllStores] = useState([]);
+  const [productToBeDeleted, setProductToBeDeleted] = useState("");
+  let [isOpen, setIsOpen] = useState(false);
 
   const authContext = useContext(AuthContext);
-  console.log('====================================');
+  console.log("====================================");
   console.log(authContext);
-  console.log('====================================');
+  console.log("====================================");
 
   useEffect(() => {
     fetchProductsData();
@@ -54,6 +56,15 @@ function Inventory() {
       });
   };
 
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal(id) {
+    setProductToBeDeleted(id);
+    setIsOpen(true);
+  }
+
   // Modal for Product ADD
   const addProductModalSetting = () => {
     setShowProductModal(!showProductModal);
@@ -65,7 +76,6 @@ function Inventory() {
     setUpdateProduct(selectedProductData);
     setShowUpdateModal(!showUpdateModal);
   };
-
 
   // Delete item
   const deleteItem = (id) => {
@@ -186,8 +196,74 @@ function Inventory() {
           <UpdateProduct
             updateProductData={updateProduct}
             updateModalSetting={updateProductModalSetting}
+            handlePageUpdate={handlePageUpdate}
           />
         )}
+
+        <Transition appear show={isOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={closeModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/25" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Delete Item
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Are you sure you want to delete this product?
+                      </p>
+                    </div>
+
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
+                        onClick={() => {
+                          closeModal();
+                          deleteItem(productToBeDeleted);
+                        }}
+                      >
+                        Delete
+                      </button>
+
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={closeModal}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
 
         {/* Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
@@ -214,7 +290,6 @@ function Inventory() {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
                 onClick={addProductModalSetting}
               >
-                {/* <Link to="/inventory/add-product">Add Product</Link> */}
                 Add Product
               </button>
             </div>
@@ -232,7 +307,7 @@ function Inventory() {
                   Stock
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Unit Price in Rs
+                  Unit Price (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Purchase Date
@@ -283,7 +358,8 @@ function Inventory() {
                       </span>
                       <span
                         className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => deleteItem(element._id)}
+                        // onClick={() => deleteItem(element._id)}
+                        onClick={() => openModal(element._id)}
                       >
                         {localStorageData.firstName === "Azhar" ? "Delete" : ""}
                       </span>

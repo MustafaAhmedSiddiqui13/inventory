@@ -7,13 +7,14 @@ const OrderSchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
-    ProductID: {
-      type: mongoose.Schema.Types.ObjectId,
+    products: {
+      type: Array,
       ref: "product",
       required: true,
     },
-    stockOrdered: {
-      type: Number,
+    StoreID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "store",
       required: true,
     },
     orderDate: {
@@ -27,7 +28,7 @@ const OrderSchema = new mongoose.Schema(
     riderName: {
       type: String,
       required: true,
-    }
+    },
   },
   { timestamps: true }
 );

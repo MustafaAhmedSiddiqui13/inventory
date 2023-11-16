@@ -1,13 +1,25 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
+import AuthContext from "../AuthContext";
 
 export default function UpdateProduct({
   updateProductData,
   updateModalSetting,
+  handlePageUpdate,
 }) {
-  const { _id, name, category, stock, unitPrice, purchaseDate, expirationDate } = updateProductData;
+  const {
+    _id,
+    name,
+    category,
+    stock,
+    unitPrice,
+    purchaseDate,
+    expirationDate,
+  } = updateProductData;
+  const authContext = useContext(AuthContext);
   const [product, setProduct] = useState({
+    userId: authContext.user,
     productID: _id,
     name: name,
     category: category,
@@ -25,7 +37,7 @@ export default function UpdateProduct({
   };
 
   const updateProduct = () => {
-    fetch("http://localhost:4000/api/product/update", {
+    fetch(`http://localhost:4000/api/product/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -34,6 +46,7 @@ export default function UpdateProduct({
     })
       .then((result) => {
         alert("Product Updated");
+        handlePageUpdate();
         setOpen(false);
       })
       .catch((err) => console.log(err));
@@ -89,7 +102,7 @@ export default function UpdateProduct({
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
-                        <div>
+                          <div>
                             <label
                               htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900"
@@ -140,7 +153,7 @@ export default function UpdateProduct({
                               id="stock"
                               value={product.stock}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Stock Amount"
@@ -159,7 +172,7 @@ export default function UpdateProduct({
                               id="unitPrice"
                               value={product.unitPrice}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Product's Unit Price"
@@ -168,14 +181,17 @@ export default function UpdateProduct({
                           <div>
                             <label
                               htmlFor="purchaseDate"
-                              className="block mb-2 text-sm font-medium text-gray-900 ">Purchase Date</label>
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Purchase Date
+                            </label>
                             <input
                               type="date"
                               name="purchaseDate"
                               id="purchaseDate"
                               value={product.purchaseDate}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Enter Product's Purchase Date"
@@ -194,7 +210,7 @@ export default function UpdateProduct({
                               id="expirationDate"
                               value={product.expirationDate}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Enter Product's Expiration Date"

@@ -1,41 +1,43 @@
 const mongoose = require("mongoose");
 
-const StockHistorySchema = new mongoose.Schema(
+const ProductHistorySchema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
     },
-    products: {
-      type: Array,
-      ref: "product",
-      required: true,
-    },
-    StoreID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "store",
-      required: true,
-    },
-    orderDate: {
+    name: {
       type: String,
       required: true,
     },
-    totalAmount: {
+    category: {
+      type: String,
+      required: true,
+    },
+    stock: {
       type: Number,
       required: true,
     },
-    riderName: {
+    unitPrice: {
+      type: Number,
+      required: true,
+    },
+    purchaseDate: {
+      type: String,
+      required: true,
+    },
+    expirationDate: {
       type: String,
       required: true,
     },
     requestType: {
       type: String,
-      required: true,
+      requried: true,
     },
   },
   { timestamps: true }
 );
 
-const StockHistory = mongoose.model("stockHistory", StockHistorySchema);
-module.exports = StockHistory;
+const ProductHistory = mongoose.model("productHistory", ProductHistorySchema);
+module.exports = ProductHistory;

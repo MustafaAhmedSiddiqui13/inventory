@@ -71,7 +71,7 @@ function SideMenu() {
         <div className="flex items-center gap-2 bg-white p-4 hover:bg-gray-50">
           <img
             alt="Profile"
-            src={localStorageData.imageUrl}
+            src={require("../assets/supplier-icon.png")}
             className="h-10 w-10 rounded-full object-cover"
           />
 
@@ -81,7 +81,7 @@ function SideMenu() {
                 {localStorageData.firstName + " " + localStorageData.lastName}
               </strong>
 
-              <span> {localStorageData.email} </span>
+              <span> {localStorageData.phoneNumber} </span>
             </p>
           </div>
         </div>

@@ -17,7 +17,7 @@ export default function AddProduct({
     purchaseDate: "",
     expirationDate: "",
   });
-  console.log("----",product)
+  console.log("----", product);
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
@@ -26,6 +26,16 @@ export default function AddProduct({
   };
 
   const addProduct = () => {
+    if (
+      product.category === "" ||
+      product.expirationDate === "" ||
+      product.name === "" ||
+      product.purchaseDate === "" ||
+      product.stock === "" ||
+      product.unitPrice === ""
+    ) {
+      return alert("Fields cannot be left Empty");
+    }
     fetch("http://localhost:4000/api/product/add", {
       method: "POST",
       headers: {
@@ -67,11 +77,11 @@ export default function AddProduct({
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -142,7 +152,7 @@ export default function AddProduct({
                               id="stock"
                               value={product.stock}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Stock Amount"
@@ -161,7 +171,7 @@ export default function AddProduct({
                               id="unitPrice"
                               value={product.unitPrice}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Product's Unit Price"
@@ -170,14 +180,17 @@ export default function AddProduct({
                           <div>
                             <label
                               htmlFor="purchaseDate"
-                              className="block mb-2 text-sm font-medium text-gray-900 ">Purchase Date</label>
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Purchase Date
+                            </label>
                             <input
                               type="date"
                               name="purchaseDate"
                               id="purchaseDate"
                               value={product.purchaseDate}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Enter Product's Purchase Date"
@@ -196,15 +209,14 @@ export default function AddProduct({
                               id="expirationDate"
                               value={product.expirationDate}
                               onChange={(e) =>
-                              handleInputChange(e.target.name, e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Enter Product's Expiration Date"
                             />
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                        </div>
+                        <div className="flex items-center space-x-4"></div>
                       </form>
                     </div>
                   </div>

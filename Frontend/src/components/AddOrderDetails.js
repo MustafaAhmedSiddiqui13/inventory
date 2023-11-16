@@ -5,17 +5,20 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 export default function AddOrderDetails({
   addSaleModalSetting,
   products,
+  stores,
   handlePageUpdate,
-  authContext
+  authContext,
 }) {
   const [order, setOrder] = useState({
     userID: authContext.user,
-    productID: "",
-    stockOrdered: "",
+    storeID: "",
     orderDate: "",
     totalAmount: "",
     riderName: "",
   });
+  const [productAdded, setProductAdded] = useState([]);
+  const [productName, setProductName] = useState({});
+  const [stockOrdered, setStockOrdered] = useState(0);
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
@@ -27,21 +30,70 @@ export default function AddOrderDetails({
   };
 
   // POST Data
-  const addSale = () => {
+  const addOrder = () => {
+    let myOrder = {
+      ...order,
+      products: productAdded,
+    };
+    if (
+      myOrder.orderDate === "" ||
+      myOrder.riderName === "" ||
+      myOrder.storeID === "" ||
+      myOrder.totalAmount === "" ||
+      myOrder.userID === ""
+    ) {
+      return alert("Fields cannot be left Empty");
+    }
+
     fetch("http://localhost:4000/api/order/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(order),
+      body: JSON.stringify(myOrder),
     })
       .then((result) => {
         alert("Order has been Created");
         handlePageUpdate();
         addSaleModalSetting();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        alert("Failed to Create Order");
+        console.log(err);
+      });
   };
+
+  const addProduct = () => {
+    if (JSON.stringify(productName) === "{}" || stockOrdered < 1) {
+      return alert("Fields cannot be left Empty");
+    }
+
+    setProductAdded((prev) => {
+      const isProductAdded = prev.find((product) => {
+        return product.product._id === productName._id;
+      });
+
+      if (isProductAdded) {
+        return prev.map((product) => {
+          if (product.product._id === isProductAdded.product._id) {
+            return {
+              ...product,
+              stockOrdered: Number(product.stockOrdered) + Number(stockOrdered),
+            };
+          }
+
+          return product;
+        });
+      }
+
+      return prev.concat({
+        product: productName,
+        stockOrdered: stockOrdered,
+      });
+    });
+  };
+
+  console.log(productAdded);
 
   return (
     // Modal
@@ -89,10 +141,13 @@ export default function AddOrderDetails({
                         as="h3"
                         className="text-lg  py-4 font-semibold leading-6 text-gray-900 "
                       >
-                        Order Details
+                        Create Order
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
+                          {/* {productFields.map((input, index) => {
+                            return (
+                              <> */}
                           <div>
                             <label
                               htmlFor="productID"
@@ -104,15 +159,22 @@ export default function AddOrderDetails({
                               id="productID"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="productID"
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              value={productName?._id}
+                              onChange={(e) => {
+                                const product = products.find(
+                                  (prd) => prd._id === e.target.value
+                                );
+                                setProductName(product || {});
+                              }}
                             >
-                              <option selected="">Select Products</option>
+                              <option>Select Products</option>
                               {products.map((element, index) => {
-                                if(element.stock !==0) {
+                                if (element.stock !== 0) {
                                   return (
-                                    <option key={element._id} value={element._id}>
+                                    <option
+                                      key={element._id}
+                                      value={element._id}
+                                    >
                                       {element.name}
                                     </option>
                                   );
@@ -131,13 +193,55 @@ export default function AddOrderDetails({
                               type="number"
                               name="stockOrdered"
                               id="stockOrdered"
-                              value={order.stockOrdered}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              value={stockOrdered}
+                              onChange={(e) => setStockOrdered(e.target.value)}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="0 - 999"
+                              placeholder="1 - 999"
                             />
+                          </div>
+                          {/* </>
+                            );
+                          })} */}
+
+                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                            <thead>
+                              <tr>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Product Name
+                                </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Stock Ordered
+                                </th>
+                              </tr>
+                            </thead>
+
+                            <tbody className="divide-y divide-gray-200">
+                              {productAdded.map((productAdd) => {
+                                return (
+                                  <tr key={productAdd.product._id}>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {productAdd.product.name}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {productAdd.stockOrdered}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+
+                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
+                            <button
+                              type="button"
+                              className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
+                              onClick={addProduct}
+                            >
+                              <PlusIcon
+                                className="h-6 w-6 text-blue-50"
+                                aria-hidden="true"
+                              />
+                            </button>
                           </div>
                           <div>
                             <label
@@ -200,9 +304,33 @@ export default function AddOrderDetails({
                               placeholder="Rider's Name here.."
                             />
                           </div>
+                          <div>
+                            <label
+                              htmlFor="storeID"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Store Name
+                            </label>
+                            <select
+                              id="storeID"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="storeID"
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                            >
+                              <option>Select Store</option>
+                              {stores.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.name}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                        </div>
+                        <div className="flex items-center space-x-4"></div>
                       </form>
                     </div>
                   </div>
@@ -211,7 +339,7 @@ export default function AddOrderDetails({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addSale}
+                    onClick={addOrder}
                   >
                     Add
                   </button>
