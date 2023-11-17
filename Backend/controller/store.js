@@ -1,24 +1,47 @@
 const Store = require("../models/store");
+const StoreHistory = require("../models/storeHistory");
 
-// Add Store
 const addStore = async (req, res) => {
-  console.log(req.body);
-  const addStore = new Store({
-    userID: req.body.userId,
-    name: req.body.name,
-    category: req.body.category,
-    address: req.body.address,
-    city: req.body.city,
-  });
-
-  addStore
-    .save()
-    .then((result) => {
-      res.status(200).send(result);
-    })
-    .catch((err) => {
-      res.status(402).send(err);
+  try {
+    await Store.create({
+      userID: req.body.userId,
+      name: req.body.name,
+      category: req.body.category,
+      address: req.body.address,
+      city: req.body.city,
     });
+
+    await StoreHistory.create({
+      userID: req.body.userId,
+      name: req.body.name,
+      category: req.body.category,
+      address: req.body.address,
+      city: req.body.city,
+      requestType: "Vendor Created",
+    });
+    res.status(200).send({ message: "Vendor and History it's Created" });
+  } catch (e) {
+    res.status(402).send({ message: e.message });
+  }
+};
+
+//Delete Store and Create its History
+const deleteStore = async (req, res) => {
+  try {
+    const storeId = req.params.id;
+    const result = await Store.findByIdAndDelete(storeId);
+    res.send(result);
+    await StoreHistory.create({
+      userID: result.userID,
+      name: result.name,
+      category: result.category,
+      address: result.address,
+      city: result.city,
+      requestType: "Vendor Deleted",
+    });
+  } catch (e) {
+    res.status(402).send(e);
+  }
 };
 
 // Get All Stores
@@ -29,4 +52,4 @@ const getAllStores = async (req, res) => {
   res.json(findAllStores);
 };
 
-module.exports = { addStore, getAllStores };
+module.exports = { addStore, getAllStores, deleteStore };

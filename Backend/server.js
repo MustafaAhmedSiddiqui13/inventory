@@ -5,9 +5,9 @@ const storeRoute = require("./router/store");
 const orderRoute = require("./router/orders");
 const stockHistoryRoute = require("./router/stockHistory");
 const productHistoryRoute = require("./router/productHistory");
+const storeHistoryRoute = require("./router/storeHistory");
 const cors = require("cors");
 const User = require("./models/users");
-const Product = require("./models/product");
 
 const app = express();
 const PORT = 4000;
@@ -29,6 +29,9 @@ app.use("/api/stockHistory", stockHistoryRoute);
 
 // Product History API
 app.use("/api/productHistory", productHistoryRoute);
+
+// Store History API
+app.use("/api/storeHistory", storeHistoryRoute);
 
 // ------------- Signin --------------
 let userAuthCheck;

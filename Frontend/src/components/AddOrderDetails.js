@@ -19,6 +19,7 @@ export default function AddOrderDetails({
   const [productAdded, setProductAdded] = useState([]);
   const [productName, setProductName] = useState({});
   const [stockOrdered, setStockOrdered] = useState(0);
+  const [store, setStore] = useState({});
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
@@ -40,7 +41,8 @@ export default function AddOrderDetails({
       myOrder.riderName === "" ||
       myOrder.storeID === "" ||
       myOrder.totalAmount === "" ||
-      myOrder.userID === ""
+      myOrder.userID === "" ||
+      productAdded.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
@@ -145,9 +147,6 @@ export default function AddOrderDetails({
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
-                          {/* {productFields.map((input, index) => {
-                            return (
-                              <> */}
                           <div>
                             <label
                               htmlFor="productID"
@@ -199,10 +198,6 @@ export default function AddOrderDetails({
                               placeholder="1 - 999"
                             />
                           </div>
-                          {/* </>
-                            );
-                          })} */}
-
                           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                             <thead>
                               <tr>
@@ -214,7 +209,6 @@ export default function AddOrderDetails({
                                 </th>
                               </tr>
                             </thead>
-
                             <tbody className="divide-y divide-gray-200">
                               {productAdded.map((productAdd) => {
                                 return (
@@ -230,7 +224,6 @@ export default function AddOrderDetails({
                               })}
                             </tbody>
                           </table>
-
                           <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
                             <button
                               type="button"
@@ -248,7 +241,7 @@ export default function AddOrderDetails({
                               htmlFor="totalAmount"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Total Amount in Rs
+                              Total Amount (Rs)
                             </label>
                             <input
                               type="number"
@@ -263,11 +256,6 @@ export default function AddOrderDetails({
                             />
                           </div>
                           <div className="h-fit w-fit">
-                            {/* <Datepicker
-                              onChange={handleChange}
-                              show={show}
-                              setShow={handleClose}
-                            /> */}
                             <label
                               className="block mb-2 text-sm font-medium text-gray-900"
                               htmlFor="orderDate"
@@ -309,17 +297,22 @@ export default function AddOrderDetails({
                               htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Store Name
+                              Vendor's Name
                             </label>
                             <select
                               id="storeID"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="storeID"
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              value={store?._id}
+                              onChange={(e) => {
+                                const store = stores.find(
+                                  (s) => s._id === e.target.value
+                                );
+                                setStore(store || {});
+                                handleInputChange(e.target.name, store);
+                              }}
                             >
-                              <option>Select Store</option>
+                              <option>Select Vendor</option>
                               {stores.map((element, index) => {
                                 return (
                                   <option key={element._id} value={element._id}>

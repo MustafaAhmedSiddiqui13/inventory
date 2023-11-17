@@ -1,31 +1,25 @@
 const mongoose = require("mongoose");
 
-const StockHistorySchema = new mongoose.Schema(
+const StoreHistorySchema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
     },
-    products: {
-      type: Array,
-      ref: "product",
-      required: true,
-    },
-    StoreID: {
-      type: Object,
-      ref: "store",
-      required: true,
-    },
-    orderDate: {
+    name: {
       type: String,
       required: true,
     },
-    totalAmount: {
-      type: Number,
+    category: {
+      type: String,
       required: true,
     },
-    riderName: {
+    address: {
+      type: String,
+      required: true,
+    },
+    city: {
       type: String,
       required: true,
     },
@@ -37,5 +31,5 @@ const StockHistorySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const StockHistory = mongoose.model("stockHistory", StockHistorySchema);
-module.exports = StockHistory;
+const StoreHistory = mongoose.model("storeHistory", StoreHistorySchema);
+module.exports = StoreHistory;

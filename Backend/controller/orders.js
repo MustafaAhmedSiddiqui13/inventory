@@ -46,7 +46,6 @@ const addOrder = async (req, res) => {
 const getOrderData = async (req, res) => {
   const findAllPurchaseData = await Orders.find()
     .sort({ _id: -1 }) // -1 for descending order
-    .populate("StoreID")
     .populate("userID");
   res.json(findAllPurchaseData);
 };

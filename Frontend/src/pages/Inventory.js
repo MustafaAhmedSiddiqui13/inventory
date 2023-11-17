@@ -358,7 +358,6 @@ function Inventory() {
                       </span>
                       <span
                         className="text-red-600 px-2 cursor-pointer"
-                        // onClick={() => deleteItem(element._id)}
                         onClick={() => openModal(element._id)}
                       >
                         {localStorageData.firstName === "Azhar" ? "Delete" : ""}

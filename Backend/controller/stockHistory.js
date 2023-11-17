@@ -3,7 +3,6 @@ const StockHistory = require("../models/stockHistory");
 const getStockHistoryData = async (req, res) => {
   const findAllStockHistoryData = await StockHistory.find()
     .sort({ _id: -1 }) // -1 for descending order
-    .populate("StoreID")
     .populate("userID");
   res.json(findAllStockHistoryData);
 };

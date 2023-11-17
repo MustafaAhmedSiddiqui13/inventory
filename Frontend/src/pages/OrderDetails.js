@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { Fragment, useState, useEffect, useContext } from "react";
+import { Dialog, Transition } from "@headlessui/react";
 import AddOrderDetails from "../components/AddOrderDetails";
 import AuthContext from "../AuthContext";
 
@@ -9,6 +10,9 @@ function OrderDetails() {
   const [products, setAllProducts] = useState([]);
   const [stores, setAllStores] = useState([]);
   const [updatePage, setUpdatePage] = useState(true);
+  let [isCompleteOpen, setIsCompleteOpen] = useState(false);
+  let [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [orderId, setOrderId] = useState("");
 
   const authContext = useContext(AuthContext);
 
@@ -58,6 +62,24 @@ function OrderDetails() {
     setOrderModal(!showOrderModal);
   };
 
+  function openCompleteModal(id) {
+    setOrderId(id);
+    setIsCompleteOpen(true);
+  }
+
+  function closeCompleteModal() {
+    setIsCompleteOpen(false);
+  }
+
+  function closeCancelModal() {
+    setIsCancelOpen(false);
+  }
+
+  function openCancelModal(id) {
+    setOrderId(id);
+    setIsCancelOpen(true);
+  }
+
   const resolveItem = (id) => {
     fetch(`http://localhost:4000/api/order/post/${id}`, {
       method: "POST",
@@ -98,6 +120,138 @@ function OrderDetails() {
             authContext={authContext}
           />
         )}
+        <Transition appear show={isCompleteOpen} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-10"
+            onClose={closeCompleteModal}
+          >
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/25" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Order Delivered
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Mark Order as Completed?
+                      </p>
+                    </div>
+
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
+                        onClick={() => {
+                          closeCompleteModal();
+                          resolveItem(orderId);
+                        }}
+                      >
+                        Yes
+                      </button>
+
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={closeCompleteModal}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
+        <Transition appear show={isCancelOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-10" onClose={closeCancelModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/25" />
+            </Transition.Child>
+
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-medium leading-6 text-gray-900"
+                    >
+                      Cancel Order
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Are you sure you want to Canel this Order?
+                      </p>
+                    </div>
+
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
+                        onClick={() => {
+                          closeCancelModal();
+                          cancelOrder(orderId);
+                        }}
+                      >
+                        Yes
+                      </button>
+
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                        onClick={closeCancelModal}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
         {/* Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
@@ -117,7 +271,7 @@ function OrderDetails() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Store Name
+                  Vendor
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Product Name
@@ -179,14 +333,15 @@ function OrderDetails() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <span
                         className="text-green-700 cursor-pointer"
-                        onClick={() => resolveItem(element._id)}
+                        // onClick={() => resolveItem(element._id)}
+                        onClick={() => openCompleteModal(element._id)}
                       >
                         Complete
                       </span>
 
                       <span
                         className="text-red-600 px-2 cursor-pointer"
-                        onClick={() => cancelOrder(element._id)}
+                        onClick={() => openCancelModal(element._id)}
                       >
                         {localStorageData.firstName === "Azhar" ? "Cancel" : ""}
                       </span>

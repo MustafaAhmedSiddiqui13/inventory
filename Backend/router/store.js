@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 const store = require("../controller/store");
 
-// Add Store 
+// Add Store
 app.post("/add", store.addStore);
 
+//Delete Store
+app.get("/delete/:id", store.deleteStore);
+
 // Get All Store
-app.get("/get/:userID", store.getAllStores)
+app.get("/get/:userID", store.getAllStores);
 
 module.exports = app;
