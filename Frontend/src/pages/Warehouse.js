@@ -1,21 +1,21 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddProduct from "../components/AddProduct";
-import UpdateProduct from "../components/UpdateProduct";
+import AddWarehouse from "../components/AddWarehouse";
 import AuthContext from "../AuthContext";
+import UpdateWarehouse from "../components/UpdateWarehouse";
+import LineBreak from "../components/LineBreak";
 
-function Inventory() {
+function Warehouse() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
 
-  const [showProductModal, setShowProductModal] = useState(false);
+  const [showItemModal, setShowWarehouseModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [updateProduct, setUpdateProduct] = useState([]);
-  const [products, setAllProducts] = useState([]);
-  const [items, setAllItems] = useState([]);
+  const [updateWarehouse, setUpdateWarehouse] = useState([]);
+  const [warehouses, setAllWarehouses] = useState([]);
+  const [cities, setAllCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
-  const [stores, setAllStores] = useState([]);
-  const [productToBeDeleted, setProductToBeDeleted] = useState("");
+  const [warehouseToBeDeleted, setWarehouseToBeDeleted] = useState("");
   let [isOpen, setIsOpen] = useState(false);
 
   const authContext = useContext(AuthContext);
@@ -24,48 +24,38 @@ function Inventory() {
   console.log("====================================");
 
   useEffect(() => {
-    fetchProductsData();
-    fetchSalesData();
-    fetchItemsData();
+    fetchWarehouseData();
+    fetchCityData();
   }, [updatePage]);
 
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+  // Fetching Data of All Warehouses
+  const fetchWarehouseData = () => {
+    fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllProducts(data);
+        setAllWarehouses(data);
       })
       .catch((err) => console.log(err));
   };
 
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+  // Fetching Data of All Cities
+  const fetchCityData = () => {
+    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllItems(data);
+        setAllCities(data);
       })
       .catch((err) => console.log(err));
   };
 
-  // Fetching Data of Search Products
+  // Fetching Data of Search Warehouses
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/product/search?searchTerm=${searchTerm}`)
+    fetch(`http://localhost:4000/api/warehouse/search?searchTerm=${searchTerm}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllProducts(data);
+        setAllWarehouses(data);
       })
       .catch((err) => console.log(err));
-  };
-
-  // Fetching all stores data
-  const fetchSalesData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
   };
 
   function closeModal() {
@@ -73,27 +63,27 @@ function Inventory() {
   }
 
   function openModal(id) {
-    setProductToBeDeleted(id);
+    setWarehouseToBeDeleted(id);
     setIsOpen(true);
   }
 
-  // Modal for Product ADD
-  const addProductModalSetting = () => {
-    setShowProductModal(!showProductModal);
+  // Modal for Warehouse ADD
+  const addWarehouseModalSetting = () => {
+    setShowWarehouseModal(!showItemModal);
   };
 
-  // Modal for Product UPDATE
-  const updateProductModalSetting = (selectedProductData) => {
+  // Modal for Warehouse UPDATE
+  const updateWarehouseModalSetting = (selectedWarehouseData) => {
     console.log("Clicked: edit");
-    setUpdateProduct(selectedProductData);
+    setUpdateWarehouse(selectedWarehouseData);
     setShowUpdateModal(!showUpdateModal);
   };
 
-  // Delete item
-  const deleteItem = (id) => {
-    console.log("Product ID: ", id);
-    console.log(`http://localhost:4000/api/product/delete/${id}`);
-    fetch(`http://localhost:4000/api/product/delete/${id}`)
+  // Delete Warehouse
+  const deleteWarehouse = (id) => {
+    console.log("Warehouse ID: ", id);
+    console.log(`http://localhost:4000/api/warehouse/delete/${id}`);
+    fetch(`http://localhost:4000/api/warehouse/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);
@@ -114,102 +104,18 @@ function Inventory() {
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
-        <div className="bg-white rounded p-3">
-          <span className="font-semibold px-4">Overall Inventory</span>
-          <div className=" flex flex-col md:flex-row justify-center items-center  ">
-            <div className="flex flex-col p-10  w-full  md:w-3/12  ">
-              <span className="font-semibold text-blue-600 text-base">
-                Total Products
-              </span>
-              <span className="font-semibold text-gray-600 text-base">
-                {products.length}
-              </span>
-              <span className="font-thin text-gray-400 text-xs">
-                Last 7 days
-              </span>
-            </div>
-            <div className="flex flex-col gap-3 p-10   w-full  md:w-3/12 sm:border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-yellow-600 text-base">
-                Stores
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    {stores.length}
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $2000
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Revenue
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  sm:border-y-2 md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-purple-600 text-base">
-                Top Selling
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    5
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Last 7 days
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    $1500
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">Cost</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 p-10  w-full  md:w-3/12  border-y-2  md:border-x-2 md:border-y-0">
-              <span className="font-semibold text-red-600 text-base">
-                Low Stocks
-              </span>
-              <div className="flex gap-8">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    12
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Ordered
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-600 text-base">
-                    2
-                  </span>
-                  <span className="font-thin text-gray-400 text-xs">
-                    Not in Stock
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {showProductModal && (
-          <AddProduct
-            products={products}
-            items={items}
-            addProductModalSetting={addProductModalSetting}
+        {showItemModal && (
+          <AddWarehouse
+            warehouses={warehouses}
+            cities={cities}
+            addWarehouseModalSetting={addWarehouseModalSetting}
             handlePageUpdate={handlePageUpdate}
           />
         )}
         {showUpdateModal && (
-          <UpdateProduct
-            updateProductData={updateProduct}
-            updateModalSetting={updateProductModalSetting}
+          <UpdateWarehouse
+            updateWarehouseData={updateWarehouse}
+            updateModalSetting={updateWarehouseModalSetting}
             handlePageUpdate={handlePageUpdate}
           />
         )}
@@ -248,7 +154,7 @@ function Inventory() {
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete this product?
+                        Are you sure you want to delete this warehouse?
                       </p>
                     </div>
 
@@ -258,7 +164,7 @@ function Inventory() {
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
                         onClick={() => {
                           closeModal();
-                          deleteItem(productToBeDeleted);
+                          deleteWarehouse(warehouseToBeDeleted);
                         }}
                       >
                         Delete
@@ -283,7 +189,7 @@ function Inventory() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Products</span>
+              <span className="font-bold">Warehouse</span>
               <div className="flex justify-center items-center px-2 border-2 rounded-md ">
                 <img
                   alt="search-icon"
@@ -302,9 +208,9 @@ function Inventory() {
             <div className="flex gap-4">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                onClick={addProductModalSetting}
+                onClick={addWarehouseModalSetting}
               >
-                Add Product
+                Add Warehouse
               </button>
             </div>
           </div>
@@ -312,22 +218,16 @@ function Inventory() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Item's Name
+                  City
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Pack Size
+                  Area
+                </th>
+                <th className="flex flex-col items-center whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse Number
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Stock
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Production Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Expiration Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Availibility
+                  Address
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   More
@@ -336,32 +236,39 @@ function Inventory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {products.map((element, index) => {
+              {warehouses.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.items?.name}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.packSize?.packSize}
-                      {element.items?.units}
+                      {element.city}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
+                      {element.area}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.production}
+                      {element.warehouseNumber.map((warehouseNumber) => {
+                        return (
+                          <div className="py-8">
+                            <p className="flex flex-col justify-start items-center">
+                              {warehouseNumber.warehouseNumber}
+                            </p>
+                          </div>
+                        );
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.expirationDate}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock > 0 ? "In Stock" : "Not in Stock"}
+                      {element.warehouseNumber.map((address) => {
+                        return (
+                          <div className=" py-2">
+                            <LineBreak text={address.address} n={5} />
+                          </div>
+                        );
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <span
                         className="text-green-700 cursor-pointer"
-                        onClick={() => updateProductModalSetting(element)}
+                        onClick={() => updateWarehouseModalSetting(element)}
                       >
                         {localStorageData.firstName === "Azhar" ? "Edit" : ""}
                       </span>
@@ -383,4 +290,4 @@ function Inventory() {
   );
 }
 
-export default Inventory;
+export default Warehouse;

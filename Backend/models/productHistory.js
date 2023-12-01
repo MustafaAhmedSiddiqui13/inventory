@@ -7,23 +7,20 @@ const ProductHistorySchema = new mongoose.Schema(
       ref: "users",
       required: true,
     },
-    name: {
-      type: String,
+    items: {
+      type: Object,
+      ref: "item",
       required: true,
     },
-    category: {
-      type: String,
+    packSize: {
+      type: Object,
       required: true,
     },
     stock: {
       type: Number,
       required: true,
     },
-    unitPrice: {
-      type: Number,
-      required: true,
-    },
-    purchaseDate: {
+    production: {
       type: String,
       required: true,
     },

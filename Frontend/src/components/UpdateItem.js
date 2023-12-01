@@ -3,50 +3,64 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 
-export default function UpdateProduct({
-  updateProductData,
+export default function UpdateItem({
+  updateItemData,
   updateModalSetting,
   handlePageUpdate,
 }) {
-  const { _id, items, packSize, stock, production, expirationDate } =
-    updateProductData;
+  const { _id, name, category, units } = updateItemData;
   const authContext = useContext(AuthContext);
-  const [product, setProduct] = useState({
+  const [item, setItem] = useState({
     userId: authContext.user,
-    productID: _id,
-    items: items,
-    packSize: packSize,
-    stock: stock,
-    production: production,
-    expirationDate: expirationDate,
+    itemID: _id,
+    name: name,
+    category: category,
+    units: units,
   });
   const [open, setOpen] = useState(true);
+  const [packSize, setPackSize] = useState(0);
+  const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
 
   const handleInputChange = (key, value) => {
     console.log(key);
-    setProduct({ ...product, [key]: value });
+    setItem({ ...item, [key]: value });
   };
 
-  const updateProduct = () => {
+  const addPackSize = () => {
+    if (packSize < 1) {
+      return alert("Fields cannot be left Empty");
+    }
+    setAddPacks((prev) => {
+      return prev.concat({
+        packSize: packSize,
+      });
+    });
+  };
+
+  const updateItem = () => {
+    let myItem = {
+      ...item,
+      packSize: addPacks,
+    };
+
     if (
-      product.expirationDate === "" ||
-      product.production === "" ||
-      product.stock === "" ||
-      product.items === "" ||
-      product.packSize === ""
+      myItem.category === "" ||
+      myItem.name === "" ||
+      myItem.units === "" ||
+      addPacks.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`http://localhost:4000/api/product/update`, {
+    fetch(`http://localhost:4000/api/item/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(product),
+      body: JSON.stringify(myItem),
     })
       .then((result) => {
-        alert("Product Updated");
+        alert("Item Updated");
         handlePageUpdate();
         setOpen(false);
       })
@@ -99,102 +113,121 @@ export default function UpdateProduct({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Update Product
+                        Update Item
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                           <div>
                             <label
-                              htmlFor="items"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                              htmlFor="name"
+                              className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Item's Name
+                              Name
                             </label>
                             <input
                               type="text"
-                              name="items"
-                              id="items"
-                              value={product.items.name}
+                              name="name"
+                              id="name"
+                              value={item.name}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Item's Name"
-                              disabled
+                              placeholder="Product's Name"
                             />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="category"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Category
+                            </label>
+                            <select
+                              id="category"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="category"
+                              value={item.category}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                            >
+                              <option>Select Category</option>
+                              <option value="Sweets">Sweets</option>
+                              <option value="Snacks">Snacks</option>
+                            </select>
                           </div>
                           <div>
                             <label
                               htmlFor="packSize"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                              className="block mb-2 text-sm font-medium text-gray-900"
                             >
                               Pack Size
                             </label>
                             <input
-                              type="text"
+                              type="number"
                               name="packSize"
                               id="packSize"
-                              value={
-                                product.packSize.packSize + product.items.units
-                              }
+                              value={packSize}
+                              onChange={(e) => setPackSize(e.target.value)}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Pack Size"
-                              disabled
                             />
                           </div>
                           <div>
                             <label
-                              htmlFor="stock"
+                              htmlFor="units"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
-                              Stock
+                              Units
                             </label>
-                            <input
-                              type="number"
-                              name="stock"
-                              id="stock"
-                              value={product.stock}
+                            <select
+                              id="units"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="units"
+                              value={item.units}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Amount"
-                            />
+                            >
+                              <option>eg. Kg, g, L, mL</option>
+                              <option value="Kg">Kg</option>
+                              <option value="g">g</option>
+                              <option value="L">L</option>
+                              <option value="mL">mL</option>
+                            </select>
                           </div>
-                          <div>
-                            <label
-                              htmlFor="production"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                            <thead>
+                              <tr>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Pack Size(s)
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {addPacks.map((element, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.packSize}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
+                            <button
+                              type="button"
+                              className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
+                              onClick={addPackSize}
                             >
-                              Production Date
-                            </label>
-                            <input
-                              type="date"
-                              name="production"
-                              id="production"
-                              value={product.production}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Purchase Date"
-                            />
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="expirationDate"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
-                            >
-                              Expiration Date
-                            </label>
-                            <input
-                              type="date"
-                              name="expirationDate"
-                              id="expirationDate"
-                              value={product.expirationDate}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Expiration Date"
-                            />
+                              <PlusIcon
+                                className="h-6 w-6 text-blue-50"
+                                aria-hidden="true"
+                              />
+                            </button>
                           </div>
                         </div>
                       </form>
@@ -205,9 +238,9 @@ export default function UpdateProduct({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={updateProduct}
+                    onClick={updateItem}
                   >
-                    Update Product
+                    Update Item
                   </button>
                   <button
                     type="button"

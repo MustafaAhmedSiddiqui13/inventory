@@ -1,36 +1,35 @@
 const mongoose = require("mongoose");
 
-const ProductSchema = new mongoose.Schema(
+const ItemHistorySchema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
     },
-    items: {
-      type: Object,
-      ref: "item",
+    name: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: String,
       required: true,
     },
     packSize: {
-      type: Object,
+      type: Array,
       required: true,
     },
-    stock: {
-      type: Number,
-      required: true,
-    },
-    production: {
+    units: {
       type: String,
       required: true,
     },
-    expirationDate: {
+    requestType: {
       type: String,
-      required: true,
+      requried: true,
     },
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("product", ProductSchema);
-module.exports = Product;
+const ItemHistory = mongoose.model("itemHistory", ItemHistorySchema);
+module.exports = ItemHistory;

@@ -3,6 +3,10 @@ const { main } = require("./models/index");
 const productRoute = require("./router/product");
 const storeRoute = require("./router/store");
 const orderRoute = require("./router/orders");
+const itemRoute = require("./router/items");
+const warehouseRoute = require("./router/warehouses");
+const warehouseHistoryRoute = require("./router/warehouseHistory");
+const itemHistoryRoute = require("./router/itemHistory");
 const stockHistoryRoute = require("./router/stockHistory");
 const productHistoryRoute = require("./router/productHistory");
 const storeHistoryRoute = require("./router/storeHistory");
@@ -23,6 +27,18 @@ app.use("/api/product", productRoute);
 
 // Orders API
 app.use("/api/order", orderRoute);
+
+// Items API
+app.use("/api/item", itemRoute);
+
+// Warehouse API
+app.use("/api/warehouse", warehouseRoute);
+
+// Warehouse History API
+app.use("./api/warehouseHistory", warehouseHistoryRoute);
+
+// Item History API
+app.use("./api/itemHistory", itemHistoryRoute);
 
 // Stock History API
 app.use("/api/stockHistory", stockHistoryRoute);

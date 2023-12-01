@@ -2,57 +2,71 @@ import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
+import LineBreak from "./LineBreak";
 
-export default function AddProduct({
-  products,
-  items,
-  addProductModalSetting,
+export default function AddWarehouse({
+  warehouses,
+  cities,
+  addWarehouseModalSetting,
   handlePageUpdate,
 }) {
-  console.log("Items: ", items);
-
   const authContext = useContext(AuthContext);
-  const [item, setItem] = useState({});
-  const [currentProduct, setCurrentProduct] = useState({});
-  const [packSize, setPackSize] = useState({});
-
-  const [product, setProduct] = useState({
+  const [warehouse, setWarehouse] = useState({
     userId: authContext.user,
-    items: "",
-    packSize: "",
-    stock: "",
-    production: "",
-    expirationDate: "",
+    city: "",
+    area: "",
   });
-  console.log("----", product);
   const [open, setOpen] = useState(true);
+  const [warehouseNumber, setWarehouseNumber] = useState(0);
+  const [addWarehouseNumber, setAddWarehouseNumber] = useState([]);
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState({});
+  const [area, setArea] = useState({});
+  const [findWarehouse, setFindWarehouse] = useState({});
   const cancelButtonRef = useRef(null);
 
   const handleInputChange = (key, value) => {
-    setProduct({ ...product, [key]: value });
+    setWarehouse({ ...warehouse, [key]: value });
   };
 
-  const addProduct = () => {
+  const addWarehouse = () => {
+    if (warehouseNumber < 1) {
+      return alert("Fields cannot be left Empty");
+    }
+    setAddWarehouseNumber((prev) => {
+      return prev.concat({
+        id: "warehouse" + Date.now(),
+        address: address,
+        warehouseNumber: warehouseNumber,
+      });
+    });
+  };
+
+  const addFinalWarehouse = () => {
+    let myWarehouse = {
+      ...warehouse,
+      warehouseNumber: addWarehouseNumber,
+    };
+
     if (
-      product.expirationDate === "" ||
-      product.production === "" ||
-      product.stock === "" ||
-      product.items === "" ||
-      product.packSize === ""
+      myWarehouse.category === "" ||
+      myWarehouse.name === "" ||
+      myWarehouse.units === "" ||
+      addWarehouseNumber.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/product/add", {
+    fetch("http://localhost:4000/api/warehouse/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(product),
+      body: JSON.stringify(myWarehouse),
     })
       .then((result) => {
-        alert("Product ADDED");
+        alert("Warehouse Created");
         handlePageUpdate();
-        addProductModalSetting();
+        addWarehouseModalSetting();
       })
       .catch((err) => console.log(err));
   };
@@ -103,7 +117,7 @@ export default function AddProduct({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Add Product
+                        Add Warehouse
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -112,30 +126,33 @@ export default function AddProduct({
                               htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Item
+                              City
                             </label>
                             <select
-                              id="items"
+                              id="city"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="items"
-                              value={item?._id}
+                              name="city"
+                              value={city?._id}
                               onChange={(e) => {
-                                const item = items.find(
-                                  (i) => i._id === e.target.value
+                                const currentCity = cities.find(
+                                  (c) => c._id === e.target.value
                                 );
-                                const currentProd = products.find(
-                                  (product) => product.items._id === item._id
+                                const currentWarehouse = warehouses.find(
+                                  (w) => w.city === currentCity.city
                                 );
-                                setCurrentProduct(currentProd || {});
-                                setItem(item || {});
-                                handleInputChange(e.target.name, item);
+                                setFindWarehouse(currentWarehouse || {});
+                                setCity(currentCity || {});
+                                handleInputChange(
+                                  e.target.name,
+                                  currentCity.city
+                                );
                               }}
                             >
-                              <option>Select Item</option>
-                              {items.map((element, index) => {
+                              <option>Select City</option>
+                              {cities.map((element, index) => {
                                 return (
                                   <option key={element._id} value={element._id}>
-                                    {element.name}
+                                    {element.city}
                                   </option>
                                 );
                               })}
@@ -146,32 +163,30 @@ export default function AddProduct({
                               htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Pack Size
+                              Area
                             </label>
                             <select
-                              id="packSize"
+                              id="area"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="packSize"
-                              value={packSize?.id}
+                              name="area"
+                              value={area?.id}
                               onChange={(e) => {
-                                const packSizeSelected = item.packSize?.find(
-                                  (i) => i.id === e.target.value
+                                const currentArea = city.areas?.find(
+                                  (a) => a.id === e.target.value
                                 );
-
-                                setPackSize(packSizeSelected || {});
+                                setArea(currentArea || {});
                                 handleInputChange(
                                   e.target.name,
-                                  packSizeSelected
+                                  currentArea.area
                                 );
                               }}
                             >
-                              <option>Select Pack Size</option>
-                              {item.packSize?.map((element, index) => {
-                                if (currentProduct.packSize.id !== element.id) {
+                              <option>Select Area</option>
+                              {city.areas?.map((element, index) => {
+                                if (findWarehouse.area !== element.area) {
                                   return (
                                     <option key={element.id} value={element.id}>
-                                      {element.packSize}
-                                      {item?.units}
+                                      {element.area}
                                     </option>
                                   );
                                 }
@@ -180,60 +195,81 @@ export default function AddProduct({
                           </div>
                           <div>
                             <label
-                              htmlFor="stock"
+                              htmlFor="units"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
-                              Stock
+                              Warehouse #
                             </label>
-                            <input
-                              type="number"
-                              name="stock"
-                              id="stock"
-                              value={product.stock}
+                            <select
+                              id="warehouseNumber"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="warehouseNumber"
+                              value={warehouseNumber}
                               onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
+                                setWarehouseNumber(e.target.value)
                               }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Stock Amount"
-                            />
+                            >
+                              <option>Select a Warehouse #</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                            </select>
                           </div>
                           <div>
                             <label
-                              htmlFor="production"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                              htmlFor="address"
+                              className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Production Date
+                              Address
                             </label>
                             <input
-                              type="date"
-                              name="production"
-                              id="production"
-                              value={product.production}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              type="text"
+                              name="address"
+                              id="address"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Production Date"
+                              placeholder="Address"
                             />
                           </div>
-                          <div>
-                            <label
-                              htmlFor="expirationDate"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                            <thead>
+                              <tr>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Warehouse #
+                                </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Address
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {addWarehouseNumber.map((element, index) => {
+                                return (
+                                  <tr key={element.id}>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.warehouseNumber}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      <LineBreak text={element.address} n={5} />
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
+                            <button
+                              type="button"
+                              className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
+                              onClick={addWarehouse}
                             >
-                              Expiration Date
-                            </label>
-                            <input
-                              type="date"
-                              name="expirationDate"
-                              id="expirationDate"
-                              value={product.expirationDate}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Expiration Date"
-                            />
+                              <PlusIcon
+                                className="h-6 w-6 text-blue-50"
+                                aria-hidden="true"
+                              />
+                            </button>
                           </div>
                         </div>
                         <div className="flex items-center space-x-4"></div>
@@ -245,14 +281,14 @@ export default function AddProduct({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addProduct}
+                    onClick={addFinalWarehouse}
                   >
-                    Add Product
+                    Add Warehouse
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addProductModalSetting()}
+                    onClick={() => addWarehouseModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel

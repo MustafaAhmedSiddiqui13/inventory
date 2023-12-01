@@ -6,21 +6,19 @@ const addProduct = async (req, res) => {
   try {
     await Product.create({
       userID: req.body.userId,
-      name: req.body.name,
-      category: req.body.category,
+      items: req.body.items,
+      packSize: req.body.packSize,
       stock: req.body.stock,
-      unitPrice: req.body.unitPrice,
-      purchaseDate: req.body.purchaseDate,
+      production: req.body.production,
       expirationDate: req.body.expirationDate,
     });
 
     await ProductHistory.create({
       userID: req.body.userId,
-      name: req.body.name,
-      category: req.body.category,
+      items: req.body.items,
+      packSize: req.body.packSize,
       stock: req.body.stock,
-      unitPrice: req.body.unitPrice,
-      purchaseDate: req.body.purchaseDate,
+      production: req.body.production,
       expirationDate: req.body.expirationDate,
       requestType: "Product Added",
     });
@@ -45,11 +43,10 @@ const deleteSelectedProduct = async (req, res) => {
     res.send(result);
     await ProductHistory.create({
       userID: result.userID,
-      name: result.name,
-      category: result.category,
+      items: result.items,
+      packSize: result.packSize,
       stock: result.stock,
-      unitPrice: result.unitPrice,
-      purchaseDate: result.purchaseDate,
+      production: result.production,
       expirationDate: result.expirationDate,
       requestType: "Product Deleted",
     });
@@ -66,22 +63,21 @@ const updateSelectedProduct = async (req, res) => {
       { _id: req.body.productID },
       {
         userID: req.body.userId,
-        name: req.body.name,
-        category: req.body.category,
+        items: req.body.items,
+        packSize: req.body.packSize,
         stock: req.body.stock,
-        unitPrice: req.body.unitPrice,
-        purchaseDate: req.body.purchaseDate,
+        production: req.body.production,
         expirationDate: req.body.expirationDate,
       },
       { new: true }
     );
     await ProductHistory.create({
       userID: userId,
-      name: updatedResult.name,
-      category: updatedResult.category,
+      items: updatedResult.items,
+      packSize: updatedResult.packSize,
       stock: updatedResult.stock,
       unitPrice: updatedResult.unitPrice,
-      purchaseDate: updatedResult.purchaseDate,
+      production: updatedResult.production,
       expirationDate: updatedResult.expirationDate,
       requestType: "Product Updated",
     });

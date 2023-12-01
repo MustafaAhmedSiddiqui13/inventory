@@ -152,7 +152,7 @@ export default function AddOrderDetails({
                               htmlFor="productID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Product Name
+                              Name & Pack Size
                             </label>
                             <select
                               id="productID"
@@ -174,7 +174,9 @@ export default function AddOrderDetails({
                                       key={element._id}
                                       value={element._id}
                                     >
-                                      {element.name}
+                                      {element.items.name} {" - "}
+                                      {element.packSize.packSize}
+                                      {element.items.units}
                                     </option>
                                   );
                                 }
@@ -186,7 +188,9 @@ export default function AddOrderDetails({
                               htmlFor="stockOrdered"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Stock Ordered
+                              Quantity{" "}
+                              {productName.stock &&
+                                `(Current Stock: ${productName.stock})`}
                             </label>
                             <input
                               type="number"
@@ -202,10 +206,10 @@ export default function AddOrderDetails({
                             <thead>
                               <tr>
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Product Name
+                                  Name & Pack Size
                                 </th>
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Stock Ordered
+                                  Quantity
                                 </th>
                               </tr>
                             </thead>
@@ -214,7 +218,10 @@ export default function AddOrderDetails({
                                 return (
                                   <tr key={productAdd.product._id}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {productAdd.product.name}
+                                      {productAdd.product.items.name}
+                                      {" - "}
+                                      {productAdd.product.packSize.packSize}
+                                      {productAdd.product.items.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {productAdd.stockOrdered}

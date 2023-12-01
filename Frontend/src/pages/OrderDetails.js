@@ -274,22 +274,25 @@ function OrderDetails() {
                   Vendor
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Product Name
+                  Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Stock Ordered
+                  Pack Size
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Quantity
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Order Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Total Amount (Rs)
+                  Total(Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Rider
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Order Created By
+                  Order By
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   More
@@ -307,7 +310,17 @@ function OrderDetails() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.products.map((product) => {
-                        return <p>{product.product.name}</p>;
+                        return <p>{product.product.items.name}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.products.map((product) => {
+                        return (
+                          <p>
+                            {product.product.packSize.packSize}
+                            {product.product.items.units}
+                          </p>
+                        );
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
