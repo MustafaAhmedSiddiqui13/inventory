@@ -65,7 +65,7 @@ const updateSelectedWarehouse = async (req, res) => {
   try {
     const userId = req.body.userId;
     const updatedResult = await Warehouse.findByIdAndUpdate(
-      { _id: req.body.itemID },
+      { _id: req.body.warehouseId },
       {
         userID: req.body.userId,
         city: req.body.city,

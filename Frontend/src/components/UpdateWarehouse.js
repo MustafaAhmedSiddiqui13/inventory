@@ -1,66 +1,81 @@
-import { Fragment, useContext, useRef, useState } from "react";
+import { Component, Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
+import LineBreak from "./LineBreak";
 
 export default function UpdateWarehouse({
-  updateItemData,
+  updateWarehouseData,
   updateModalSetting,
   handlePageUpdate,
 }) {
-  const { _id, name, category, units } = updateItemData;
+  const { _id, city, area, warehouseNumber } = updateWarehouseData;
   const authContext = useContext(AuthContext);
-  const [item, setItem] = useState({
+  const [warehouse, setWarehouse] = useState({
     userId: authContext.user,
-    itemID: _id,
-    name: name,
-    category: category,
-    units: units,
+    warehouseId: _id,
+    city: city,
+    area: area,
+    warehouseNumber: warehouseNumber,
   });
   const [open, setOpen] = useState(true);
-  const [packSize, setPackSize] = useState(0);
-  const [addPacks, setAddPacks] = useState([]);
+  const [prevWarehouseNumber, setPrevWarehouseNumber] = useState(0);
+  const [address, setAddress] = useState("");
+  const [newWarehouses, setNewWarehouses] = useState([]);
   const cancelButtonRef = useRef(null);
 
-  const handleInputChange = (key, value) => {
-    console.log(key);
-    setItem({ ...item, [key]: value });
-  };
-
-  const addPackSize = () => {
-    if (packSize < 1) {
+  const addWarehouse = () => {
+    if (prevWarehouseNumber < 1) {
       return alert("Fields cannot be left Empty");
     }
-    setAddPacks((prev) => {
+
+    setNewWarehouses((prev) => {
       return prev.concat({
-        packSize: packSize,
+        id: "warehouse" + Date.now(),
+        address: address,
+        warehouseNumber: prevWarehouseNumber,
       });
     });
   };
 
-  const updateItem = () => {
-    let myItem = {
-      ...item,
-      packSize: addPacks,
+  const deleteWarehouse = (id) => {
+    setNewWarehouses((prev) => prev.filter((warehouse) => warehouse.id !== id));
+  };
+
+  const deleteExistingWarehouse = (index) => {
+    // Create a copy of the warehouse state and remove the warehouse at the specified index
+    const updatedWarehouses = [...warehouse.warehouseNumber];
+    updatedWarehouses.splice(index, 1);
+
+    // Update the state with the modified warehouse array
+    setWarehouse({ ...warehouse, warehouseNumber: updatedWarehouses });
+    console.log("pressed");
+  };
+
+  const updateFinalWarehouse = () => {
+    const mergedWarehouses = [...warehouse.warehouseNumber, ...newWarehouses];
+
+    let myWarehouse = {
+      ...warehouse,
+      warehouseNumber: mergedWarehouses,
     };
 
     if (
-      myItem.category === "" ||
-      myItem.name === "" ||
-      myItem.units === "" ||
-      addPacks.length === 0
+      myWarehouse.city === "" ||
+      myWarehouse.area === "" ||
+      mergedWarehouses.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`http://localhost:4000/api/item/update`, {
+    fetch("http://localhost:4000/api/warehouse/update", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(myItem),
+      body: JSON.stringify(myWarehouse),
     })
       .then((result) => {
-        alert("Item Updated");
+        alert("Warehouse Updated");
         handlePageUpdate();
         setOpen(false);
       })
@@ -113,65 +128,38 @@ export default function UpdateWarehouse({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Update Item
+                        Update Warehouse
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                           <div>
                             <label
-                              htmlFor="name"
+                              htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Name
+                              City
                             </label>
                             <input
-                              type="text"
-                              name="name"
-                              id="name"
-                              value={item.name}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Product's Name"
+                              id="city"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="city"
+                              value={city}
+                              disabled
                             />
                           </div>
                           <div>
                             <label
-                              htmlFor="category"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
-                            >
-                              Category
-                            </label>
-                            <select
-                              id="category"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="category"
-                              value={item.category}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                            >
-                              <option>Select Category</option>
-                              <option value="Sweets">Sweets</option>
-                              <option value="Snacks">Snacks</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="packSize"
+                              htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Pack Size
+                              Area
                             </label>
                             <input
-                              type="number"
-                              name="packSize"
-                              id="packSize"
-                              value={packSize}
-                              onChange={(e) => setPackSize(e.target.value)}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Pack Size"
+                              id="area"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="area"
+                              value={area}
+                              disabled
                             />
                           </div>
                           <div>
@@ -179,38 +167,126 @@ export default function UpdateWarehouse({
                               htmlFor="units"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
-                              Units
+                              Warehouse #
                             </label>
                             <select
-                              id="units"
+                              id="warehouseNumber"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="units"
-                              value={item.units}
+                              name="warehouseNumber"
+                              value={prevWarehouseNumber}
                               onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
+                                setPrevWarehouseNumber(e.target.value)
                               }
                             >
-                              <option>eg. Kg, g, L, mL</option>
-                              <option value="Kg">Kg</option>
-                              <option value="g">g</option>
-                              <option value="L">L</option>
-                              <option value="mL">mL</option>
+                              <option>Select a Warehouse #</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
                             </select>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="address"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Address
+                            </label>
+                            <input
+                              type="text"
+                              name="address"
+                              id="address"
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Address"
+                            />
                           </div>
                           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                             <thead>
                               <tr>
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Pack Size(s)
+                                  Warehouse #
+                                </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Address
                                 </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                              {addPacks.map((element, index) => {
+                              {warehouse.warehouseNumber?.map(
+                                (element, index) => {
+                                  return (
+                                    <tr key={element.id}>
+                                      <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                        {element.warehouseNumber}
+                                      </td>
+                                      <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                        <LineBreak
+                                          text={element.address}
+                                          n={5}
+                                        />
+                                      </td>
+                                      <td className="whitespace-nowrap px-4 py-2 text-gray-900">
+                                        <button
+                                          type="button"
+                                          className="text-red-600 hover:text-red-800"
+                                          onClick={() =>
+                                            deleteExistingWarehouse(index)
+                                          }
+                                        >
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth={1.5}
+                                            stroke="currentColor"
+                                            className="w-6 h-6"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                            />
+                                          </svg>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  );
+                                }
+                              )}
+                              {newWarehouses?.map((element, index) => {
                                 return (
-                                  <tr key={index}>
+                                  <tr key={element.id}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {element.packSize}
+                                      {element.warehouseNumber}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      <LineBreak text={element.address} n={5} />
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2 text-gray-900">
+                                      <button
+                                        type="button"
+                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() =>
+                                          deleteWarehouse(element.id)
+                                        }
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          strokeWidth={1.5}
+                                          stroke="currentColor"
+                                          className="w-6 h-6"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                          />
+                                        </svg>
+                                      </button>
                                     </td>
                                   </tr>
                                 );
@@ -221,7 +297,7 @@ export default function UpdateWarehouse({
                             <button
                               type="button"
                               className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
-                              onClick={addPackSize}
+                              onClick={addWarehouse}
                             >
                               <PlusIcon
                                 className="h-6 w-6 text-blue-50"
@@ -230,6 +306,7 @@ export default function UpdateWarehouse({
                             </button>
                           </div>
                         </div>
+                        <div className="flex items-center space-x-4"></div>
                       </form>
                     </div>
                   </div>
@@ -238,9 +315,9 @@ export default function UpdateWarehouse({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={updateItem}
+                    onClick={updateFinalWarehouse}
                   >
-                    Update Item
+                    Update Warehouse
                   </button>
                   <button
                     type="button"

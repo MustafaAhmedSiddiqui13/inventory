@@ -11,6 +11,9 @@ const addProduct = async (req, res) => {
       stock: req.body.stock,
       production: req.body.production,
       expirationDate: req.body.expirationDate,
+      city: req.body.city,
+      area: req.body.area,
+      warehouseNumber: req.body.warehouseNumber,
     });
 
     await ProductHistory.create({
@@ -20,6 +23,9 @@ const addProduct = async (req, res) => {
       stock: req.body.stock,
       production: req.body.production,
       expirationDate: req.body.expirationDate,
+      city: req.body.city,
+      area: req.body.area,
+      warehouseNumber: req.body.warehouseNumber,
       requestType: "Product Added",
     });
 
@@ -48,6 +54,9 @@ const deleteSelectedProduct = async (req, res) => {
       stock: result.stock,
       production: result.production,
       expirationDate: result.expirationDate,
+      city: result.city,
+      area: result.area,
+      warehouseNumber: result.warehouseNumber,
       requestType: "Product Deleted",
     });
   } catch (e) {
@@ -68,6 +77,9 @@ const updateSelectedProduct = async (req, res) => {
         stock: req.body.stock,
         production: req.body.production,
         expirationDate: req.body.expirationDate,
+        city: req.body.city,
+        area: req.body.area,
+        warehouseNumber: req.body.warehouseNumber,
       },
       { new: true }
     );
@@ -79,6 +91,9 @@ const updateSelectedProduct = async (req, res) => {
       unitPrice: updatedResult.unitPrice,
       production: updatedResult.production,
       expirationDate: updatedResult.expirationDate,
+      city: updatedResult.city,
+      area: updatedResult.area,
+      warehouseNumber: updatedResult.warehouseNumber,
       requestType: "Product Updated",
     });
 

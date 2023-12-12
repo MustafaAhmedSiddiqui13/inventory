@@ -114,6 +114,8 @@ function Warehouse() {
         )}
         {showUpdateModal && (
           <UpdateWarehouse
+            warehouses={warehouses}
+            cities={cities}
             updateWarehouseData={updateWarehouse}
             updateModalSetting={updateWarehouseModalSetting}
             handlePageUpdate={handlePageUpdate}

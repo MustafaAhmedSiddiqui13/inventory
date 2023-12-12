@@ -22,7 +22,6 @@ export default function AddWarehouse({
   const [address, setAddress] = useState("");
   const [city, setCity] = useState({});
   const [area, setArea] = useState({});
-  const [findWarehouse, setFindWarehouse] = useState({});
   const cancelButtonRef = useRef(null);
 
   const handleInputChange = (key, value) => {
@@ -49,9 +48,8 @@ export default function AddWarehouse({
     };
 
     if (
-      myWarehouse.category === "" ||
-      myWarehouse.name === "" ||
-      myWarehouse.units === "" ||
+      myWarehouse.city === "" ||
+      myWarehouse.area === "" ||
       addWarehouseNumber.length === 0
     ) {
       return alert("Fields cannot be left Empty");
@@ -140,7 +138,7 @@ export default function AddWarehouse({
                                 const currentWarehouse = warehouses.find(
                                   (w) => w.city === currentCity.city
                                 );
-                                setFindWarehouse(currentWarehouse || {});
+
                                 setCity(currentCity || {});
                                 handleInputChange(
                                   e.target.name,
@@ -174,23 +172,34 @@ export default function AddWarehouse({
                                 const currentArea = city.areas?.find(
                                   (a) => a.id === e.target.value
                                 );
-                                setArea(currentArea || {});
-                                handleInputChange(
-                                  e.target.name,
-                                  currentArea.area
-                                );
+
+                                // If the area is not present in the addWarehouseNumber array, set it as the current area
+                                if (
+                                  !addWarehouseNumber.some(
+                                    (w) => w.area === currentArea?.area
+                                  )
+                                ) {
+                                  setArea(currentArea || {});
+                                  handleInputChange(
+                                    e.target.name,
+                                    currentArea?.area
+                                  );
+                                }
                               }}
                             >
                               <option>Select Area</option>
-                              {city.areas?.map((element, index) => {
-                                if (findWarehouse.area !== element.area) {
-                                  return (
-                                    <option key={element.id} value={element.id}>
-                                      {element.area}
-                                    </option>
-                                  );
-                                }
-                              })}
+                              {city.areas
+                                ?.filter(
+                                  (element) =>
+                                    !warehouses.some(
+                                      (w) => w.area === element.area
+                                    )
+                                )
+                                .map((element) => (
+                                  <option key={element.id} value={element.id}>
+                                    {element.area}
+                                  </option>
+                                ))}
                             </select>
                           </div>
                           <div>

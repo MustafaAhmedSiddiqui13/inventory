@@ -4,17 +4,25 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 
 export default function AddProduct({
+  cities,
+  warehouses,
   products,
   items,
   addProductModalSetting,
   handlePageUpdate,
 }) {
-  console.log("Items: ", items);
+  console.log("warehouses: ", warehouses);
 
   const authContext = useContext(AuthContext);
   const [item, setItem] = useState({});
   const [currentProduct, setCurrentProduct] = useState({});
   const [packSize, setPackSize] = useState({});
+
+  const [warehouse, setWarehouse] = useState({});
+  const [warehouseNumber, setWarehouseNumber] = useState({});
+
+  const [city, setCity] = useState({});
+  const [sameCityWarehouses, setSameCityWarehouses] = useState({});
 
   const [product, setProduct] = useState({
     userId: authContext.user,
@@ -23,6 +31,9 @@ export default function AddProduct({
     stock: "",
     production: "",
     expirationDate: "",
+    city: "",
+    area: "",
+    warehouseNumber: "",
   });
   console.log("----", product);
   const [open, setOpen] = useState(true);
@@ -50,7 +61,7 @@ export default function AddProduct({
       body: JSON.stringify(product),
     })
       .then((result) => {
-        alert("Product ADDED");
+        alert("Product Added");
         handlePageUpdate();
         addProductModalSetting();
       })
@@ -167,7 +178,9 @@ export default function AddProduct({
                             >
                               <option>Select Pack Size</option>
                               {item.packSize?.map((element, index) => {
-                                if (currentProduct.packSize.id !== element.id) {
+                                if (
+                                  currentProduct.packSize?.id !== element.id
+                                ) {
                                   return (
                                     <option key={element.id} value={element.id}>
                                       {element.packSize}
@@ -196,6 +209,118 @@ export default function AddProduct({
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Stock Amount"
                             />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="city"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              City
+                            </label>
+                            <select
+                              id="city"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="city"
+                              value={city?._id}
+                              onChange={(e) => {
+                                const currentCity = cities.find(
+                                  (c) => c._id === e.target.value
+                                );
+
+                                setCity(currentCity || {});
+                                handleInputChange(
+                                  e.target.name,
+                                  currentCity.city
+                                );
+                              }}
+                            >
+                              <option>Select City</option>
+                              {cities.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.city}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="area"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Area
+                            </label>
+                            <select
+                              id="area"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="area"
+                              value={warehouse?.area}
+                              onChange={(e) => {
+                                const sameCityWarehouse = warehouses.find(
+                                  (i) => i.area === e.target.value
+                                );
+                                console.log(
+                                  "Same City Warehouses: ",
+                                  sameCityWarehouse
+                                );
+                                setSameCityWarehouses(sameCityWarehouse || {});
+
+                                handleInputChange(
+                                  e.target.name,
+                                  sameCityWarehouse.area
+                                );
+                              }}
+                            >
+                              <option>Select Area</option>
+                              {warehouses.map((element, index) => {
+                                if (element.city === city?.city) {
+                                  return (
+                                    <option
+                                      key={element._id}
+                                      value={element.area}
+                                    >
+                                      {element.area}
+                                    </option>
+                                  );
+                                }
+                              })}
+                            </select>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="warehouseNumber"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Warehouse #
+                            </label>
+                            <select
+                              id="warehouseNumber"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="warehouseNumber"
+                              value={sameCityWarehouses.warehouseNumber?.id}
+                              onChange={(e) => {
+                                const currWarehouse =
+                                  sameCityWarehouses.warehouseNumber?.find(
+                                    (w) => w.id === e.target.value
+                                  );
+                                handleInputChange(
+                                  e.target.name,
+                                  currWarehouse.warehouseNumber
+                                );
+                              }}
+                            >
+                              <option>Select Warehouse #</option>
+                              {sameCityWarehouses.warehouseNumber?.map(
+                                (element, index) => {
+                                  return (
+                                    <option key={element.id} value={element.id}>
+                                      {element.warehouseNumber}
+                                    </option>
+                                  );
+                                }
+                              )}
+                            </select>
                           </div>
                           <div>
                             <label

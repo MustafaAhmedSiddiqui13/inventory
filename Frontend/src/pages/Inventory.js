@@ -12,6 +12,8 @@ function Inventory() {
   const [updateProduct, setUpdateProduct] = useState([]);
   const [products, setAllProducts] = useState([]);
   const [items, setAllItems] = useState([]);
+  const [warehouses, setAllWarehouses] = useState([]);
+  const [cities, setAllCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
   const [stores, setAllStores] = useState([]);
@@ -25,8 +27,10 @@ function Inventory() {
 
   useEffect(() => {
     fetchProductsData();
-    fetchSalesData();
+    fetchStoresData();
     fetchItemsData();
+    fetchWarehouseData();
+    fetchCityData();
   }, [updatePage]);
 
   // Fetching Data of All Products
@@ -60,12 +64,29 @@ function Inventory() {
   };
 
   // Fetching all stores data
-  const fetchSalesData = () => {
+  const fetchStoresData = () => {
     fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
         setAllStores(data);
       });
+  };
+
+  const fetchWarehouseData = () => {
+    fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllWarehouses(data);
+      });
+  };
+
+  const fetchCityData = () => {
+    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllCities(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   function closeModal() {
@@ -200,6 +221,8 @@ function Inventory() {
 
         {showProductModal && (
           <AddProduct
+            cities={cities}
+            warehouses={warehouses}
             products={products}
             items={items}
             addProductModalSetting={addProductModalSetting}
@@ -321,6 +344,9 @@ function Inventory() {
                   Stock
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Production Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -348,6 +374,13 @@ function Inventory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      <>
+                        <p>{element.city},</p>
+                        <p>{element.area},</p>
+                        <p>Warehouse {element.warehouseNumber}</p>
+                      </>
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.production}

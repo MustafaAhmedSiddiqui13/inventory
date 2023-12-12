@@ -8,7 +8,7 @@ export default function UpdateItem({
   updateModalSetting,
   handlePageUpdate,
 }) {
-  const { _id, name, category, units } = updateItemData;
+  const { _id, name, category, units, packSize } = updateItemData;
   const authContext = useContext(AuthContext);
   const [item, setItem] = useState({
     userId: authContext.user,
@@ -16,9 +16,10 @@ export default function UpdateItem({
     name: name,
     category: category,
     units: units,
+    packSize: packSize,
   });
   const [open, setOpen] = useState(true);
-  const [packSize, setPackSize] = useState(0);
+  const [newPackSize, setNewPackSize] = useState(0);
   const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
 
@@ -28,27 +29,41 @@ export default function UpdateItem({
   };
 
   const addPackSize = () => {
-    if (packSize < 1) {
+    if (newPackSize < 1) {
       return alert("Fields cannot be left Empty");
     }
     setAddPacks((prev) => {
       return prev.concat({
-        packSize: packSize,
+        id: "packsize" + Date.now(),
+        packSize: newPackSize,
       });
     });
   };
 
+  const deleteItem = (id) => {
+    setAddPacks((prev) => prev.filter((items) => items.id !== id));
+  };
+
+  const deleteExistingItem = (index) => {
+    const updatedItems = [...item.packSize];
+    updatedItems.splice(index, 1);
+
+    setItem({ ...item, packSize: updatedItems });
+  };
+
   const updateItem = () => {
+    const mergedItems = [...item.packSize, ...addPacks];
+
     let myItem = {
       ...item,
-      packSize: addPacks,
+      packSize: mergedItems,
     };
 
     if (
       myItem.category === "" ||
       myItem.name === "" ||
       myItem.units === "" ||
-      addPacks.length === 0
+      mergedItems.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
@@ -168,8 +183,8 @@ export default function UpdateItem({
                               type="number"
                               name="packSize"
                               id="packSize"
-                              value={packSize}
-                              onChange={(e) => setPackSize(e.target.value)}
+                              value={newPackSize}
+                              onChange={(e) => setNewPackSize(e.target.value)}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Pack Size"
                             />
@@ -206,11 +221,66 @@ export default function UpdateItem({
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
+                              {item.packSize.map((element, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.packSize}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2 text-gray-900">
+                                      <button
+                                        type="button"
+                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() =>
+                                          deleteExistingItem(index)
+                                        }
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          strokeWidth={1.5}
+                                          stroke="currentColor"
+                                          className="w-6 h-6"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                          />
+                                        </svg>
+                                      </button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
                               {addPacks.map((element, index) => {
                                 return (
                                   <tr key={index}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2 text-gray-900">
+                                      <button
+                                        type="button"
+                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() => deleteItem(element.id)}
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          strokeWidth={1.5}
+                                          stroke="currentColor"
+                                          className="w-6 h-6"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                                          />
+                                        </svg>
+                                      </button>
                                     </td>
                                   </tr>
                                 );
