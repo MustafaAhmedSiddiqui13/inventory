@@ -4,6 +4,7 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../AuthContext";
 
 export default function AddProduct({
+  suppliers,
   cities,
   warehouses,
   products,
@@ -17,9 +18,8 @@ export default function AddProduct({
   const [item, setItem] = useState({});
   const [currentProduct, setCurrentProduct] = useState({});
   const [packSize, setPackSize] = useState({});
-
+  const [supplier, setSupplier] = useState({});
   const [warehouse, setWarehouse] = useState({});
-  const [warehouseNumber, setWarehouseNumber] = useState({});
 
   const [city, setCity] = useState({});
   const [sameCityWarehouses, setSameCityWarehouses] = useState({});
@@ -29,6 +29,7 @@ export default function AddProduct({
     items: "",
     packSize: "",
     stock: "",
+    supplier: "",
     production: "",
     expirationDate: "",
     city: "",
@@ -48,8 +49,12 @@ export default function AddProduct({
       product.expirationDate === "" ||
       product.production === "" ||
       product.stock === "" ||
+      product.supplier === "" ||
       product.items === "" ||
-      product.packSize === ""
+      product.packSize === "" ||
+      product.city === "" ||
+      product.area === "" ||
+      product.warehouseNumber === ""
     ) {
       return alert("Fields cannot be left Empty");
     }
@@ -178,16 +183,19 @@ export default function AddProduct({
                             >
                               <option>Select Pack Size</option>
                               {item.packSize?.map((element, index) => {
-                                if (
+                                {
+                                  /* if (
                                   currentProduct.packSize?.id !== element.id
                                 ) {
-                                  return (
-                                    <option key={element.id} value={element.id}>
-                                      {element.packSize}
-                                      {item?.units}
-                                    </option>
-                                  );
+                                  
+                                } */
                                 }
+                                return (
+                                  <option key={element.id} value={element.id}>
+                                    {element.packSize}
+                                    {item?.units}
+                                  </option>
+                                );
                               })}
                             </select>
                           </div>
@@ -212,10 +220,40 @@ export default function AddProduct({
                           </div>
                           <div>
                             <label
+                              htmlFor="supplier"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Suppliers's Name
+                            </label>
+                            <select
+                              id="supplier"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="supplier"
+                              value={supplier?._id}
+                              onChange={(e) => {
+                                const supplier = suppliers.find(
+                                  (s) => s._id === e.target.value
+                                );
+                                setSupplier(supplier || {});
+                                handleInputChange(e.target.name, supplier.name);
+                              }}
+                            >
+                              <option>Select Supplier</option>
+                              {suppliers.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.name}
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
+                          <div>
+                            <label
                               htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              City
+                              Warehouse City
                             </label>
                             <select
                               id="city"
@@ -249,7 +287,7 @@ export default function AddProduct({
                               htmlFor="area"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Area
+                              Warehouse Area
                             </label>
                             <select
                               id="area"

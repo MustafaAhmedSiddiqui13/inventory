@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import AddProduct from "../components/AddProduct";
 import UpdateProduct from "../components/UpdateProduct";
 import AuthContext from "../AuthContext";
+import LineBreak from "../components/LineBreak";
 
 function Inventory() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -17,6 +18,7 @@ function Inventory() {
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
   const [stores, setAllStores] = useState([]);
+  const [suppliers, setAllSuppliers] = useState([]);
   const [productToBeDeleted, setProductToBeDeleted] = useState("");
   let [isOpen, setIsOpen] = useState(false);
 
@@ -31,6 +33,7 @@ function Inventory() {
     fetchItemsData();
     fetchWarehouseData();
     fetchCityData();
+    fetchSuppliersData();
   }, [updatePage]);
 
   // Fetching Data of All Products
@@ -85,6 +88,16 @@ function Inventory() {
       .then((response) => response.json())
       .then((data) => {
         setAllCities(data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  // Fetching Data of All Suppliers
+  const fetchSuppliersData = () => {
+    fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllSuppliers(data);
       })
       .catch((err) => console.log(err));
   };
@@ -221,6 +234,7 @@ function Inventory() {
 
         {showProductModal && (
           <AddProduct
+            suppliers={suppliers}
             cities={cities}
             warehouses={warehouses}
             products={products}
@@ -231,6 +245,9 @@ function Inventory() {
         )}
         {showUpdateModal && (
           <UpdateProduct
+            suppliers={suppliers}
+            cities={cities}
+            warehouses={warehouses}
             updateProductData={updateProduct}
             updateModalSetting={updateProductModalSetting}
             handlePageUpdate={handlePageUpdate}
@@ -344,6 +361,9 @@ function Inventory() {
                   Stock
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Supplier
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -374,6 +394,9 @@ function Inventory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      <LineBreak text={element.supplier} n={1} />
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <>

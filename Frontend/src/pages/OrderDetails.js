@@ -283,6 +283,9 @@ function OrderDetails() {
                   Quantity
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Order Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -326,6 +329,16 @@ function OrderDetails() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.products.map((product) => {
                         return <p>{product.stockOrdered}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.products.map((product) => {
+                        return (
+                          <p>
+                            {product.product.city}, {product.product.area},
+                            Warehouse {product.product.warehouseNumber}
+                          </p>
+                        );
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">

@@ -121,7 +121,7 @@ export default function AddWarehouse({
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                           <div>
                             <label
-                              htmlFor="storeID"
+                              htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
                               City
@@ -158,7 +158,7 @@ export default function AddWarehouse({
                           </div>
                           <div>
                             <label
-                              htmlFor="storeID"
+                              htmlFor="area"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
                               Area

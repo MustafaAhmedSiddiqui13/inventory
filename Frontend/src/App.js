@@ -15,6 +15,12 @@ import Store from "./pages/Store";
 import StockHistory from "./pages/StockHistory";
 import OrderDetails from "./pages/OrderDetails";
 import Warehouse from "./pages/Warehouse";
+import Supplier from "./pages/Supplier";
+import ItemHistory from "./pages/history/ItemHistory";
+import ProductHistory from "./pages/history/ProductHistory";
+import StoreHistory from "./pages/history/StoreHistory";
+import SupplierHistory from "./pages/history/SupplierHistory";
+import WarehouseHistory from "./pages/history/WarehouseHistory";
 
 const App = () => {
   const [user, setUser] = useState("");
@@ -74,10 +80,16 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path="/items" element={<Items />} />
             <Route path="/warehouse" element={<Warehouse />} />
+            <Route path="/supplier" element={<Supplier />} />
             <Route path="/inventory" element={<Inventory />} />
-            <Route path="/purchase-details" element={<OrderDetails />} />
-            <Route path="/sales" element={<StockHistory />} />
-            <Route path="/manage-store" element={<Store />} />
+            <Route path="/order-details" element={<OrderDetails />} />
+            <Route path="/history" element={<StockHistory />} />
+            <Route path="/vendor" element={<Store />} />
+            <Route path="/itemHistory" element={<ItemHistory />} />
+            <Route path="/productHistory" element={<ProductHistory />} />
+            <Route path="/storeHistory" element={<StoreHistory />} />
+            <Route path="/supplierHistory" element={<SupplierHistory />} />
+            <Route path="/warehouseHistory" element={<WarehouseHistory />} />
           </Route>
           <Route path="*" element={<NoPageFound />} />
         </Routes>

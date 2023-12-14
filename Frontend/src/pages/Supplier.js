@@ -1,19 +1,20 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddItem from "../components/AddItem";
+import AddSupplier from "../components/AddSupplier";
 import AuthContext from "../AuthContext";
-import UpdateItem from "../components/UpdateItem";
+import UpdateSupplier from "../components/UpdateSupplier";
 
-function Items() {
+function Supplier() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
 
-  const [showItemModal, setShowItemModal] = useState(false);
+  const [showSupplierModal, setShowSupplierModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [updateItem, setUpdateItem] = useState([]);
-  const [items, setAllItems] = useState([]);
+  const [updateSupplier, setUpdateSupplier] = useState([]);
+  const [suppliers, setAllSuppliers] = useState([]);
+  const [cities, setAllCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
-  const [itemToBeDeleted, setItemToBeDeleted] = useState("");
+  const [supplierToBeDeleted, setSupplierToBeDeleted] = useState("");
   let [isOpen, setIsOpen] = useState(false);
 
   const authContext = useContext(AuthContext);
@@ -22,25 +23,36 @@ function Items() {
   console.log("====================================");
 
   useEffect(() => {
-    fetchItemsData();
+    fetchSuppliersData();
+    fetchCityData();
   }, [updatePage]);
 
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+  // Fetching Data of All Suppliers
+  const fetchSuppliersData = () => {
+    fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllItems(data);
+        setAllSuppliers(data);
       })
       .catch((err) => console.log(err));
   };
 
-  // Fetching Data of Search Items
+  // Fetching Data of Search Suppliers
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/item/search?searchTerm=${searchTerm}`)
+    fetch(`http://localhost:4000/api/supplier/search?searchTerm=${searchTerm}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllItems(data);
+        setAllSuppliers(data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  // Fetching Data of All Cities
+  const fetchCityData = () => {
+    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllCities(data);
       })
       .catch((err) => console.log(err));
   };
@@ -50,27 +62,27 @@ function Items() {
   }
 
   function openModal(id) {
-    setItemToBeDeleted(id);
+    setSupplierToBeDeleted(id);
     setIsOpen(true);
   }
 
-  // Modal for Item ADD
-  const addItemModalSetting = () => {
-    setShowItemModal(!showItemModal);
+  // Modal for Supplier ADD
+  const addSupplierModalSetting = () => {
+    setShowSupplierModal(!showSupplierModal);
   };
 
-  // Modal for Item UPDATE
-  const updateItemModalSetting = (selectedProductData) => {
+  // Modal for Supplier UPDATE
+  const updateSupplierModalSetting = (selectedSupplierData) => {
     console.log("Clicked: edit");
-    setUpdateItem(selectedProductData);
+    setUpdateSupplier(selectedSupplierData);
     setShowUpdateModal(!showUpdateModal);
   };
 
-  // Delete item
-  const deleteItem = (id) => {
-    console.log("Item ID: ", id);
-    console.log(`http://localhost:4000/api/item/delete/${id}`);
-    fetch(`http://localhost:4000/api/item/delete/${id}`)
+  // Delete Supplier
+  const deleteSupplier = (id) => {
+    console.log("Supplier ID: ", id);
+    console.log(`http://localhost:4000/api/supplier/delete/${id}`);
+    fetch(`http://localhost:4000/api/supplier/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);
@@ -91,16 +103,18 @@ function Items() {
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
-        {showItemModal && (
-          <AddItem
-            addItemModalSetting={addItemModalSetting}
+        {showSupplierModal && (
+          <AddSupplier
+            cities={cities}
+            addSupplierModalSetting={addSupplierModalSetting}
             handlePageUpdate={handlePageUpdate}
           />
         )}
         {showUpdateModal && (
-          <UpdateItem
-            updateItemData={updateItem}
-            updateModalSetting={updateItemModalSetting}
+          <UpdateSupplier
+            cities={cities}
+            updateSupplierData={updateSupplier}
+            updateModalSetting={updateSupplierModalSetting}
             handlePageUpdate={handlePageUpdate}
           />
         )}
@@ -135,11 +149,11 @@ function Items() {
                       as="h3"
                       className="text-lg font-medium leading-6 text-gray-900"
                     >
-                      Delete Item
+                      Delete Supplier
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete this product?
+                        Are you sure you want to delete this supplier?
                       </p>
                     </div>
 
@@ -149,7 +163,7 @@ function Items() {
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
                         onClick={() => {
                           closeModal();
-                          deleteItem(itemToBeDeleted);
+                          deleteSupplier(supplierToBeDeleted);
                         }}
                       >
                         Delete
@@ -174,7 +188,7 @@ function Items() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Items</span>
+              <span className="font-bold">Suppliers</span>
               <div className="flex justify-center items-center px-2 border-2 rounded-md ">
                 <img
                   alt="search-icon"
@@ -193,9 +207,9 @@ function Items() {
             <div className="flex gap-4">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                onClick={addItemModalSetting}
+                onClick={addSupplierModalSetting}
               >
-                Add Item
+                Add Supplier
               </button>
             </div>
           </div>
@@ -203,13 +217,13 @@ function Items() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Item's Name
+                  Supplier's Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Category
+                  City
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Pack Size(s)
+                  Address
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   More
@@ -218,29 +232,22 @@ function Items() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {items.map((element, index) => {
+              {suppliers.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.name}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.category}
+                      {element.city}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.packSize.map((packSize) => {
-                        return (
-                          <p>
-                            {packSize.packSize}
-                            {element.units}
-                          </p>
-                        );
-                      })}
+                      {element.address}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <span
                         className="text-green-700 cursor-pointer"
-                        onClick={() => updateItemModalSetting(element)}
+                        onClick={() => updateSupplierModalSetting(element)}
                       >
                         {localStorageData.firstName === "Azhar" ? "Edit" : ""}
                       </span>
@@ -262,4 +269,4 @@ function Items() {
   );
 }
 
-export default Items;
+export default Supplier;

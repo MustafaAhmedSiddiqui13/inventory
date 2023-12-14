@@ -6,6 +6,8 @@ const orderRoute = require("./router/orders");
 const itemRoute = require("./router/items");
 const warehouseRoute = require("./router/warehouses");
 const warehouseHistoryRoute = require("./router/warehouseHistory");
+const supplierRoute = require("./router/supplier");
+const supplierHistoryRoute = require("./router/supplierHistory");
 const itemHistoryRoute = require("./router/itemHistory");
 const stockHistoryRoute = require("./router/stockHistory");
 const productHistoryRoute = require("./router/productHistory");
@@ -34,11 +36,17 @@ app.use("/api/item", itemRoute);
 // Warehouse API
 app.use("/api/warehouse", warehouseRoute);
 
+// Supplier API
+app.use("/api/supplier", supplierRoute);
+
+// Supplier History API
+app.use("/api/supplierHistory", supplierHistoryRoute);
+
 // Warehouse History API
-app.use("./api/warehouseHistory", warehouseHistoryRoute);
+app.use("/api/warehouseHistory", warehouseHistoryRoute);
 
 // Item History API
-app.use("./api/itemHistory", itemHistoryRoute);
+app.use("/api/itemHistory", itemHistoryRoute);
 
 // Stock History API
 app.use("/api/stockHistory", stockHistoryRoute);

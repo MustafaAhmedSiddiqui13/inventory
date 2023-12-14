@@ -19,6 +19,7 @@ export default function AddOrderDetails({
   const [productAdded, setProductAdded] = useState([]);
   const [productName, setProductName] = useState({});
   const [stockOrdered, setStockOrdered] = useState(0);
+  const [duplicateItems, setDuplicateItems] = useState([]);
   const [store, setStore] = useState({});
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
@@ -95,6 +96,20 @@ export default function AddOrderDetails({
     });
   };
 
+  const warehouseSelection = (product) => {
+    const sameProduct = products?.filter(
+      (p) =>
+        p?.items?.name &&
+        p?.packSize?.packSize &&
+        product?.items?.name &&
+        product?.packSize?.packSize &&
+        p.items.name === product.items.name &&
+        p.packSize.packSize === product.packSize.packSize
+    );
+    setDuplicateItems(sameProduct || []);
+  };
+
+  console.log("Same Products: ", duplicateItems);
   console.log(productAdded);
 
   return (
@@ -164,22 +179,71 @@ export default function AddOrderDetails({
                                   (prd) => prd._id === e.target.value
                                 );
                                 setProductName(product || {});
+                                warehouseSelection(product);
                               }}
                             >
-                              <option>Select Products</option>
-                              {products.map((element, index) => {
-                                if (element.stock !== 0) {
+                              <option>
+                                {productName.items?.name === undefined
+                                  ? `Select Products`
+                                  : `${productName.items?.name} - ${productName.packSize?.packSize}${productName.items?.units}`}
+                              </option>
+                              {[
+                                ...new Set(
+                                  products.map(
+                                    (element) =>
+                                      `${element.items.name}-${element.packSize.packSize}`
+                                  )
+                                ),
+                              ].map((key) => {
+                                const product = products.find(
+                                  (element) =>
+                                    `${element.items.name}-${element.packSize.packSize}` ===
+                                    key
+                                );
+                                if (product && product.stock !== 0) {
                                   return (
                                     <option
-                                      key={element._id}
-                                      value={element._id}
+                                      key={product._id}
+                                      value={product._id}
                                     >
-                                      {element.items.name} {" - "}
-                                      {element.packSize.packSize}
-                                      {element.items.units}
+                                      {product.items.name} -{" "}
+                                      {product.packSize.packSize}
+                                      {product.items.units}
                                     </option>
                                   );
                                 }
+                                return null;
+                              })}
+                            </select>
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="productID"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Warehouse
+                            </label>
+                            <select
+                              id="productID"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="productID"
+                              value={productName?._id}
+                              onChange={(e) => {
+                                const product = duplicateItems.find(
+                                  (c) => c._id === e.target.value
+                                );
+                                console.log("New Product: ", product);
+                                setProductName(product || {});
+                              }}
+                            >
+                              <option>Select Warehouse</option>
+                              {duplicateItems.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.city}, {element.area}, Warehouse{" "}
+                                    {element.warehouseNumber}
+                                  </option>
+                                );
                               })}
                             </select>
                           </div>
@@ -202,47 +266,6 @@ export default function AddOrderDetails({
                               placeholder="1 - 999"
                             />
                           </div>
-                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-                            <thead>
-                              <tr>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Name & Pack Size
-                                </th>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Quantity
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                              {productAdded.map((productAdd) => {
-                                return (
-                                  <tr key={productAdd.product._id}>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {productAdd.product.items.name}
-                                      {" - "}
-                                      {productAdd.product.packSize.packSize}
-                                      {productAdd.product.items.units}
-                                    </td>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {productAdd.stockOrdered}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
-                            <button
-                              type="button"
-                              className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
-                              onClick={addProduct}
-                            >
-                              <PlusIcon
-                                className="h-6 w-6 text-blue-50"
-                                aria-hidden="true"
-                              />
-                            </button>
-                          </div>
                           <div>
                             <label
                               htmlFor="totalAmount"
@@ -262,6 +285,63 @@ export default function AddOrderDetails({
                               placeholder="Total Amount in Rupees"
                             />
                           </div>
+                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                            <thead>
+                              <tr>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Name & Pack Size
+                                </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Warehouse
+                                </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Quantity
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                              {productAdded.map((productAdd) => {
+                                return (
+                                  <tr key={productAdd.product._id}>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {productAdd.product.items.name}
+                                      {" - "}
+                                      {productAdd.product.packSize.packSize}
+                                      {productAdd.product.items.units}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      <>
+                                        <p>{productAdd.product.city},</p>
+                                        <p>{productAdd.product.area},</p>
+                                        <p>
+                                          Warehouse{" "}
+                                          {productAdd.product.warehouseNumber}
+                                        </p>
+                                      </>
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {productAdd.stockOrdered}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                          <div className="flex items-center space-x-4 justify-end">
+                            <div className="flex items-center space-x-4">
+                              <button
+                                type="button"
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500"
+                                onClick={addProduct}
+                              >
+                                <PlusIcon
+                                  className="h-6 w-6 text-blue-50"
+                                  aria-hidden="true"
+                                />
+                              </button>
+                            </div>
+                          </div>
+
                           <div className="h-fit w-fit">
                             <label
                               className="block mb-2 text-sm font-medium text-gray-900"
@@ -335,6 +415,7 @@ export default function AddOrderDetails({
                     </div>
                   </div>
                 </div>
+
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"

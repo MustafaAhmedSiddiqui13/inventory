@@ -2,7 +2,7 @@ const Orders = require("../models/orders");
 const Product = require("../models/product");
 const StockHistory = require("../models/stockHistory");
 
-// Add Purchase Details
+// Add Order Details
 const addOrder = async (req, res) => {
   try {
     console.log(req.body);
@@ -77,6 +77,7 @@ const resolveOrder = async (req, res) => {
 const cancelOrder = async (req, res) => {
   //order should be removed from the orders table
   const orderId = req.params.id;
+  const products = req.body.products;
   console.log(orderId);
   let result = await Orders.findByIdAndDelete(orderId);
   console.log("Result: ", result);
@@ -85,6 +86,7 @@ const cancelOrder = async (req, res) => {
     res.send("No order available");
   } else {
     res.send(result);
+    const products = result.products;
     await StockHistory.create({
       userID: result.userID,
       products: result.products,
@@ -94,6 +96,12 @@ const cancelOrder = async (req, res) => {
       riderName: result.riderName,
       requestType: "Cancelled",
     });
+    for (i = 0; i < products.length; i++) {
+      const product = products[i].product;
+      const newQuantity = product.stock;
+
+      await Product.findByIdAndUpdate(product._id, { stock: newQuantity });
+    }
   }
   //order should be added to order history table
 };

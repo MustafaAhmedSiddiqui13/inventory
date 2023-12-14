@@ -20,6 +20,10 @@ const ProductHistorySchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    supplier: {
+      type: String,
+      required: true,
+    },
     production: {
       type: String,
       required: true,
