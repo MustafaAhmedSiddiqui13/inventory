@@ -30,6 +30,7 @@ export default function AddProduct({
     packSize: "",
     stock: "",
     supplier: "",
+    purchaseDate: "",
     production: "",
     expirationDate: "",
     city: "",
@@ -48,6 +49,7 @@ export default function AddProduct({
     if (
       product.expirationDate === "" ||
       product.production === "" ||
+      product.purchaseDate === "" ||
       product.stock === "" ||
       product.supplier === "" ||
       product.items === "" ||
@@ -58,7 +60,7 @@ export default function AddProduct({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/product/add", {
+    fetch("http://localhost:4000/api/grn/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -66,7 +68,7 @@ export default function AddProduct({
       body: JSON.stringify(product),
     })
       .then((result) => {
-        alert("Product Added");
+        alert("GRN Added");
         handlePageUpdate();
         addProductModalSetting();
       })
@@ -362,6 +364,25 @@ export default function AddProduct({
                           </div>
                           <div>
                             <label
+                              htmlFor="purchaseDate"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Purchase Date
+                            </label>
+                            <input
+                              type="date"
+                              name="purchaseDate"
+                              id="purchaseDate"
+                              value={product.purchaseDate}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Enter Purchase Date"
+                            />
+                          </div>
+                          <div>
+                            <label
                               htmlFor="production"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
@@ -395,7 +416,7 @@ export default function AddProduct({
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Expiration Date"
+                              placeholder="Enter Item's Expiration Date"
                             />
                           </div>
                         </div>
@@ -410,7 +431,7 @@ export default function AddProduct({
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                     onClick={addProduct}
                   >
-                    Add Product
+                    Create GRN
                   </button>
                   <button
                     type="button"

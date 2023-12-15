@@ -3,25 +3,15 @@ import AuthContext from "D:/inventory/Frontend/src/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LineBreak from "../../components/LineBreak";
 
-function WarehouseHistory() {
-  const [warehouseHistory, setAllWarehouseHistoryData] = useState([]);
+function GRNHistory() {
+  const [grnHistory, setAllGRNHistoryData] = useState([]);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
-  const [selectedOption, setSelectedOption] = useState("Warehouse History");
+  const [selectedOption, setSelectedOption] = useState("GRN History");
 
   useEffect(() => {
-    fetchWarehouseHistoryData();
+    fetchGRNHistoryData();
   }, []);
-
-  // Fetching Data of All Warehouse History items
-  const fetchWarehouseHistoryData = () => {
-    fetch(`http://localhost:4000/api/warehouseHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllWarehouseHistoryData(data);
-      })
-      .catch((err) => console.log(err));
-  };
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -30,17 +20,27 @@ function WarehouseHistory() {
     // Navigate to the selected page
     if (selectedValue === "Item History") {
       navigate("/itemHistory");
-    } else if (selectedValue === "Product History") {
-      navigate("/productHistory");
+    } else if (selectedValue === "Order History") {
+      navigate("/history");
     } else if (selectedValue === "Vendor History") {
       navigate("/storeHistory");
     } else if (selectedValue === "Supplier History") {
       navigate("/supplierHistory");
-    } else if (selectedValue === "Order History") {
-      navigate("/history");
-    } else if (selectedValue === "GRN History") {
-      navigate("/grnHistory");
+    } else if (selectedValue === "Warehouse History") {
+      navigate("/warehouseHistory");
+    } else if (selectedValue === "Product History") {
+      navigate("/productHistory");
     }
+  };
+
+  // Fetching Data of All GRN History items
+  const fetchGRNHistoryData = () => {
+    fetch(`http://localhost:4000/api/grnHistory/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllGRNHistoryData(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -56,38 +56,50 @@ function WarehouseHistory() {
               value={selectedOption}
               onChange={handleSelectChange}
             >
-              <option>Warehouse History</option>
+              <option>GRN History</option>
               <option value="Item History">Item History</option>
-              <option value="Product History">Product History</option>
+              <option value="Order History">Order History</option>
               <option value="Vendor History">Vendor History</option>
               <option value="Supplier History">Supplier History</option>
-              <option value="Order History">Order History</option>
-              <option value="GRN History">GRN History</option>
+              <option value="Warehouse History">Warehouse History</option>
+              <option value="Product History">Product History</option>
             </select>
           </div>
         </div>
 
-        {/* Supplier History Table  */}
+        {/* Product History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Warehouse History</span>
+              <span className="font-bold">GRN History</span>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  City
+                  Item's Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Area
-                </th>
-                <th className="flex flex-col items-center whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Warehouse Number
+                  Pack Size
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Address
+                  Stock
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Supplier
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Purchase Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Production Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Expiration Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Request
@@ -96,34 +108,37 @@ function WarehouseHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {warehouseHistory.map((element, index) => {
+              {grnHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.city}
+                      {element.items?.name}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.packSize?.packSize}
+                      {element.items?.units}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.area}
+                      {element.stock}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.warehouseNumber.map((warehouseNumber) => {
-                        return (
-                          <div className="py-8">
-                            <p className="flex flex-col justify-start items-center">
-                              {warehouseNumber.warehouseNumber}
-                            </p>
-                          </div>
-                        );
-                      })}
+                      <LineBreak text={element.supplier} n={1} />
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.warehouseNumber.map((address) => {
-                        return (
-                          <div className=" py-2">
-                            <LineBreak text={address.address} n={5} />
-                          </div>
-                        );
-                      })}
+                      <>
+                        <p>{element.city},</p>
+                        <p>{element.area},</p>
+                        <p>Warehouse {element.warehouseNumber}</p>
+                      </>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.purchaseDate}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.production}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.expirationDate}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.requestType}
@@ -140,4 +155,4 @@ function WarehouseHistory() {
   );
 }
 
-export default WarehouseHistory;
+export default GRNHistory;

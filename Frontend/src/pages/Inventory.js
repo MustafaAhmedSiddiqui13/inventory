@@ -1,18 +1,14 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddProduct from "../components/AddProduct";
 import UpdateProduct from "../components/UpdateProduct";
 import AuthContext from "../AuthContext";
 import LineBreak from "../components/LineBreak";
 
 function Inventory() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
-
-  const [showProductModal, setShowProductModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [updateProduct, setUpdateProduct] = useState([]);
   const [products, setAllProducts] = useState([]);
-  const [items, setAllItems] = useState([]);
   const [warehouses, setAllWarehouses] = useState([]);
   const [cities, setAllCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
@@ -30,7 +26,6 @@ function Inventory() {
   useEffect(() => {
     fetchProductsData();
     fetchStoresData();
-    fetchItemsData();
     fetchWarehouseData();
     fetchCityData();
     fetchSuppliersData();
@@ -42,16 +37,6 @@ function Inventory() {
       .then((response) => response.json())
       .then((data) => {
         setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllItems(data);
       })
       .catch((err) => console.log(err));
   };
@@ -110,11 +95,6 @@ function Inventory() {
     setProductToBeDeleted(id);
     setIsOpen(true);
   }
-
-  // Modal for Product ADD
-  const addProductModalSetting = () => {
-    setShowProductModal(!showProductModal);
-  };
 
   // Modal for Product UPDATE
   const updateProductModalSetting = (selectedProductData) => {
@@ -232,17 +212,6 @@ function Inventory() {
           </div>
         </div>
 
-        {showProductModal && (
-          <AddProduct
-            suppliers={suppliers}
-            cities={cities}
-            warehouses={warehouses}
-            products={products}
-            items={items}
-            addProductModalSetting={addProductModalSetting}
-            handlePageUpdate={handlePageUpdate}
-          />
-        )}
         {showUpdateModal && (
           <UpdateProduct
             suppliers={suppliers}
@@ -323,7 +292,7 @@ function Inventory() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Products</span>
+              <span className="font-bold">Inventory</span>
               <div className="flex justify-center items-center px-2 border-2 rounded-md ">
                 <img
                   alt="search-icon"
@@ -338,14 +307,6 @@ function Inventory() {
                   onChange={handleSearchTerm}
                 />
               </div>
-            </div>
-            <div className="flex gap-4">
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                onClick={addProductModalSetting}
-              >
-                Add Product
-              </button>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
@@ -434,6 +395,7 @@ function Inventory() {
             </tbody>
           </table>
         </div>
+        <div></div>
       </div>
     </div>
   );

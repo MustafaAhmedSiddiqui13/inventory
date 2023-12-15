@@ -58,9 +58,9 @@ export default function UpdateProduct({
       product.supplier === "" ||
       product.items === "" ||
       product.packSize === "" ||
-      product.city === "" ||
+      Object.keys(updateCity).length === 0 ||
       product.area === "" ||
-      product.warehouseNumber === ""
+      Object.keys(sameCityWarehouses).length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
@@ -201,16 +201,24 @@ export default function UpdateProduct({
                                   (s) => s._id === e.target.value
                                 );
                                 setUpdateSupplier(supplier || {});
-                                handleInputChange(e.target.name, supplier.name);
+                                handleInputChange(
+                                  e.target.name,
+                                  supplier?.name
+                                );
                               }}
                             >
-                              <option>Select Supplier</option>
+                              <option>{product.supplier}</option>
                               {suppliers.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.name}
-                                  </option>
-                                );
+                                if (product.supplier !== element.name) {
+                                  return (
+                                    <option
+                                      key={element._id}
+                                      value={element._id}
+                                    >
+                                      {element.name}
+                                    </option>
+                                  );
+                                }
                               })}
                             </select>
                           </div>
@@ -219,7 +227,12 @@ export default function UpdateProduct({
                               htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse City
+                              <>
+                                <p>Warehouse City</p>
+                                <p className="font-normal">
+                                  Current City: {product.city}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="city"
@@ -234,11 +247,11 @@ export default function UpdateProduct({
                                 setUpdateCity(currentCity || {});
                                 handleInputChange(
                                   e.target.name,
-                                  currentCity.city
+                                  currentCity?.city
                                 );
                               }}
                             >
-                              <option>Select City</option>
+                              <option value="">Select City</option>
                               {cities.map((element, index) => {
                                 return (
                                   <option key={element._id} value={element._id}>
@@ -253,7 +266,12 @@ export default function UpdateProduct({
                               htmlFor="area"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse Area
+                              <>
+                                <p>Warehouse Area</p>
+                                <p className="font-normal">
+                                  Current Area: {product.area}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="area"
@@ -276,7 +294,7 @@ export default function UpdateProduct({
                                 );
                               }}
                             >
-                              <option>Select Area</option>
+                              <option value="">Select Area</option>
                               {warehouses.map((element, index) => {
                                 if (element.city === updateCity?.city) {
                                   return (
@@ -296,7 +314,12 @@ export default function UpdateProduct({
                               htmlFor="warehouseNumber"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse #
+                              <>
+                                <p>Warehouse Number</p>
+                                <p className="font-normal">
+                                  Current Number: {product.warehouseNumber}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="warehouseNumber"
@@ -311,7 +334,7 @@ export default function UpdateProduct({
                                   );
                                 handleInputChange(
                                   e.target.name,
-                                  currWarehouse.warehouseNumber
+                                  currWarehouse?.warehouseNumber
                                 );
                               }}
                             >

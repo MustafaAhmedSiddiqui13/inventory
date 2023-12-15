@@ -140,13 +140,18 @@ export default function UpdateSupplier({
                                 );
                               }}
                             >
-                              <option>Select City</option>
+                              <option>{supplier.city}</option>
                               {cities.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.city}
-                                  </option>
-                                );
+                                if (element.city !== supplier.city) {
+                                  return (
+                                    <option
+                                      key={element._id}
+                                      value={element._id}
+                                    >
+                                      {element.city}
+                                    </option>
+                                  );
+                                }
                               })}
                             </select>
                           </div>

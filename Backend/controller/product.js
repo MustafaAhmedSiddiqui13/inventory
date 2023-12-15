@@ -1,42 +1,6 @@
 const Product = require("../models/product");
 const ProductHistory = require("../models/productHistory");
 
-// Add Post
-const addProduct = async (req, res) => {
-  try {
-    await Product.create({
-      userID: req.body.userId,
-      items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
-      supplier: req.body.supplier,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
-    });
-
-    await ProductHistory.create({
-      userID: req.body.userId,
-      items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
-      supplier: req.body.supplier,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
-      requestType: "Product Added",
-    });
-
-    res.status(200).send({ message: "Product and History it's Created" });
-  } catch (e) {
-    res.status(402).send({ message: e.message });
-  }
-};
-
 // Get All Products
 const getAllProducts = async (req, res) => {
   const findAllProducts = await Product.find().sort({ expirationDate: 1 }); // -1 for descending;
@@ -60,7 +24,7 @@ const deleteSelectedProduct = async (req, res) => {
       city: result.city,
       area: result.area,
       warehouseNumber: result.warehouseNumber,
-      requestType: "Product Deleted",
+      requestType: "Inventory Deleted",
     });
   } catch (e) {
     res.status(402).send(e);
@@ -99,7 +63,7 @@ const updateSelectedProduct = async (req, res) => {
       city: updatedResult.city,
       area: updatedResult.area,
       warehouseNumber: updatedResult.warehouseNumber,
-      requestType: "Product Updated",
+      requestType: "Inventory Updated",
     });
 
     console.log(updatedResult);
@@ -120,7 +84,6 @@ const searchProduct = async (req, res) => {
 };
 
 module.exports = {
-  addProduct,
   getAllProducts,
   deleteSelectedProduct,
   updateSelectedProduct,

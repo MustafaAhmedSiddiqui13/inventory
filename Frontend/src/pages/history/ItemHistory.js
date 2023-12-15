@@ -37,6 +37,8 @@ function ItemHistory() {
       navigate("/supplierHistory");
     } else if (selectedValue === "Warehouse History") {
       navigate("/warehouseHistory");
+    } else if (selectedValue === "GRN History") {
+      navigate("/grnHistory");
     }
   };
 
@@ -59,6 +61,7 @@ function ItemHistory() {
               <option value="Vendor History">Vendor History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
+              <option value="GRN History">GRN History</option>
             </select>
           </div>
         </div>
@@ -67,7 +70,7 @@ function ItemHistory() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Order History</span>
+              <span className="font-bold">Item History</span>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
