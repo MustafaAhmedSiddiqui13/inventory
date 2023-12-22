@@ -1,67 +1,61 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-export default function AddOrderDetails({
-  addSaleModalSetting,
+export default function CreateGRRN({
+  addGRRNModalSetting,
   products,
   stores,
   handlePageUpdate,
   authContext,
 }) {
-  const [order, setOrder] = useState({
+  const [grrn, setGRRN] = useState({
     userID: authContext.user,
-    storeID: "",
-    orderDate: "",
-    riderName: "",
+    vendor: "",
+    date: "",
   });
   const [productAdded, setProductAdded] = useState([]);
   const [productName, setProductName] = useState({});
   const [stockOrdered, setStockOrdered] = useState(0);
   const [duplicateItems, setDuplicateItems] = useState([]);
   const [store, setStore] = useState({});
-  const [totalPrice, setTotalPrice] = useState(0);
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
 
-  console.log("PPu: ", order);
-
   // Handling Input Change for input fields
   const handleInputChange = (key, value) => {
-    setOrder({ ...order, [key]: value });
+    setGRRN({ ...grrn, [key]: value });
   };
 
   // POST Data
-  const addOrder = () => {
-    let myOrder = {
-      ...order,
-      totalAmount: totalPrice,
+  const createGRRN = () => {
+    let myGRRN = {
+      ...grrn,
       products: productAdded,
     };
     if (
-      myOrder.orderDate === "" ||
-      myOrder.riderName === "" ||
-      myOrder.storeID === "" ||
-      myOrder.userID === "" ||
+      myGRRN.date === "" ||
+      myGRRN.vendor === "" ||
+      myGRRN.userID === "" ||
       productAdded.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
 
-    fetch("http://localhost:4000/api/order/add", {
+    fetch("http://localhost:4000/api/grrn/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(myOrder),
+      body: JSON.stringify(myGRRN),
     })
       .then((result) => {
-        alert("Order has been Created");
+        alert("GRRN has been Created");
         handlePageUpdate();
-        addSaleModalSetting();
+        addGRRNModalSetting();
       })
       .catch((err) => {
-        alert("Failed to Create Order");
+        alert("Failed to Create GRRN");
         console.log(err);
       });
   };
@@ -94,18 +88,6 @@ export default function AddOrderDetails({
         stockOrdered: stockOrdered,
       });
     });
-
-    if (JSON.stringify(store) !== "{}") {
-      store.items?.map((element, index) => {
-        if (element.name.name === productName.items.name) {
-          if (element.packSize.packSize === productName.packSize.packSize) {
-            const currentPrice =
-              Number(stockOrdered) * Number(element.packPrice);
-            setTotalPrice(currentPrice + totalPrice);
-          }
-        }
-      });
-    }
   };
 
   const warehouseSelection = (product) => {
@@ -120,9 +102,6 @@ export default function AddOrderDetails({
     );
     setDuplicateItems(sameProduct || []);
   };
-
-  console.log("Same Products: ", duplicateItems);
-  console.log(productAdded);
 
   return (
     // Modal
@@ -170,7 +149,7 @@ export default function AddOrderDetails({
                         as="h3"
                         className="text-lg  py-4 font-semibold leading-6 text-gray-900 "
                       >
-                        Create Order
+                        Create GRRN
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -278,37 +257,24 @@ export default function AddOrderDetails({
                               placeholder="1 - 999"
                             />
                           </div>
-                          <div>
+                          <div className="h-fit w-fit">
                             <label
-                              htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
+                              htmlFor="orderDate"
                             >
-                              Vendor's Name
+                              Date
                             </label>
-                            <select
-                              id="storeID"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="storeID"
-                              value={store?._id}
-                              onChange={(e) => {
-                                const store = stores.find(
-                                  (s) => s._id === e.target.value
-                                );
-                                setStore(store || {});
-                                handleInputChange(e.target.name, store);
-                              }}
-                            >
-                              <option>Select Vendor</option>
-                              {stores.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.name}
-                                  </option>
-                                );
-                              })}
-                            </select>
+                            <input
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              type="date"
+                              id="date"
+                              name="date"
+                              value={grrn.date}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                            />
                           </div>
-
                           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                             <thead>
                               <tr>
@@ -367,60 +333,33 @@ export default function AddOrderDetails({
                           </div>
                           <div>
                             <label
-                              htmlFor="totalAmount"
+                              htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Total Amount (Rs)
+                              Vendor's Name
                             </label>
-                            <input
-                              type="number"
-                              name="totalAmount"
-                              id="price"
-                              value={totalPrice}
-                              // onChange={(e) =>
-                              //   handleInputChange(e.target.name, totalPrice)
-                              // }
-                              disabled
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Total Amount in Rupees"
-                            />
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="riderName"
-                              className="block mb-2 text-sm font-medium text-gray-900"
+                            <select
+                              id="vendor"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="vendor"
+                              value={store?._id}
+                              onChange={(e) => {
+                                const store = stores.find(
+                                  (s) => s._id === e.target.value
+                                );
+                                setStore(store || {});
+                                handleInputChange(e.target.name, store);
+                              }}
                             >
-                              Rider's Name
-                            </label>
-                            <input
-                              type="text"
-                              name="riderName"
-                              id="riderName"
-                              value={order.riderName}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Rider's Name here.."
-                            />
-                          </div>
-                          <div className="h-fit w-fit">
-                            <label
-                              className="block mb-2 text-sm font-medium text-gray-900"
-                              htmlFor="orderDate"
-                            >
-                              Order Date
-                            </label>
-                            <input
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              type="date"
-                              id="orderDate"
-                              name="orderDate"
-                              value={order.orderDate}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                            />
+                              <option>Select Vendor</option>
+                              {stores.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.name}
+                                  </option>
+                                );
+                              })}
+                            </select>
                           </div>
                         </div>
                         <div className="flex items-center space-x-4"></div>
@@ -433,14 +372,14 @@ export default function AddOrderDetails({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addOrder}
+                    onClick={createGRRN}
                   >
-                    Add
+                    Create
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addSaleModalSetting()}
+                    onClick={() => addGRRNModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel

@@ -8,6 +8,8 @@ const warehouseRoute = require("./router/warehouses");
 const warehouseHistoryRoute = require("./router/warehouseHistory");
 const supplierRoute = require("./router/supplier");
 const grnRoute = require("./router/grn");
+const grrnRoute = require("./router/grrn");
+const grrnHistoryRoute = require("./router/grrnHistory");
 const grnHistoryRoute = require("./router/grnHistory");
 const supplierHistoryRoute = require("./router/supplierHistory");
 const itemHistoryRoute = require("./router/itemHistory");
@@ -43,6 +45,12 @@ app.use("/api/supplier", supplierRoute);
 
 // GRN API
 app.use("/api/grn", grnRoute);
+
+// GRRN API
+app.use("/api/grrn", grrnRoute);
+
+// GRRN History API
+app.use("/api/grrnHistory", grrnHistoryRoute);
 
 // GRN History API
 app.use("/api/grnHistory", grnHistoryRoute);

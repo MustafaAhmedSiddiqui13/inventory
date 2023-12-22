@@ -9,6 +9,7 @@ const addStore = async (req, res) => {
       category: req.body.category,
       address: req.body.address,
       city: req.body.city,
+      items: [],
     });
 
     await StoreHistory.create({
@@ -17,6 +18,7 @@ const addStore = async (req, res) => {
       category: req.body.category,
       address: req.body.address,
       city: req.body.city,
+      items: [],
       requestType: "Vendor Created",
     });
     res.status(200).send({ message: "Vendor and History it's Created" });
@@ -37,10 +39,44 @@ const deleteStore = async (req, res) => {
       category: result.category,
       address: result.address,
       city: result.city,
+      items: result.items,
       requestType: "Vendor Deleted",
     });
   } catch (e) {
     res.status(402).send(e);
+  }
+};
+
+const addItemInfo = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const updatedResult = await Store.findByIdAndUpdate(
+      { _id: req.body.storeID },
+      {
+        userID: req.body.userId,
+        name: req.body.name,
+        category: req.body.category,
+        address: req.body.address,
+        city: req.body.city,
+        items: req.body.items,
+      },
+      { new: true }
+    );
+    await StoreHistory.create({
+      userID: userId,
+      name: updatedResult.name,
+      category: updatedResult.category,
+      address: updatedResult.address,
+      city: updatedResult.city,
+      items: updatedResult.items,
+      requestType: "Items Added",
+    });
+
+    console.log(updatedResult);
+    res.json(updatedResult);
+  } catch (error) {
+    console.log(error);
+    res.status(402).send("Error");
   }
 };
 
@@ -52,4 +88,4 @@ const getAllStores = async (req, res) => {
   res.json(findAllStores);
 };
 
-module.exports = { addStore, getAllStores, deleteStore };
+module.exports = { addStore, getAllStores, deleteStore, addItemInfo };

@@ -1,36 +1,33 @@
 const mongoose = require("mongoose");
 
-const StoreSchema = new mongoose.Schema(
+const GRRNHistorySchema = new mongoose.Schema(
   {
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
     },
-    name: {
+    products: {
+      type: Object,
+      ref: "product",
+      required: true,
+    },
+    vendor: {
+      type: Object,
+      ref: "store",
+      required: true,
+    },
+    date: {
       type: String,
       required: true,
     },
-    category: {
+    requestType: {
       type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    items: {
-      type: Array,
-      ref: "item",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Store = mongoose.model("store", StoreSchema);
-module.exports = Store;
+const GRRNHistory = mongoose.model("grrnHistory", GRRNHistorySchema);
+module.exports = GRRNHistory;

@@ -23,6 +23,11 @@ const StoreHistorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    items: {
+      type: Array,
+      ref: "item",
+      required: true,
+    },
     requestType: {
       type: String,
       required: true,

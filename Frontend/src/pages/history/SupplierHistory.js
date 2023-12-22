@@ -39,6 +39,8 @@ function SupplierHistory() {
       navigate("/warehouseHistory");
     } else if (selectedValue === "GRN History") {
       navigate("/grnHistory");
+    } else if (selectedValue === "GRRN History") {
+      navigate("/grrnHistory");
     }
   };
 
@@ -62,6 +64,7 @@ function SupplierHistory() {
               <option value="Order History">Order History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="GRN History">GRN History</option>
+              <option value="GRRN History">GRRN History</option>
             </select>
           </div>
         </div>

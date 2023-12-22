@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import AuthContext from "D:/inventory/Frontend/src/AuthContext";
 import { useNavigate } from "react-router-dom";
-import LineBreak from "../../components/LineBreak";
 
-function GRNHistory() {
-  const [grnHistory, setAllGRNHistoryData] = useState([]);
+function GRRNHistory() {
+  const [grrnHistory, setAllGRRNHistoryData] = useState([]);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
-  const [selectedOption, setSelectedOption] = useState("GRN History");
+  const [selectedOption, setSelectedOption] = useState("GRRN History");
 
   useEffect(() => {
-    fetchGRNHistoryData();
+    fetchGRRNHistoryData();
   }, []);
 
   const handleSelectChange = (event) => {
@@ -30,17 +29,17 @@ function GRNHistory() {
       navigate("/warehouseHistory");
     } else if (selectedValue === "Product History") {
       navigate("/productHistory");
-    } else if (selectedValue === "GRRN History") {
-      navigate("/grrnHistory");
+    } else if (selectedValue === "GRN History") {
+      navigate("/grnHistory");
     }
   };
 
-  // Fetching Data of All GRN History items
-  const fetchGRNHistoryData = () => {
-    fetch(`http://localhost:4000/api/grnHistory/get/${authContext.user}`)
+  // Fetching Data of All GRRN History items
+  const fetchGRRNHistoryData = () => {
+    fetch(`http://localhost:4000/api/grrnHistory/get/${authContext.user}`)
       .then((response) => response.json())
       .then((data) => {
-        setAllGRNHistoryData(data);
+        setAllGRRNHistoryData(data);
       })
       .catch((err) => console.log(err));
   };
@@ -58,51 +57,45 @@ function GRNHistory() {
               value={selectedOption}
               onChange={handleSelectChange}
             >
-              <option>GRN History</option>
+              <option>GRRN History</option>
               <option value="Item History">Item History</option>
               <option value="Order History">Order History</option>
               <option value="Vendor History">Vendor History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="Product History">Product History</option>
-              <option value="GRRN History">GRRN History</option>
+              <option value="GRN History">GRN History</option>
             </select>
           </div>
         </div>
 
-        {/* Product History Table  */}
+        {/* GRRN History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">GRN History</span>
+              <span className="font-bold">GRRN History</span>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Item's Name
+                  Vendor
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Pack Size
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Stock
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Supplier
+                  Quantity
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Purchase Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Production Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Expiration Date
+                  Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Request
@@ -111,37 +104,47 @@ function GRNHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {grnHistory.map((element, index) => {
+              {grrnHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.items?.name}
+                      {element.vendor?.name}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.packSize?.packSize}
-                      {element.items?.units}
+                      {element.products.map((product) => {
+                        return <p>{product.product.items?.name}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.products.map((product) => {
+                        return (
+                          <p>
+                            {product.product.packSize?.packSize}
+                            {product.product.items?.units}
+                          </p>
+                        );
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
+                      {element.products.map((product) => {
+                        return <p>{product.stockOrdered}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <LineBreak text={element.supplier} n={1} />
+                      {element.products.map((product) => {
+                        return (
+                          <p>
+                            {product.product.city}, {product.product.area},
+                            Warehouse {product.product.warehouseNumber}
+                          </p>
+                        );
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <>
-                        <p>{element.city},</p>
-                        <p>{element.area},</p>
-                        <p>Warehouse {element.warehouseNumber}</p>
-                      </>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.purchaseDate}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.production}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.expirationDate}
+                      {new Date(element.PurchaseDate).toLocaleDateString() ==
+                      new Date().toLocaleDateString()
+                        ? "Today"
+                        : element.date}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.requestType}
@@ -158,4 +161,4 @@ function GRNHistory() {
   );
 }
 
-export default GRNHistory;
+export default GRRNHistory;

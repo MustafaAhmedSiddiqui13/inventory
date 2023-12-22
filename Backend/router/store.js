@@ -11,4 +11,7 @@ app.get("/delete/:id", store.deleteStore);
 // Get All Store
 app.get("/get/:userID", store.getAllStores);
 
+// Update Selected Store
+app.post("/update", store.addItemInfo);
+
 module.exports = app;

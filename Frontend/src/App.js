@@ -23,6 +23,8 @@ import SupplierHistory from "./pages/history/SupplierHistory";
 import WarehouseHistory from "./pages/history/WarehouseHistory";
 import GRN from "./pages/GRN";
 import GRNHistory from "./pages/history/GRNHistory";
+import GRRN from "./pages/GRRN";
+import GRRNHistory from "./pages/history/GRRNHistory";
 
 const App = () => {
   const [user, setUser] = useState("");
@@ -92,7 +94,9 @@ const App = () => {
             <Route path="/storeHistory" element={<StoreHistory />} />
             <Route path="/supplierHistory" element={<SupplierHistory />} />
             <Route path="/warehouseHistory" element={<WarehouseHistory />} />
+            <Route path="/grrn" element={<GRRN />} />
             <Route path="/grn" element={<GRN />} />
+            <Route path="/grrnHistory" element={<GRRNHistory />} />
             <Route path="/grnHistory" element={<GRNHistory />} />
           </Route>
           <Route path="*" element={<NoPageFound />} />

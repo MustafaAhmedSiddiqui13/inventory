@@ -2,8 +2,12 @@ import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import AddStore from "../components/AddStore";
 import AuthContext from "../AuthContext";
+import AddItemPriceInfo from "../components/AddItemPriceInfo";
 
 function Store() {
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [updateItem, setUpdateItem] = useState([]);
+  const [items, setAllItems] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [stores, setAllStores] = useState([]);
   const [updatePage, setUpdatePage] = useState(true);
@@ -14,6 +18,7 @@ function Store() {
 
   useEffect(() => {
     fetchData();
+    fetchItemsData();
   }, [updatePage]);
 
   // Fetching all stores data
@@ -23,6 +28,16 @@ function Store() {
       .then((data) => {
         setAllStores(data);
       });
+  };
+
+  // Fetching Data of All Items
+  const fetchItemsData = () => {
+    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setAllItems(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   // Delete Store
@@ -52,9 +67,23 @@ function Store() {
     setIsOpen(true);
   }
 
+  const updateItemModalSetting = (selectedStoreData) => {
+    console.log("Clicked: edit");
+    setUpdateItem(selectedStoreData);
+    setShowUpdateModal(!showUpdateModal);
+  };
+
   return (
     <div className="col-span-12 lg:col-span-10 flex justify-center ">
       <div className=" flex flex-col gap-1 w-11/12 border-2">
+        {showUpdateModal && (
+          <AddItemPriceInfo
+            Items={items}
+            updateItemData={updateItem}
+            updateModalSetting={updateItemModalSetting}
+            handlePageUpdate={handlePageUpdate}
+          />
+        )}
         <div className="flex justify-between">
           <span className="font-bold">Manage Vendors</span>
           <button
@@ -145,14 +174,64 @@ function Store() {
                   />
                   <span>{element.address + ", " + element.city}</span>
                 </div>
-                <span
-                  className="text-red-600 px-2 cursor-pointer font-bold"
-                  onClick={() => openModal(element._id)}
-                >
-                  {localStorageData.firstName === "Azhar"
-                    ? "Remove Vendor"
-                    : ""}
-                </span>
+                <div>
+                  <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
+                    <thead>
+                      <tr>
+                        <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                          Item Name
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                          Pack Size
+                        </th>
+                        <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                          Price
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-gray-200">
+                      <tr key={element._id}>
+                        <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                          {element.items?.map((i) => {
+                            return <p>{i.name.name}</p>;
+                          })}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {element.items?.map((i) => {
+                            return (
+                              <p>
+                                {i.packSize.packSize}
+                                {i.name.units}
+                              </p>
+                            );
+                          })}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {element.items?.map((i) => {
+                            return <p>{i.packPrice}</p>;
+                          })}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div>
+                  <span
+                    className="text-green-600 px-2 cursor-pointer font-bold"
+                    onClick={() => updateItemModalSetting(element)}
+                  >
+                    Add Item Info
+                  </span>
+                  <span
+                    className="text-red-600 px-2 cursor-pointer font-bold"
+                    onClick={() => openModal(element._id)}
+                  >
+                    {localStorageData.firstName === "Azhar"
+                      ? "Remove Vendor"
+                      : ""}
+                  </span>
+                </div>
               </div>
             </div>
           );

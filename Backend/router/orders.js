@@ -2,10 +2,10 @@ const express = require("express");
 const app = express();
 const order = require("../controller/orders");
 
-// Add Purchase
+// Add Order
 app.post("/add", order.addOrder);
 
-// Get All Purchase Data
+// Get All Order Data
 app.get("/get/:userID", order.getOrderData);
 
 // Remove Order and update History
