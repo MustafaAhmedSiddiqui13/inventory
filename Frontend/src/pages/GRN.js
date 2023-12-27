@@ -129,11 +129,9 @@ function GRN() {
             handlePageUpdate={handlePageUpdate}
           />
         )}
-
-        {/* Table  */}
-        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
-          <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
+          <div className="flex justify-between pt-5 pb-3 px-3 items-center">
+            <div className="flex gap-4 justify-center items-center">
               <span className="font-bold">GRN</span>
               <div className="flex justify-center items-center px-2 border-2 rounded-md ">
                 <img
@@ -159,6 +157,9 @@ function GRN() {
               </button>
             </div>
           </div>
+        </div>
+        {/* Table  */}
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>

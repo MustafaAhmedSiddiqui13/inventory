@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
@@ -71,6 +71,8 @@ export default function AddOrderDetails({
       return alert("Fields cannot be left Empty");
     }
 
+    let nameAndSizeMatch = false; // Flag variable
+
     setProductAdded((prev) => {
       const isProductAdded = prev.find((product) => {
         return product.product._id === productName._id;
@@ -97,14 +99,21 @@ export default function AddOrderDetails({
 
     if (JSON.stringify(store) !== "{}") {
       store.items?.map((element, index) => {
-        if (element.name.name === productName.items.name) {
-          if (element.packSize.packSize === productName.packSize.packSize) {
-            const currentPrice =
-              Number(stockOrdered) * Number(element.packPrice);
-            setTotalPrice(currentPrice + totalPrice);
-          }
+        if (
+          element.name.name === productName.items.name &&
+          element.packSize.packSize === productName.packSize.packSize
+        ) {
+          nameAndSizeMatch = true; // Set flag to true
+          const currentPrice = Number(stockOrdered) * Number(element.packPrice);
+          setTotalPrice(currentPrice + totalPrice);
         }
       });
+
+      // Check the flag after the loop
+      if (!nameAndSizeMatch) {
+        window.location.href = "/order-details";
+        alert("This item is not being sold by this Vendor!");
+      }
     }
   };
 

@@ -133,7 +133,7 @@ export default function AddItemPriceInfo({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Update Store
+                        Update Vendor
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -142,7 +142,7 @@ export default function AddItemPriceInfo({
                               htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Store Name
+                              Vendor Name
                             </label>
                             <input
                               type="text"
@@ -359,7 +359,7 @@ export default function AddItemPriceInfo({
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                     onClick={updateItem}
                   >
-                    Update Item
+                    Update Vendor
                   </button>
                   <button
                     type="button"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import AuthContext from "D:/inventory/Frontend/src/AuthContext";
+import AuthContext from "../../AuthContext";
 import { useNavigate } from "react-router-dom";
 import LineBreak from "../../components/LineBreak";
 

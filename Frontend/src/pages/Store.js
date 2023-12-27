@@ -84,14 +84,20 @@ function Store() {
             handlePageUpdate={handlePageUpdate}
           />
         )}
-        <div className="flex justify-between">
-          <span className="font-bold">Manage Vendors</span>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-            onClick={modalSetting}
-          >
-            Add Vendor
-          </button>
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
+          <div className="flex justify-between pt-5 pb-3 px-3 items-center">
+            <div className="flex gap-4 justify-center items-center">
+              <span className="font-bold">Manage Vendors</span>
+            </div>
+            <div className="flex gap-4">
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
+                onClick={modalSetting}
+              >
+                Add Vendor
+              </button>
+            </div>
+          </div>
         </div>
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-10" onClose={closeModal}>

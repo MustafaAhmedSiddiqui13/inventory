@@ -6,10 +6,15 @@ import { Link } from "react-router-dom";
 
 const navigation = [
   { name: "Dashboard", href: "/", current: true },
-  { name: "GRN", href: "/inventory", current: false },
+  { name: "GRN", href: "/grn", current: false },
+  { name: "Inventory", href: "/inventory", current: false },
+  { name: "Items", href: "/items", current: false },
+  { name: "Warehouses", href: "/warehouse", current: false },
+  { name: "Suppliers", href: "/supplier", current: false },
   { name: "Order Details", href: "/order-details", current: false },
+  { name: "GRRN", href: "/grrn", current: false },
   { name: "History", href: "/history", current: false },
-  { name: "Manage Vendors", href: "/manage-store", current: false },
+  { name: "Manage Vendors", href: "/vendor", current: false },
 ];
 
 const userNavigation = [{ name: "Sign out", href: "./login" }];
@@ -22,10 +27,13 @@ export default function Header() {
   const authContext = useContext(AuthContext);
   const localStorageData = JSON.parse(localStorage.getItem("user"));
   const [products, setProducts] = useState([]);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   useEffect(() => {
+    const lowStockProducts = products.filter((product) => product.stock < 11);
+    setNotificationCount(lowStockProducts.length);
     fetchProductsData();
-  }, []);
+  }, [products]);
 
   const fetchProductsData = () => {
     fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
@@ -52,7 +60,7 @@ export default function Header() {
                           alt="Inventory Management System"
                         />
                         <span className="font-bold text-white italic">
-                          Inventory Management
+                          Mads International
                         </span>
                       </div>
                     </div>
@@ -78,6 +86,14 @@ export default function Header() {
                                 d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
                               />
                             </svg>
+                            {notificationCount > 0 && (
+                              <span
+                                className="bg-red-500 text-white rounded-full px-1 py-0.125 text-xxs absolute -top-2 -right-1"
+                                style={{ fontSize: "0.65rem" }} // Adjust the font size as needed
+                              >
+                                {notificationCount}
+                              </span>
+                            )}
                           </Menu.Button>
                         </div>
 
@@ -211,11 +227,20 @@ export default function Header() {
                 <div className="border-t border-gray-700 pt-4 pb-3">
                   <div className="flex items-center px-5">
                     <div className="flex-shrink-0">
-                      <img
-                        className="h-10 w-10 rounded-full"
-                        src={localStorageData.imageUrl}
-                        alt="profile"
-                      />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-6 h-6 text-white"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                        />
+                      </svg>
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium leading-none text-white">
@@ -224,7 +249,7 @@ export default function Header() {
                           localStorageData.lastName}
                       </div>
                       <div className="text-sm font-medium leading-none text-gray-400">
-                        {localStorageData.email}
+                        {localStorageData.phoneNumber}
                       </div>
                     </div>
                     <button

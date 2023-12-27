@@ -183,9 +183,7 @@ function Supplier() {
             </div>
           </Dialog>
         </Transition>
-
-        {/* Table  */}
-        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
               <span className="font-bold">Suppliers</span>
@@ -213,6 +211,9 @@ function Supplier() {
               </button>
             </div>
           </div>
+        </div>
+        {/* Table  */}
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>

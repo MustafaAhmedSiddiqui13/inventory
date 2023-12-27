@@ -2,6 +2,10 @@ import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import AddOrderDetails from "../components/AddOrderDetails";
 import AuthContext from "../AuthContext";
+import jsPDFInvoiceTemplate, {
+  OutputType,
+  jsPDF,
+} from "jspdf-invoice-template";
 
 function OrderDetails() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -79,6 +83,150 @@ function OrderDetails() {
     setOrderId(id);
     setIsCancelOpen(true);
   }
+
+  const generatePDF = () => {
+    const prop = {
+      outputType: OutputType.Save,
+      returnJsPDFDocObject: true,
+      fileName: "Invoice",
+      orientationLandscape: true,
+      compress: true,
+      logo: {
+        src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/logo.png",
+        type: "PNG", //optional, when src= data:uri (nodejs case)
+        width: 53.33, //aspect ratio = width/height
+        height: 26.66,
+        margin: {
+          top: 0, //negative or positive num, from the current position
+          left: 0, //negative or positive num, from the current position
+        },
+      },
+      stamp: {
+        inAllPages: true, //by default = false, just in the last page
+        src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/qr_code.jpg",
+        type: "JPG", //optional, when src= data:uri (nodejs case)
+        width: 20, //aspect ratio = width/height
+        height: 20,
+        margin: {
+          top: 0, //negative or positive num, from the current position
+          left: 0, //negative or positive num, from the current position
+        },
+      },
+      business: {
+        name: "Mads International",
+        address: "Eros Complex",
+      },
+
+      invoice: {
+        label: `Invoice #: 1`,
+        invDate: `Order Date: ${Date.now().toString}`,
+        invGenDate: `Invoice Date: ${Date.now().toString}`,
+        headerBorder: false,
+        tableBodyBorder: false,
+        header: [
+          {
+            title: "#",
+            style: {
+              width: 10,
+            },
+          },
+          {
+            title: "Vendor",
+            style: {
+              width: 20,
+            },
+          },
+          {
+            title: "Item",
+            style: {
+              width: 20,
+            },
+          },
+          {
+            title: "Pack Size",
+            style: {
+              width: 20,
+            },
+          },
+          { title: "Quantity" },
+          {
+            title: "Warehouse",
+            style: {
+              width: 80,
+            },
+          },
+          { title: "Rider" },
+          { title: "Order By" },
+          { title: "Total" },
+        ],
+        table: order.map((element, index) => [
+          index + 1,
+          element.StoreID?.name,
+          element.products.map((product) => {
+            return <p>{product.product.items.name}</p>;
+          }),
+          element.products.map((product) => {
+            return (
+              <p>
+                {product.product.packSize.packSize}
+                {product.product.items.units}
+              </p>
+            );
+          }),
+          element.products.map((product) => {
+            return <p>{product.stockOrdered}</p>;
+          }),
+          element.products.map((product) => {
+            return (
+              <p>
+                {product.product.city}, {product.product.area}, Warehouse{" "}
+                {product.product.warehouseNumber}
+              </p>
+            );
+          }),
+          element.riderName,
+          element.userID?.firstName + " " + element.userID?.lastName,
+          element.totalAmount,
+        ]),
+        additionalRows: [
+          {
+            col1: "Total:",
+            col2: "145,250.50",
+            col3: "ALL",
+            style: {
+              fontSize: 14, //optional, default 12
+            },
+          },
+          {
+            col1: "VAT:",
+            col2: "20",
+            col3: "%",
+            style: {
+              fontSize: 10, //optional, default 12
+            },
+          },
+          {
+            col1: "SubTotal:",
+            col2: "116,199.90",
+            col3: "ALL",
+            style: {
+              fontSize: 10, //optional, default 12
+            },
+          },
+        ],
+        invDescLabel: "Invoice Note",
+        invDesc:
+          "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary.",
+      },
+      footer: {
+        text: "The invoice is created on a computer and is valid without the signature and stamp.",
+      },
+      pageEnable: true,
+      pageLabel: "Page ",
+    };
+    const pdfCreated = jsPDFInvoiceTemplate(prop);
+    pdfCreated.jsPDFDocObject.save();
+  };
 
   const resolveItem = (id) => {
     fetch(`http://localhost:4000/api/order/post/${id}`, {
@@ -252,10 +400,9 @@ function OrderDetails() {
             </div>
           </Dialog>
         </Transition>
-        {/* Table  */}
-        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
-          <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
+          <div className="flex justify-between pt-5 pb-3 px-3 items-center">
+            <div className="flex gap-4 justify-center items-center">
               <span className="font-bold">Order Details</span>
             </div>
             <div className="flex gap-4">
@@ -267,6 +414,9 @@ function OrderDetails() {
               </button>
             </div>
           </div>
+        </div>
+        {/* Table  */}
+        <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
               <tr>
@@ -359,7 +509,6 @@ function OrderDetails() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <span
                         className="text-green-700 cursor-pointer"
-                        // onClick={() => resolveItem(element._id)}
                         onClick={() => openCompleteModal(element._id)}
                       >
                         Complete
@@ -371,6 +520,13 @@ function OrderDetails() {
                       >
                         {localStorageData.firstName === "Azhar" ? "Cancel" : ""}
                       </span>
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
+                        onClick={generatePDF}
+                      >
+                        Generate Invoice
+                      </button>
                     </td>
                   </tr>
                 );
