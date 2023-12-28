@@ -72,7 +72,28 @@ export default function AddOrderDetails({
     }
 
     let nameAndSizeMatch = false; // Flag variable
+    let currentPrice;
 
+    if (JSON.stringify(store) !== "{}") {
+      store.items?.map((element, index) => {
+        if (
+          element.name.name === productName.items.name &&
+          element.packSize.packSize === productName.packSize.packSize
+        ) {
+          nameAndSizeMatch = true; // Set flag to true
+          currentPrice = Number(stockOrdered) * Number(element.packPrice);
+          setTotalPrice(currentPrice + totalPrice);
+          console.log("Single Price: ", currentPrice);
+        }
+        return null;
+      });
+
+      // Check the flag after the loop
+      if (!nameAndSizeMatch) {
+        window.location.href = "/order-details";
+        alert("This item is not being sold by this Vendor!");
+      }
+    }
     setProductAdded((prev) => {
       const isProductAdded = prev.find((product) => {
         return product.product._id === productName._id;
@@ -84,6 +105,7 @@ export default function AddOrderDetails({
             return {
               ...product,
               stockOrdered: Number(product.stockOrdered) + Number(stockOrdered),
+              price: Number(product.price) + Number(currentPrice),
             };
           }
 
@@ -94,27 +116,9 @@ export default function AddOrderDetails({
       return prev.concat({
         product: productName,
         stockOrdered: stockOrdered,
+        price: currentPrice,
       });
     });
-
-    if (JSON.stringify(store) !== "{}") {
-      store.items?.map((element, index) => {
-        if (
-          element.name.name === productName.items.name &&
-          element.packSize.packSize === productName.packSize.packSize
-        ) {
-          nameAndSizeMatch = true; // Set flag to true
-          const currentPrice = Number(stockOrdered) * Number(element.packPrice);
-          setTotalPrice(currentPrice + totalPrice);
-        }
-      });
-
-      // Check the flag after the loop
-      if (!nameAndSizeMatch) {
-        window.location.href = "/order-details";
-        alert("This item is not being sold by this Vendor!");
-      }
-    }
   };
 
   const warehouseSelection = (product) => {
@@ -321,14 +325,20 @@ export default function AddOrderDetails({
                           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                             <thead>
                               <tr>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Name & Pack Size
+                                <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-gray-900">
+                                  <>
+                                    <p>Name</p>
+                                    <p>- Pack Size</p>
+                                  </>
                                 </th>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-gray-900">
                                   Warehouse
                                 </th>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-gray-900">
                                   Quantity
+                                </th>
+                                <th className="whitespace-nowrap px-2 py-2 text-left font-medium text-gray-900">
+                                  Price
                                 </th>
                               </tr>
                             </thead>
@@ -336,13 +346,17 @@ export default function AddOrderDetails({
                               {productAdded.map((productAdd) => {
                                 return (
                                   <tr key={productAdd.product._id}>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {productAdd.product.items.name}
-                                      {" - "}
-                                      {productAdd.product.packSize.packSize}
-                                      {productAdd.product.items.units}
+                                    <td className="whitespace-nowrap px-2 py-2  text-gray-900">
+                                      <>
+                                        <p>{productAdd.product.items.name}</p>
+                                        <p>
+                                          {" - "}
+                                          {productAdd.product.packSize.packSize}
+                                          {productAdd.product.items.units}
+                                        </p>
+                                      </>
                                     </td>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                    <td className="whitespace-nowrap px-2 py-2  text-gray-900">
                                       <>
                                         <p>{productAdd.product.city},</p>
                                         <p>{productAdd.product.area},</p>
@@ -352,8 +366,11 @@ export default function AddOrderDetails({
                                         </p>
                                       </>
                                     </td>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                    <td className="whitespace-nowrap px-2 py-2  text-gray-900">
                                       {productAdd.stockOrdered}
+                                    </td>
+                                    <td className="whitespace-nowrap px-2 py-2  text-gray-900">
+                                      {productAdd.price}
                                     </td>
                                   </tr>
                                 );

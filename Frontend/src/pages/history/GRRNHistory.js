@@ -9,8 +9,17 @@ function GRRNHistory() {
   const [selectedOption, setSelectedOption] = useState("GRRN History");
 
   useEffect(() => {
+    // Fetching Data of All GRRN History items
+    const fetchGRRNHistoryData = () => {
+      fetch(`http://localhost:4000/api/grrnHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllGRRNHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchGRRNHistoryData();
-  }, []);
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -32,16 +41,6 @@ function GRRNHistory() {
     } else if (selectedValue === "GRN History") {
       navigate("/grnHistory");
     }
-  };
-
-  // Fetching Data of All GRRN History items
-  const fetchGRRNHistoryData = () => {
-    fetch(`http://localhost:4000/api/grrnHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllGRRNHistoryData(data);
-      })
-      .catch((err) => console.log(err));
   };
 
   return (
@@ -141,7 +140,7 @@ function GRRNHistory() {
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {new Date(element.PurchaseDate).toLocaleDateString() ==
+                      {new Date(element.PurchaseDate).toLocaleDateString() ===
                       new Date().toLocaleDateString()
                         ? "Today"
                         : element.date}

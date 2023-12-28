@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddWarehouse from "../components/AddWarehouse";
+import AddWarehouse from "../components/Warehouse/AddWarehouse";
 import AuthContext from "../AuthContext";
-import UpdateWarehouse from "../components/UpdateWarehouse";
+import UpdateWarehouse from "../components/Warehouse/UpdateWarehouse";
 import LineBreak from "../components/LineBreak";
 
 function Warehouse() {
@@ -24,29 +24,27 @@ function Warehouse() {
   console.log("====================================");
 
   useEffect(() => {
+    // Fetching Data of All Warehouses
+    const fetchWarehouseData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllWarehouses(data);
+        })
+        .catch((err) => console.log(err));
+    };
+    // Fetching Data of All Cities
+    const fetchCityData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllCities(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchWarehouseData();
     fetchCityData();
-  }, [updatePage]);
-
-  // Fetching Data of All Warehouses
-  const fetchWarehouseData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllWarehouses(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Cities
-  const fetchCityData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllCities(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Fetching Data of Search Warehouses
   const fetchSearchData = () => {

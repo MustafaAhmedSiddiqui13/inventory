@@ -1,70 +1,62 @@
 import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import AuthContext from "../AuthContext";
-import LineBreak from "./LineBreak";
+import AuthContext from "../../AuthContext";
 
-export default function AddWarehouse({
-  warehouses,
-  cities,
-  addWarehouseModalSetting,
-  handlePageUpdate,
-}) {
+export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
   const authContext = useContext(AuthContext);
-  const [warehouse, setWarehouse] = useState({
+  const [item, setItem] = useState({
     userId: authContext.user,
-    city: "",
-    area: "",
+    name: "",
+    category: "",
+    units: "",
   });
   const [open, setOpen] = useState(true);
-  const [warehouseNumber, setWarehouseNumber] = useState(0);
-  const [addWarehouseNumber, setAddWarehouseNumber] = useState([]);
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState({});
-  const [area, setArea] = useState({});
+  const [packSize, setPackSize] = useState(0);
+  const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
 
   const handleInputChange = (key, value) => {
-    setWarehouse({ ...warehouse, [key]: value });
+    setItem({ ...item, [key]: value });
   };
 
-  const addWarehouse = () => {
-    if (warehouseNumber < 1) {
+  const addPackSize = () => {
+    if (packSize < 1) {
       return alert("Fields cannot be left Empty");
     }
-    setAddWarehouseNumber((prev) => {
+    setAddPacks((prev) => {
       return prev.concat({
-        id: "warehouse" + Date.now(),
-        address: address,
-        warehouseNumber: warehouseNumber,
+        id: "packsize" + Date.now(),
+        packSize: packSize,
       });
     });
   };
 
-  const addFinalWarehouse = () => {
-    let myWarehouse = {
-      ...warehouse,
-      warehouseNumber: addWarehouseNumber,
+  const addItem = () => {
+    let myItem = {
+      ...item,
+      packSize: addPacks,
     };
 
     if (
-      myWarehouse.city === "" ||
-      myWarehouse.area === "" ||
-      addWarehouseNumber.length === 0
+      myItem.category === "" ||
+      myItem.name === "" ||
+      myItem.units === "" ||
+      addPacks.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/warehouse/add", {
+    fetch("http://localhost:4000/api/item/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(myWarehouse),
+      body: JSON.stringify(myItem),
     })
       .then((result) => {
-        alert("Warehouse Created");
+        alert("Item Created");
         handlePageUpdate();
-        addWarehouseModalSetting();
+        addItemModalSetting();
       })
       .catch((err) => console.log(err));
   };
@@ -115,153 +107,104 @@ export default function AddWarehouse({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Add Warehouse
+                        Add Item
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                           <div>
                             <label
-                              htmlFor="city"
+                              htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              City
+                              Item's Name
+                            </label>
+                            <input
+                              type="text"
+                              name="name"
+                              id="name"
+                              value={item.name}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Product's Name"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="category"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Category
                             </label>
                             <select
-                              id="city"
+                              id="category"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="city"
-                              value={city?._id}
-                              onChange={(e) => {
-                                const currentCity = cities.find(
-                                  (c) => c._id === e.target.value
-                                );
-                                const currentWarehouse = warehouses.find(
-                                  (w) => w.city === currentCity.city
-                                );
-
-                                setCity(currentCity || {});
-                                handleInputChange(
-                                  e.target.name,
-                                  currentCity.city
-                                );
-                              }}
+                              name="category"
+                              value={item.category}
+                              onChange={(e) =>
+                                handleInputChange(e.target.name, e.target.value)
+                              }
                             >
-                              <option>Select City</option>
-                              {cities.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.city}
-                                  </option>
-                                );
-                              })}
+                              <option>Select Category</option>
+                              <option value="Sweets">Sweets</option>
+                              <option value="Snacks">Snacks</option>
                             </select>
                           </div>
                           <div>
                             <label
-                              htmlFor="area"
+                              htmlFor="packSize"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Area
+                              Pack Size
                             </label>
-                            <select
-                              id="area"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="area"
-                              value={area?.id}
-                              onChange={(e) => {
-                                const currentArea = city.areas?.find(
-                                  (a) => a.id === e.target.value
-                                );
-
-                                // If the area is not present in the addWarehouseNumber array, set it as the current area
-                                if (
-                                  !addWarehouseNumber.some(
-                                    (w) => w.area === currentArea?.area
-                                  )
-                                ) {
-                                  setArea(currentArea || {});
-                                  handleInputChange(
-                                    e.target.name,
-                                    currentArea?.area
-                                  );
-                                }
-                              }}
-                            >
-                              <option>Select Area</option>
-                              {city.areas
-                                ?.filter(
-                                  (element) =>
-                                    !warehouses.some(
-                                      (w) => w.area === element.area
-                                    )
-                                )
-                                .map((element) => (
-                                  <option key={element.id} value={element.id}>
-                                    {element.area}
-                                  </option>
-                                ))}
-                            </select>
+                            <input
+                              type="number"
+                              name="packSize"
+                              id="packSize"
+                              value={packSize}
+                              onChange={(e) => setPackSize(e.target.value)}
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Pack Size"
+                            />
                           </div>
                           <div>
                             <label
                               htmlFor="units"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
-                              Warehouse #
+                              Units
                             </label>
                             <select
-                              id="warehouseNumber"
+                              id="units"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="warehouseNumber"
-                              value={warehouseNumber}
+                              name="units"
+                              value={item.units}
                               onChange={(e) =>
-                                setWarehouseNumber(e.target.value)
+                                handleInputChange(e.target.name, e.target.value)
                               }
                             >
-                              <option>Select a Warehouse #</option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
+                              <option>eg. Kg, g, L, mL</option>
+                              <option value="Kg">Kg</option>
+                              <option value="g">g</option>
+                              <option value="L">L</option>
+                              <option value="mL">mL</option>
                             </select>
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="address"
-                              className="block mb-2 text-sm font-medium text-gray-900"
-                            >
-                              Address
-                            </label>
-                            <input
-                              type="text"
-                              name="address"
-                              id="address"
-                              value={address}
-                              onChange={(e) => setAddress(e.target.value)}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Address"
-                            />
                           </div>
                           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                             <thead>
                               <tr>
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Warehouse #
-                                </th>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Address
+                                  Pack Size(s)
                                 </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                              {addWarehouseNumber.map((element, index) => {
+                              {addPacks.map((element, index) => {
                                 return (
-                                  <tr key={element.id}>
+                                  <tr key={index}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {element.warehouseNumber}
-                                    </td>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      <LineBreak text={element.address} n={5} />
+                                      {element.packSize}
                                     </td>
                                   </tr>
                                 );
@@ -272,7 +215,7 @@ export default function AddWarehouse({
                             <button
                               type="button"
                               className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
-                              onClick={addWarehouse}
+                              onClick={addPackSize}
                             >
                               <PlusIcon
                                 className="h-6 w-6 text-blue-50"
@@ -290,14 +233,14 @@ export default function AddWarehouse({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addFinalWarehouse}
+                    onClick={addItem}
                   >
-                    Add Warehouse
+                    Add Item
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addWarehouseModalSetting()}
+                    onClick={() => addItemModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel

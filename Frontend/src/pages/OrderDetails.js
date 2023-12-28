@@ -1,16 +1,13 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddOrderDetails from "../components/AddOrderDetails";
+import AddOrderDetails from "../components/Order/AddOrderDetails";
 import AuthContext from "../AuthContext";
-import jsPDFInvoiceTemplate, {
-  OutputType,
-  jsPDF,
-} from "jspdf-invoice-template";
+import jsPDFInvoiceTemplate, { OutputType } from "jspdf-invoice-template";
 
 function OrderDetails() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
   const [showOrderModal, setOrderModal] = useState(false);
-  const [order, setAllOrderData] = useState([]);
+  const [orders, setAllOrdersData] = useState([]);
   const [products, setAllProducts] = useState([]);
   const [stores, setAllStores] = useState([]);
   const [updatePage, setUpdatePage] = useState(true);
@@ -21,40 +18,39 @@ function OrderDetails() {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    // Fetching Data of All Order items
+    const fetchOrderData = () => {
+      fetch(`http://localhost:4000/api/order/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllOrdersData(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Products
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllProducts(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Stores
+    const fetchStoresData = () => {
+      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStores(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchOrderData();
     fetchProductsData();
     fetchStoresData();
-  }, [updatePage]);
-
-  // Fetching Data of All Order items
-  const fetchOrderData = () => {
-    fetch(`http://localhost:4000/api/order/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllOrderData(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Stores
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Handle Page Update
   const handlePageUpdate = () => {
@@ -84,148 +80,137 @@ function OrderDetails() {
     setIsCancelOpen(true);
   }
 
-  const generatePDF = () => {
-    const prop = {
-      outputType: OutputType.Save,
-      returnJsPDFDocObject: true,
-      fileName: "Invoice",
-      orientationLandscape: true,
-      compress: true,
-      logo: {
-        src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/logo.png",
-        type: "PNG", //optional, when src= data:uri (nodejs case)
-        width: 53.33, //aspect ratio = width/height
-        height: 26.66,
-        margin: {
-          top: 0, //negative or positive num, from the current position
-          left: 0, //negative or positive num, from the current position
+  const generatePDF = (id) => {
+    const order = orders.filter((element) => element._id === id);
+    const date = new Date().toJSON().slice(0, 10);
+    order.map((element, index) => {
+      const prop = {
+        outputType: OutputType.Save,
+        returnJsPDFDocObject: true,
+        fileName: "Invoice",
+        orientationLandscape: true,
+        compress: true,
+        logo: {
+          src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/logo.png",
+          type: "PNG", //optional, when src= data:uri (nodejs case)
+          width: 53.33, //aspect ratio = width/height
+          height: 26.66,
+          margin: {
+            top: 0, //negative or positive num, from the current position
+            left: 0, //negative or positive num, from the current position
+          },
         },
-      },
-      stamp: {
-        inAllPages: true, //by default = false, just in the last page
-        src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/qr_code.jpg",
-        type: "JPG", //optional, when src= data:uri (nodejs case)
-        width: 20, //aspect ratio = width/height
-        height: 20,
-        margin: {
-          top: 0, //negative or positive num, from the current position
-          left: 0, //negative or positive num, from the current position
+        stamp: {
+          inAllPages: true, //by default = false, just in the last page
+          src: "https://raw.githubusercontent.com/edisonneza/jspdf-invoice-template/demo/images/qr_code.jpg",
+          type: "JPG", //optional, when src= data:uri (nodejs case)
+          width: 20, //aspect ratio = width/height
+          height: 20,
+          margin: {
+            top: 0, //negative or positive num, from the current position
+            left: 0, //negative or positive num, from the current position
+          },
         },
-      },
-      business: {
-        name: "Mads International",
-        address: "Eros Complex",
-      },
+        business: {
+          name: "Mads International",
+          address: "Eros Complex",
+        },
 
-      invoice: {
-        label: `Invoice #: 1`,
-        invDate: `Order Date: ${Date.now().toString}`,
-        invGenDate: `Invoice Date: ${Date.now().toString}`,
-        headerBorder: false,
-        tableBodyBorder: false,
-        header: [
-          {
-            title: "#",
-            style: {
-              width: 10,
+        invoice: {
+          label: `Invoice #: 1`,
+          invDate: `Order Date: ${element.orderDate}`,
+          invGenDate: `Invoice Date: ${date}`,
+          headerBorder: false,
+          tableBodyBorder: false,
+          header: [
+            {
+              title: "#",
+              style: {
+                width: 10,
+              },
             },
-          },
-          {
-            title: "Vendor",
-            style: {
-              width: 20,
+            {
+              title: "Vendor",
+              style: {
+                width: 40,
+              },
             },
-          },
-          {
-            title: "Item",
-            style: {
-              width: 20,
+            {
+              title: "Item",
+              style: {
+                width: 40,
+              },
             },
-          },
-          {
-            title: "Pack Size",
-            style: {
-              width: 20,
+            {
+              title: "Pack Size",
+              style: {
+                width: 20,
+              },
             },
-          },
-          { title: "Quantity" },
-          {
-            title: "Warehouse",
-            style: {
-              width: 80,
+            {
+              title: "Quantity",
+              style: {
+                width: 20,
+              },
             },
-          },
-          { title: "Rider" },
-          { title: "Order By" },
-          { title: "Total" },
-        ],
-        table: order.map((element, index) => [
-          index + 1,
-          element.StoreID?.name,
-          element.products.map((product) => {
-            return <p>{product.product.items.name}</p>;
-          }),
-          element.products.map((product) => {
-            return (
-              <p>
-                {product.product.packSize.packSize}
-                {product.product.items.units}
-              </p>
-            );
-          }),
-          element.products.map((product) => {
-            return <p>{product.stockOrdered}</p>;
-          }),
-          element.products.map((product) => {
-            return (
-              <p>
-                {product.product.city}, {product.product.area}, Warehouse{" "}
-                {product.product.warehouseNumber}
-              </p>
-            );
-          }),
-          element.riderName,
-          element.userID?.firstName + " " + element.userID?.lastName,
-          element.totalAmount,
-        ]),
-        additionalRows: [
-          {
-            col1: "Total:",
-            col2: "145,250.50",
-            col3: "ALL",
-            style: {
-              fontSize: 14, //optional, default 12
+            {
+              title: "Warehouse",
+              style: {
+                width: 80,
+              },
             },
-          },
-          {
-            col1: "VAT:",
-            col2: "20",
-            col3: "%",
-            style: {
-              fontSize: 10, //optional, default 12
+            {
+              title: "Rider",
+              style: {
+                width: 20,
+              },
             },
-          },
-          {
-            col1: "SubTotal:",
-            col2: "116,199.90",
-            col3: "ALL",
-            style: {
-              fontSize: 10, //optional, default 12
+            {
+              title: "Order By",
+              style: {
+                width: 30,
+              },
             },
-          },
-        ],
-        invDescLabel: "Invoice Note",
-        invDesc:
-          "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary.",
-      },
-      footer: {
-        text: "The invoice is created on a computer and is valid without the signature and stamp.",
-      },
-      pageEnable: true,
-      pageLabel: "Page ",
-    };
-    const pdfCreated = jsPDFInvoiceTemplate(prop);
-    pdfCreated.jsPDFDocObject.save();
+            {
+              title: "Price(Rs)",
+              style: {
+                width: 20,
+              },
+            },
+          ],
+          table: element.products?.map((product, index) => [
+            index + 1,
+            element.StoreID?.name,
+            product.product.items.name,
+            `${product.product.packSize.packSize} ${product.product.items.units}`,
+            product.stockOrdered,
+            `${product.product.city}, ${product.product.area}, Warehouse ${product.product.warehouseNumber}`,
+            element.riderName,
+            `${element.userID?.firstName} ${element.userID?.lastName}`,
+            product.price,
+          ]),
+
+          additionalRows: [
+            {
+              col1: "Total:",
+              col2: `Rs. ${element.totalAmount}`,
+              style: {
+                fontSize: 14, //optional, default 12
+              },
+            },
+          ],
+          invDescLabel: "Invoice Note",
+          invDesc:
+            "Invoice Generated Successfully. This invoice should be kept safely such that it is not lost. By placing this order you are agreeing to pay the amount generated as mentioned above.",
+        },
+        footer: {
+          text: "The invoice is created on a computer and is valid without the signature and stamp.",
+        },
+        pageEnable: true,
+        pageLabel: "Page ",
+      };
+      return jsPDFInvoiceTemplate(prop);
+    });
   };
 
   const resolveItem = (id) => {
@@ -433,6 +418,9 @@ function OrderDetails() {
                   Quantity
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Price(Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -454,7 +442,7 @@ function OrderDetails() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {order.map((element, index) => {
+              {orders.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     {console.log("Element: ", element)}
@@ -483,6 +471,11 @@ function OrderDetails() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.products.map((product) => {
+                        return <p>{product.price}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.products.map((product) => {
                         return (
                           <p>
                             {product.product.city}, {product.product.area},
@@ -492,7 +485,7 @@ function OrderDetails() {
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {new Date(element.PurchaseDate).toLocaleDateString() ==
+                      {new Date(element.PurchaseDate).toLocaleDateString() ===
                       new Date().toLocaleDateString()
                         ? "Today"
                         : element.orderDate}
@@ -523,7 +516,7 @@ function OrderDetails() {
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 mr-2"
-                        onClick={generatePDF}
+                        onClick={() => generatePDF(element._id)}
                       >
                         Generate Invoice
                       </button>

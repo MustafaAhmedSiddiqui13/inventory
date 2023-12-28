@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UploadImage from "../components/UploadImage";
 
 function Register() {
   const [form, setForm] = useState({
@@ -28,8 +27,7 @@ function Register() {
     })
       .then((result) => {
         alert("Successfully Registered, Now Login with your details");
-        navigate('/login')
-        
+        navigate("/login");
       })
       .catch((err) => console.log(err));
   };
@@ -37,7 +35,7 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  }
+  };
 
   return (
     <>
@@ -76,8 +74,7 @@ function Register() {
                   onChange={handleInputChange}
                 />
               </div>
-              <div>
-              </div>
+              <div></div>
               <div>
                 <input
                   id="password"
@@ -120,9 +117,7 @@ function Register() {
               </button>
               <p className="mt-2 text-center text-sm text-gray-600">
                 Or{" "}
-                <span
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
+                <span className="font-medium text-indigo-600 hover:text-indigo-500">
                   Already Have an Account, Please
                   <Link to="/login"> Signin now </Link>
                 </span>

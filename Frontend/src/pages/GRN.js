@@ -1,13 +1,9 @@
-import React, { Fragment, useState, useEffect, useContext } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import AddProduct from "../components/AddProduct";
-import UpdateProduct from "../components/UpdateProduct";
+import React, { useState, useEffect, useContext } from "react";
+import AddProduct from "../components/GRN/AddProduct";
 import AuthContext from "../AuthContext";
 import LineBreak from "../components/LineBreak";
 
 function GRN() {
-  const localStorageData = JSON.parse(localStorage.getItem("user"));
-
   const [showProductModal, setShowProductModal] = useState(false);
 
   const [grn, setAllGRNs] = useState([]);
@@ -16,7 +12,6 @@ function GRN() {
   const [cities, setAllCities] = useState([]);
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
-  const [stores, setAllStores] = useState([]);
   const [suppliers, setAllSuppliers] = useState([]);
 
   const authContext = useContext(AuthContext);
@@ -25,33 +20,58 @@ function GRN() {
   console.log("====================================");
 
   useEffect(() => {
+    // Fetching Data of All GRNs
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/grn/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllGRNs(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Items
+    const fetchItemsData = () => {
+      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllItems(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    const fetchWarehouseData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllWarehouses(data);
+        });
+    };
+
+    const fetchCityData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllCities(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Suppliers
+    const fetchSuppliersData = () => {
+      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllSuppliers(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchProductsData();
-    fetchStoresData();
     fetchItemsData();
     fetchWarehouseData();
     fetchCityData();
     fetchSuppliersData();
-  }, [updatePage]);
-
-  // Fetching Data of All GRNs
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/grn/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllGRNs(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllItems(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Fetching Data of Search Products
   const fetchSearchData = () => {
@@ -59,42 +79,6 @@ function GRN() {
       .then((response) => response.json())
       .then((data) => {
         setAllGRNs(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching all stores data
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
-  };
-
-  const fetchWarehouseData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllWarehouses(data);
-      });
-  };
-
-  const fetchCityData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllCities(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Suppliers
-  const fetchSuppliersData = () => {
-    fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllSuppliers(data);
       })
       .catch((err) => console.log(err));
   };

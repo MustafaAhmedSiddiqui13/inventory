@@ -10,8 +10,17 @@ function GRNHistory() {
   const [selectedOption, setSelectedOption] = useState("GRN History");
 
   useEffect(() => {
+    // Fetching Data of All GRN History items
+    const fetchGRNHistoryData = () => {
+      fetch(`http://localhost:4000/api/grnHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllGRNHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchGRNHistoryData();
-  }, []);
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -33,16 +42,6 @@ function GRNHistory() {
     } else if (selectedValue === "GRRN History") {
       navigate("/grrnHistory");
     }
-  };
-
-  // Fetching Data of All GRN History items
-  const fetchGRNHistoryData = () => {
-    fetch(`http://localhost:4000/api/grnHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllGRNHistoryData(data);
-      })
-      .catch((err) => console.log(err));
   };
 
   return (

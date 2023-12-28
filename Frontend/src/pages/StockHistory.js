@@ -9,18 +9,17 @@ function StockHistory() {
   const [selectedOption, setSelectedOption] = useState("Order History");
 
   useEffect(() => {
+    // Fetching Data of All Order History items
+    const fetchStockHistoryData = () => {
+      fetch(`http://localhost:4000/api/stockHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStockHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchStockHistoryData();
-  }, []);
-
-  // Fetching Data of All Order History items
-  const fetchStockHistoryData = () => {
-    fetch(`http://localhost:4000/api/stockHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStockHistoryData(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -92,6 +91,9 @@ function StockHistory() {
                   Quantity
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Price(Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -142,6 +144,11 @@ function StockHistory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.products.map((product) => {
+                        return <p>{product.price}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.products.map((product) => {
                         return (
                           <p>
                             {product.product.city}, {product.product.area},
@@ -151,7 +158,7 @@ function StockHistory() {
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {new Date(element.PurchaseDate).toLocaleDateString() ==
+                      {new Date(element.PurchaseDate).toLocaleDateString() ===
                       new Date().toLocaleDateString()
                         ? "Today"
                         : element.orderDate}

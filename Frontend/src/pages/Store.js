@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddStore from "../components/AddStore";
+import AddStore from "../components/Vendor/AddStore";
 import AuthContext from "../AuthContext";
-import AddItemPriceInfo from "../components/AddItemPriceInfo";
+import AddItemPriceInfo from "../components/Vendor/AddItemPriceInfo";
 
 function Store() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -17,28 +17,26 @@ function Store() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
+    // Fetching all stores data
+    const fetchData = () => {
+      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStores(data);
+        });
+    };
+    // Fetching Data of All Items
+    const fetchItemsData = () => {
+      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllItems(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchData();
     fetchItemsData();
-  }, [updatePage]);
-
-  // Fetching all stores data
-  const fetchData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
-  };
-
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllItems(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Delete Store
   const deleteStore = (id) => {

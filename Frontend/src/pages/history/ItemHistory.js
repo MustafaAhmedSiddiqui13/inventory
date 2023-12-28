@@ -9,18 +9,17 @@ function ItemHistory() {
   const [selectedOption, setSelectedOption] = useState("Item History");
 
   useEffect(() => {
+    // Fetching Data of All Order History items
+    const fetchItemHistoryData = () => {
+      fetch(`http://localhost:4000/api/itemHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setItems(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchItemHistoryData();
-  }, []);
-
-  // Fetching Data of All Order History items
-  const fetchItemHistoryData = () => {
-    fetch(`http://localhost:4000/api/itemHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setItems(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;

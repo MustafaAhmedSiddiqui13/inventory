@@ -106,4 +106,9 @@ const cancelOrder = async (req, res) => {
   //order should be added to order history table
 };
 
-module.exports = { addOrder, getOrderData, resolveOrder, cancelOrder };
+module.exports = {
+  addOrder,
+  getOrderData,
+  resolveOrder,
+  cancelOrder,
+};

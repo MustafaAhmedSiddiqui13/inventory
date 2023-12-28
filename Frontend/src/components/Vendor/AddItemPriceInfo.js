@@ -1,7 +1,7 @@
 import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import AuthContext from "../AuthContext";
+import AuthContext from "../../AuthContext";
 
 export default function AddItemPriceInfo({
   Items,
@@ -30,8 +30,8 @@ export default function AddItemPriceInfo({
 
   const addItem = () => {
     if (
-      Object.keys(item).length == 0 ||
-      Object.keys(packSize).length == 0 ||
+      Object.keys(item).length === 0 ||
+      Object.keys(packSize).length === 0 ||
       packPrice < 1
     ) {
       return alert("Fields cannot be Empty");
@@ -207,13 +207,6 @@ export default function AddItemPriceInfo({
                             >
                               <option>Select Pack Size</option>
                               {item.packSize?.map((element, index) => {
-                                {
-                                  /* if (
-                                  currentProduct.packSize?.id !== element.id
-                                ) {
-                                  
-                                } */
-                                }
                                 return (
                                   <option key={element.id} value={element.id}>
                                     {element.packSize}

@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddSupplier from "../components/AddSupplier";
+import AddSupplier from "../components/Supplier/AddSupplier";
 import AuthContext from "../AuthContext";
-import UpdateSupplier from "../components/UpdateSupplier";
+import UpdateSupplier from "../components/Supplier/UpdateSupplier";
 
 function Supplier() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -23,19 +23,27 @@ function Supplier() {
   console.log("====================================");
 
   useEffect(() => {
+    // Fetching Data of All Suppliers
+    const fetchSuppliersData = () => {
+      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllSuppliers(data);
+        })
+        .catch((err) => console.log(err));
+    };
+    // Fetching Data of All Cities
+    const fetchCityData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllCities(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchSuppliersData();
     fetchCityData();
-  }, [updatePage]);
-
-  // Fetching Data of All Suppliers
-  const fetchSuppliersData = () => {
-    fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllSuppliers(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Fetching Data of Search Suppliers
   const fetchSearchData = () => {
@@ -43,16 +51,6 @@ function Supplier() {
       .then((response) => response.json())
       .then((data) => {
         setAllSuppliers(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Cities
-  const fetchCityData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllCities(data);
       })
       .catch((err) => console.log(err));
   };

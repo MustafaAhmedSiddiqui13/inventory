@@ -9,18 +9,17 @@ function SupplierHistory() {
   const [selectedOption, setSelectedOption] = useState("Supplier History");
 
   useEffect(() => {
+    // Fetching Data of All Supplier History items
+    const fetchSupplierHistoryData = () => {
+      fetch(`http://localhost:4000/api/supplierHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllSupplierHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchSupplierHistoryData();
-  }, []);
-
-  // Fetching Data of All Supplier History items
-  const fetchSupplierHistoryData = () => {
-    fetch(`http://localhost:4000/api/supplierHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllSupplierHistoryData(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;

@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import AddItem from "../components/AddItem";
+import AddItem from "../components/Item/AddItem";
 import AuthContext from "../AuthContext";
-import UpdateItem from "../components/UpdateItem";
+import UpdateItem from "../components/Item/UpdateItem";
 
 function Items() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -22,18 +22,17 @@ function Items() {
   console.log("====================================");
 
   useEffect(() => {
+    // Fetching Data of All Items
+    const fetchItemsData = () => {
+      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllItems(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchItemsData();
-  }, [updatePage]);
-
-  // Fetching Data of All Items
-  const fetchItemsData = () => {
-    fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllItems(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Fetching Data of Search Items
   const fetchSearchData = () => {

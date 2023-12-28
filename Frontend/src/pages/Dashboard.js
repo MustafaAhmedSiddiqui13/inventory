@@ -68,69 +68,74 @@ function Dashboard() {
     ],
   });
 
-  // Update Chart Data
-  const updateChartData = (salesData) => {
-    setChart({
-      ...chart,
-      series: [
-        {
-          name: "Monthly Sales Amount",
-          data: [...salesData],
-        },
-      ],
-    });
-  };
-
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    const fetchTotalSaleAmount = () => {
+      fetch(
+        `http://localhost:4000/api/sales/get/${authContext.user}/totalsaleamount`
+      )
+        .then((response) => response.json())
+        .then((datas) => setSaleAmount(datas.totalSaleAmount))
+        .catch((error) =>
+          console.error("Error fetching total sale amount:", error)
+        );
+    };
+
+    const fetchTotalPurchaseAmount = () => {
+      fetch(
+        `http://localhost:4000/api/purchase/get/${authContext.user}/totalpurchaseamount`
+      )
+        .then((response) => response.json())
+        .then((datas) => setPurchaseAmount(datas.totalPurchaseAmount))
+        .catch((error) =>
+          console.error("Error fetching total purchase amount:", error)
+        );
+    };
+
+    const fetchStoresData = () => {
+      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((datas) => setStores(datas))
+        .catch((error) => console.error("Error fetching stores data:", error));
+    };
+
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((datas) => setProducts(datas))
+        .catch((error) =>
+          console.error("Error fetching products data:", error)
+        );
+    };
+
+    const fetchMonthlySalesData = () => {
+      fetch(`http://localhost:4000/api/sales/getmonthly`)
+        .then((response) => response.json())
+        .then((datas) => updateChartData(datas.salesAmount))
+        .catch((error) =>
+          console.error("Error fetching monthly sales data:", error)
+        );
+    };
+
+    const updateChartData = (salesData) => {
+      setChart((prevChart) => ({
+        ...prevChart,
+        series: [
+          {
+            name: "Monthly Sales Amount",
+            data: [...salesData],
+          },
+        ],
+      }));
+    };
+
     fetchTotalSaleAmount();
     fetchTotalPurchaseAmount();
     fetchStoresData();
     fetchProductsData();
     fetchMonthlySalesData();
-  }, []);
-
-  // Fetching total sales amount
-  const fetchTotalSaleAmount = () => {
-    fetch(
-      `http://localhost:4000/api/sales/get/${authContext.user}/totalsaleamount`
-    )
-      .then((response) => response.json())
-      .then((datas) => setSaleAmount(datas.totalSaleAmount));
-  };
-
-  // Fetching total purchase amount
-  const fetchTotalPurchaseAmount = () => {
-    fetch(
-      `http://localhost:4000/api/purchase/get/${authContext.user}/totalpurchaseamount`
-    )
-      .then((response) => response.json())
-      .then((datas) => setPurchaseAmount(datas.totalPurchaseAmount));
-  };
-
-  // Fetching all stores data
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((datas) => setStores(datas));
-  };
-
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((datas) => setProducts(datas))
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Monthly Sales
-  const fetchMonthlySalesData = () => {
-    fetch(`http://localhost:4000/api/sales/getmonthly`)
-      .then((response) => response.json())
-      .then((datas) => updateChartData(datas.salesAmount))
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user]);
 
   return (
     <>

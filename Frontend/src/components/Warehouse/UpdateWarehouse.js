@@ -1,8 +1,8 @@
-import { Component, Fragment, useContext, useRef, useState } from "react";
+import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import AuthContext from "../AuthContext";
-import LineBreak from "./LineBreak";
+import AuthContext from "../../AuthContext";
+import LineBreak from "../LineBreak";
 
 export default function UpdateWarehouse({
   updateWarehouseData,

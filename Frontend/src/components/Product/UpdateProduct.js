@@ -1,66 +1,68 @@
 import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import AuthContext from "../AuthContext";
+import AuthContext from "../../AuthContext";
 
-export default function AddProduct({
+export default function UpdateProduct({
   suppliers,
   cities,
   warehouses,
-  products,
-  items,
-  addProductModalSetting,
+  updateProductData,
+  updateModalSetting,
   handlePageUpdate,
 }) {
-  console.log("warehouses: ", warehouses);
-
+  const {
+    _id,
+    items,
+    packSize,
+    stock,
+    supplier,
+    production,
+    expirationDate,
+    city,
+    area,
+    warehouseNumber,
+  } = updateProductData;
   const authContext = useContext(AuthContext);
-  const [item, setItem] = useState({});
-  const [currentProduct, setCurrentProduct] = useState({});
-  const [packSize, setPackSize] = useState({});
-  const [supplier, setSupplier] = useState({});
-  const [warehouse, setWarehouse] = useState({});
-
-  const [city, setCity] = useState({});
-  const [sameCityWarehouses, setSameCityWarehouses] = useState({});
-
   const [product, setProduct] = useState({
     userId: authContext.user,
-    items: "",
-    packSize: "",
-    stock: "",
-    supplier: "",
-    purchaseDate: "",
-    production: "",
-    expirationDate: "",
-    city: "",
-    area: "",
-    warehouseNumber: "",
+    productID: _id,
+    items: items,
+    packSize: packSize,
+    stock: stock,
+    supplier: supplier,
+    production: production,
+    expirationDate: expirationDate,
+    city: city,
+    area: area,
+    warehouseNumber: warehouseNumber,
   });
-  console.log("----", product);
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
+  const [updateCity, setUpdateCity] = useState({});
+  const [sameCityWarehouses, setSameCityWarehouses] = useState({});
+  const [updateSupplier, setUpdateSupplier] = useState({});
 
   const handleInputChange = (key, value) => {
+    console.log(key);
     setProduct({ ...product, [key]: value });
   };
 
-  const addProduct = () => {
+  const updateProduct = () => {
     if (
       product.expirationDate === "" ||
       product.production === "" ||
-      product.purchaseDate === "" ||
       product.stock === "" ||
       product.supplier === "" ||
       product.items === "" ||
       product.packSize === "" ||
-      product.city === "" ||
+      Object.keys(updateCity).length === 0 ||
       product.area === "" ||
-      product.warehouseNumber === ""
+      Object.keys(sameCityWarehouses).length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/grn/add", {
+    fetch(`http://localhost:4000/api/product/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -68,9 +70,9 @@ export default function AddProduct({
       body: JSON.stringify(product),
     })
       .then((result) => {
-        alert("GRN Added");
+        alert("Product Updated");
         handlePageUpdate();
-        addProductModalSetting();
+        setOpen(false);
       })
       .catch((err) => console.log(err));
   };
@@ -101,11 +103,11 @@ export default function AddProduct({
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -121,85 +123,45 @@ export default function AddProduct({
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Add Product
+                        Update Product
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
                           <div>
                             <label
-                              htmlFor="storeID"
-                              className="block mb-2 text-sm font-medium text-gray-900"
+                              htmlFor="items"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
                             >
-                              Item
+                              Item's Name
                             </label>
-                            <select
-                              id="items"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            <input
+                              type="text"
                               name="items"
-                              value={item?._id}
-                              onChange={(e) => {
-                                const item = items.find(
-                                  (i) => i._id === e.target.value
-                                );
-                                const currentProd = products.find(
-                                  (product) => product.items._id === item._id
-                                );
-                                setCurrentProduct(currentProd || {});
-                                setItem(item || {});
-                                handleInputChange(e.target.name, item);
-                              }}
-                            >
-                              <option>Select Item</option>
-                              {items.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.name}
-                                  </option>
-                                );
-                              })}
-                            </select>
+                              id="items"
+                              value={product.items.name}
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Item's Name"
+                              disabled
+                            />
                           </div>
                           <div>
                             <label
-                              htmlFor="storeID"
-                              className="block mb-2 text-sm font-medium text-gray-900"
+                              htmlFor="packSize"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
                             >
                               Pack Size
                             </label>
-                            <select
-                              id="packSize"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            <input
+                              type="text"
                               name="packSize"
-                              value={packSize?.id}
-                              onChange={(e) => {
-                                const packSizeSelected = item.packSize?.find(
-                                  (i) => i.id === e.target.value
-                                );
-
-                                setPackSize(packSizeSelected || {});
-                                handleInputChange(
-                                  e.target.name,
-                                  packSizeSelected
-                                );
-                              }}
-                            >
-                              <option>Select Pack Size</option>
-                              {item.packSize?.map((element, index) => {
-                                {
-                                  /* if (
-                                  currentProduct.packSize?.id !== element.id
-                                ) {
-                                  
-                                } */
-                                }
-                                return (
-                                  <option key={element.id} value={element.id}>
-                                    {element.packSize}
-                                    {item?.units}
-                                  </option>
-                                );
-                              })}
-                            </select>
+                              id="packSize"
+                              value={
+                                product.packSize.packSize + product.items.units
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Pack Size"
+                              disabled
+                            />
                           </div>
                           <div>
                             <label
@@ -231,22 +193,32 @@ export default function AddProduct({
                               id="supplier"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="supplier"
-                              value={supplier?._id}
+                              value={updateSupplier?._id}
                               onChange={(e) => {
                                 const supplier = suppliers.find(
                                   (s) => s._id === e.target.value
                                 );
-                                setSupplier(supplier || {});
-                                handleInputChange(e.target.name, supplier.name);
+                                setUpdateSupplier(supplier || {});
+                                handleInputChange(
+                                  e.target.name,
+                                  supplier?.name
+                                );
                               }}
                             >
-                              <option>Select Supplier</option>
+                              <option>{product.supplier}</option>
                               {suppliers.map((element, index) => {
-                                return (
-                                  <option key={element._id} value={element._id}>
-                                    {element.name}
-                                  </option>
-                                );
+                                if (product.supplier !== element.name) {
+                                  return (
+                                    <option
+                                      key={element._id}
+                                      value={element._id}
+                                    >
+                                      {element.name}
+                                    </option>
+                                  );
+                                } else {
+                                  return null;
+                                }
                               })}
                             </select>
                           </div>
@@ -255,26 +227,31 @@ export default function AddProduct({
                               htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse City
+                              <>
+                                <p>Warehouse City</p>
+                                <p className="font-normal">
+                                  Current City: {product.city}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="city"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="city"
-                              value={city?._id}
+                              value={updateCity?._id}
                               onChange={(e) => {
                                 const currentCity = cities.find(
                                   (c) => c._id === e.target.value
                                 );
 
-                                setCity(currentCity || {});
+                                setUpdateCity(currentCity || {});
                                 handleInputChange(
                                   e.target.name,
-                                  currentCity.city
+                                  currentCity?.city
                                 );
                               }}
                             >
-                              <option>Select City</option>
+                              <option value="">Select City</option>
                               {cities.map((element, index) => {
                                 return (
                                   <option key={element._id} value={element._id}>
@@ -289,21 +266,23 @@ export default function AddProduct({
                               htmlFor="area"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse Area
+                              <>
+                                <p>Warehouse Area</p>
+                                <p className="font-normal">
+                                  Current Area: {product.area}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="area"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="area"
-                              value={warehouse?.area}
+                              value={product.area}
                               onChange={(e) => {
                                 const sameCityWarehouse = warehouses.find(
                                   (i) => i.area === e.target.value
                                 );
-                                console.log(
-                                  "Same City Warehouses: ",
-                                  sameCityWarehouse
-                                );
+
                                 setSameCityWarehouses(sameCityWarehouse || {});
 
                                 handleInputChange(
@@ -312,9 +291,9 @@ export default function AddProduct({
                                 );
                               }}
                             >
-                              <option>Select Area</option>
+                              <option value="">Select Area</option>
                               {warehouses.map((element, index) => {
-                                if (element.city === city?.city) {
+                                if (element.city === updateCity?.city) {
                                   return (
                                     <option
                                       key={element._id}
@@ -323,6 +302,8 @@ export default function AddProduct({
                                       {element.area}
                                     </option>
                                   );
+                                } else {
+                                  return null;
                                 }
                               })}
                             </select>
@@ -332,13 +313,19 @@ export default function AddProduct({
                               htmlFor="warehouseNumber"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Warehouse #
+                              <>
+                                <p>Warehouse Number</p>
+                                <p className="font-normal">
+                                  Current Number: {product.warehouseNumber}
+                                </p>
+                              </>
                             </label>
                             <select
                               id="warehouseNumber"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="warehouseNumber"
                               value={sameCityWarehouses.warehouseNumber?.id}
+                              defaultValue={product.warehouseNumber}
                               onChange={(e) => {
                                 const currWarehouse =
                                   sameCityWarehouses.warehouseNumber?.find(
@@ -346,7 +333,7 @@ export default function AddProduct({
                                   );
                                 handleInputChange(
                                   e.target.name,
-                                  currWarehouse.warehouseNumber
+                                  currWarehouse?.warehouseNumber
                                 );
                               }}
                             >
@@ -364,25 +351,6 @@ export default function AddProduct({
                           </div>
                           <div>
                             <label
-                              htmlFor="purchaseDate"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
-                            >
-                              Purchase Date
-                            </label>
-                            <input
-                              type="date"
-                              name="purchaseDate"
-                              id="purchaseDate"
-                              value={product.purchaseDate}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Purchase Date"
-                            />
-                          </div>
-                          <div>
-                            <label
                               htmlFor="production"
                               className="block mb-2 text-sm font-medium text-gray-900 "
                             >
@@ -397,7 +365,7 @@ export default function AddProduct({
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Product's Production Date"
+                              placeholder="Enter Product's Purchase Date"
                             />
                           </div>
                           <div>
@@ -416,11 +384,10 @@ export default function AddProduct({
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Enter Item's Expiration Date"
+                              placeholder="Enter Product's Expiration Date"
                             />
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4"></div>
                       </form>
                     </div>
                   </div>
@@ -429,14 +396,14 @@ export default function AddProduct({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addProduct}
+                    onClick={updateProduct}
                   >
-                    Create GRN
+                    Update Product
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addProductModalSetting()}
+                    onClick={() => updateModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel

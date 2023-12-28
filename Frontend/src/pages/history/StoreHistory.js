@@ -9,8 +9,17 @@ function StoreHistory() {
   const [selectedOption, setSelectedOption] = useState("Vendor History");
 
   useEffect(() => {
+    // Fetching Data of All Store History items
+    const fetchStoreHistoryData = () => {
+      fetch(`http://localhost:4000/api/storeHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStoreHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchStoreHistoryData();
-  }, []);
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -32,16 +41,6 @@ function StoreHistory() {
     } else if (selectedValue === "GRRN History") {
       navigate("/grrnHistory");
     }
-  };
-
-  // Fetching Data of All Store History items
-  const fetchStoreHistoryData = () => {
-    fetch(`http://localhost:4000/api/storeHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStoreHistoryData(data);
-      })
-      .catch((err) => console.log(err));
   };
 
   return (

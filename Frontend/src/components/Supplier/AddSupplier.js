@@ -1,62 +1,47 @@
 import { Fragment, useContext, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
-import AuthContext from "../AuthContext";
+import AuthContext from "../../AuthContext";
 
-export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
+export default function AddSupplier({
+  cities,
+  addSupplierModalSetting,
+  handlePageUpdate,
+}) {
   const authContext = useContext(AuthContext);
-  const [item, setItem] = useState({
+  const [supplier, setSupplier] = useState({
     userId: authContext.user,
     name: "",
-    category: "",
-    units: "",
+    city: "",
+    address: "",
   });
   const [open, setOpen] = useState(true);
-  const [packSize, setPackSize] = useState(0);
-  const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
+  const [city, setCity] = useState({});
 
   const handleInputChange = (key, value) => {
-    setItem({ ...item, [key]: value });
+    setSupplier({ ...supplier, [key]: value });
   };
 
-  const addPackSize = () => {
-    if (packSize < 1) {
-      return alert("Fields cannot be left Empty");
-    }
-    setAddPacks((prev) => {
-      return prev.concat({
-        id: "packsize" + Date.now(),
-        packSize: packSize,
-      });
-    });
-  };
-
-  const addItem = () => {
-    let myItem = {
-      ...item,
-      packSize: addPacks,
-    };
-
+  const addSupplier = () => {
     if (
-      myItem.category === "" ||
-      myItem.name === "" ||
-      myItem.units === "" ||
-      addPacks.length === 0
+      supplier.category === "" ||
+      supplier.city === "" ||
+      supplier.address === ""
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/item/add", {
+    fetch("http://localhost:4000/api/supplier/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify(myItem),
+      body: JSON.stringify(supplier),
     })
       .then((result) => {
-        alert("Item Created");
+        alert("Supplier Created");
         handlePageUpdate();
-        addItemModalSetting();
+        addSupplierModalSetting();
       })
       .catch((err) => console.log(err));
   };
@@ -107,7 +92,7 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                         as="h3"
                         className="text-lg font-semibold leading-6 text-gray-900 "
                       >
-                        Add Item
+                        Add Supplier
                       </Dialog.Title>
                       <form action="#">
                         <div className="grid gap-4 mb-4 sm:grid-cols-2">
@@ -116,112 +101,71 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                               htmlFor="name"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Item's Name
+                              Supplier's Name
                             </label>
                             <input
                               type="text"
                               name="name"
                               id="name"
-                              value={item.name}
+                              value={supplier.name}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Product's Name"
+                              placeholder="Supplier's Name"
                             />
                           </div>
                           <div>
                             <label
-                              htmlFor="category"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
-                            >
-                              Category
-                            </label>
-                            <select
-                              id="category"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="category"
-                              value={item.category}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
-                            >
-                              <option>Select Category</option>
-                              <option value="Sweets">Sweets</option>
-                              <option value="Snacks">Snacks</option>
-                            </select>
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="packSize"
+                              htmlFor="city"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Pack Size
+                              Supplier's City
                             </label>
-                            <input
-                              type="number"
-                              name="packSize"
-                              id="packSize"
-                              value={packSize}
-                              onChange={(e) => setPackSize(e.target.value)}
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              placeholder="Pack Size"
-                            />
+                            <select
+                              id="city"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="city"
+                              value={city?._id}
+                              onChange={(e) => {
+                                const currentCity = cities.find(
+                                  (c) => c._id === e.target.value
+                                );
+                                setCity(currentCity || {});
+                                handleInputChange(
+                                  e.target.name,
+                                  currentCity.city
+                                );
+                              }}
+                            >
+                              <option>Select City</option>
+                              {cities.map((element, index) => {
+                                return (
+                                  <option key={element._id} value={element._id}>
+                                    {element.city}
+                                  </option>
+                                );
+                              })}
+                            </select>
                           </div>
                           <div>
                             <label
-                              htmlFor="units"
-                              className="block mb-2 text-sm font-medium text-gray-900 "
+                              htmlFor="address"
+                              className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Units
+                              Supplier's Address
                             </label>
-                            <select
-                              id="units"
-                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                              name="units"
-                              value={item.units}
+                            <textarea
+                              type="text"
+                              name="address"
+                              id="address"
+                              value={supplier.address}
                               onChange={(e) =>
                                 handleInputChange(e.target.name, e.target.value)
                               }
-                            >
-                              <option>eg. Kg, g, L, mL</option>
-                              <option value="Kg">Kg</option>
-                              <option value="g">g</option>
-                              <option value="L">L</option>
-                              <option value="mL">mL</option>
-                            </select>
-                          </div>
-                          <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
-                            <thead>
-                              <tr>
-                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                                  Pack Size(s)
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                              {addPacks.map((element, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                                      {element.packSize}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 ">
-                            <button
-                              type="button"
-                              className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-blue-400 hover:bg-blue-500 "
-                              onClick={addPackSize}
-                            >
-                              <PlusIcon
-                                className="h-6 w-6 text-blue-50"
-                                aria-hidden="true"
-                              />
-                            </button>
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Supplier's Address"
+                            />
                           </div>
                         </div>
                         <div className="flex items-center space-x-4"></div>
@@ -233,14 +177,14 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addItem}
+                    onClick={addSupplier}
                   >
-                    Add Item
+                    Add Supplier
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => addItemModalSetting()}
+                    onClick={() => addSupplierModalSetting()}
                     ref={cancelButtonRef}
                   >
                     Cancel

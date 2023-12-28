@@ -10,8 +10,17 @@ function ProductHistory() {
   const [selectedOption, setSelectedOption] = useState("Product History");
 
   useEffect(() => {
+    // Fetching Data of All Product History items
+    const fetchProductHistoryData = () => {
+      fetch(`http://localhost:4000/api/productHistory/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllProductHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchProductHistoryData();
-  }, []);
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -33,16 +42,6 @@ function ProductHistory() {
     } else if (selectedValue === "GRRN History") {
       navigate("/grrnHistory");
     }
-  };
-
-  // Fetching Data of All Product History items
-  const fetchProductHistoryData = () => {
-    fetch(`http://localhost:4000/api/productHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProductHistoryData(data);
-      })
-      .catch((err) => console.log(err));
   };
 
   return (

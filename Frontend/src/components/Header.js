@@ -32,17 +32,18 @@ export default function Header() {
   useEffect(() => {
     const lowStockProducts = products.filter((product) => product.stock < 11);
     setNotificationCount(lowStockProducts.length);
-    fetchProductsData();
-  }, [products]);
 
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((err) => console.log(err));
+    };
+    fetchProductsData();
+  }, [authContext.user, products]);
+
   return (
     <>
       <div className="min-h-full">

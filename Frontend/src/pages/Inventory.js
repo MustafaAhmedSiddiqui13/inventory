@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import UpdateProduct from "../components/UpdateProduct";
+import UpdateProduct from "../components/Product/UpdateProduct";
 import AuthContext from "../AuthContext";
 import LineBreak from "../components/LineBreak";
 
@@ -24,22 +24,55 @@ function Inventory() {
   console.log("====================================");
 
   useEffect(() => {
+    // Fetching Data of All Products
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllProducts(data);
+        })
+        .catch((err) => console.log(err));
+    };
+    // Fetching all stores data
+    const fetchStoresData = () => {
+      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStores(data);
+        });
+    };
+    const fetchWarehouseData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllWarehouses(data);
+        });
+    };
+
+    const fetchCityData = () => {
+      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllCities(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Suppliers
+    const fetchSuppliersData = () => {
+      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllSuppliers(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchProductsData();
     fetchStoresData();
     fetchWarehouseData();
     fetchCityData();
     fetchSuppliersData();
-  }, [updatePage]);
-
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Fetching Data of Search Products
   const fetchSearchData = () => {
@@ -47,42 +80,6 @@ function Inventory() {
       .then((response) => response.json())
       .then((data) => {
         setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching all stores data
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      });
-  };
-
-  const fetchWarehouseData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllWarehouses(data);
-      });
-  };
-
-  const fetchCityData = () => {
-    fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllCities(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Suppliers
-  const fetchSuppliersData = () => {
-    fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllSuppliers(data);
       })
       .catch((err) => console.log(err));
   };

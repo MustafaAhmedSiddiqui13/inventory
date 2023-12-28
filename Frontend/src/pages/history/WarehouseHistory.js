@@ -10,18 +10,19 @@ function WarehouseHistory() {
   const [selectedOption, setSelectedOption] = useState("Warehouse History");
 
   useEffect(() => {
+    // Fetching Data of All Warehouse History items
+    const fetchWarehouseHistoryData = () => {
+      fetch(
+        `http://localhost:4000/api/warehouseHistory/get/${authContext.user}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          setAllWarehouseHistoryData(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchWarehouseHistoryData();
-  }, []);
-
-  // Fetching Data of All Warehouse History items
-  const fetchWarehouseHistoryData = () => {
-    fetch(`http://localhost:4000/api/warehouseHistory/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllWarehouseHistoryData(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;

@@ -1,56 +1,50 @@
-import React, { Fragment, useState, useEffect, useContext } from "react";
-import { Dialog, Transition } from "@headlessui/react";
-import CreateGRRN from "../components/CreateGRRN";
+import React, { useState, useEffect, useContext } from "react";
+import CreateGRRN from "../components/GRRN/CreateGRRN";
 import AuthContext from "../AuthContext";
 
 function GRRN() {
-  const localStorageData = JSON.parse(localStorage.getItem("user"));
   const [showGRRNModal, setGRRNModal] = useState(false);
   const [grrn, setAllGRRNData] = useState([]);
   const [products, setAllProducts] = useState([]);
   const [stores, setAllStores] = useState([]);
   const [updatePage, setUpdatePage] = useState(true);
-  let [isCompleteOpen, setIsCompleteOpen] = useState(false);
-  let [isCancelOpen, setIsCancelOpen] = useState(false);
-  const [grrnId, setGRRNId] = useState("");
 
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
+    // Fetching Data of All GRRN entries
+    const fetchGRRNData = () => {
+      fetch(`http://localhost:4000/api/grrn/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllGRRNData(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Products
+    const fetchProductsData = () => {
+      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllProducts(data);
+        })
+        .catch((err) => console.log(err));
+    };
+
+    // Fetching Data of All Stores
+    const fetchStoresData = () => {
+      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setAllStores(data);
+        })
+        .catch((err) => console.log(err));
+    };
     fetchGRRNData();
     fetchProductsData();
     fetchStoresData();
-  }, [updatePage]);
-
-  // Fetching Data of All GRRN entries
-  const fetchGRRNData = () => {
-    fetch(`http://localhost:4000/api/grrn/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllGRRNData(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Products
-  const fetchProductsData = () => {
-    fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  // Fetching Data of All Stores
-  const fetchStoresData = () => {
-    fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setAllStores(data);
-      })
-      .catch((err) => console.log(err));
-  };
+  }, [authContext.user, updatePage]);
 
   // Handle Page Update
   const handlePageUpdate = () => {
@@ -61,16 +55,6 @@ function GRRN() {
   const addGRRNModalSetting = () => {
     setGRRNModal(!showGRRNModal);
   };
-
-  function openCompleteModal(id) {
-    setGRRNId(id);
-    setIsCompleteOpen(true);
-  }
-
-  function openCancelModal(id) {
-    setGRRNId(id);
-    setIsCancelOpen(true);
-  }
 
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
@@ -164,7 +148,7 @@ function GRRN() {
                       })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {new Date(element.PurchaseDate).toLocaleDateString() ==
+                      {new Date(element.PurchaseDate).toLocaleDateString() ===
                       new Date().toLocaleDateString()
                         ? "Today"
                         : element.date}
