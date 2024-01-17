@@ -24,6 +24,10 @@ const GRNSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    price: {
+      type: Number,
+      required: true,
+    },
     purchaseDate: {
       type: String,
       required: true,

@@ -92,6 +92,9 @@ function GRNHistory() {
                   Supplier
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Price (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -125,6 +128,9 @@ function GRNHistory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <LineBreak text={element.supplier} n={1} />
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.price}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <>
