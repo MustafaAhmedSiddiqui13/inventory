@@ -7,6 +7,16 @@ function StoreHistory() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("Vendor History");
+  const [selectedVendor, setSelectedVendor] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const uniqueVendors = new Set();
+  const uniqueCategory = new Set();
+  const uniqueAddress = new Set();
+  const uniqueCity = new Set();
+  const uniqueRequests = new Set();
 
   useEffect(() => {
     // Fetching Data of All Store History items
@@ -43,6 +53,54 @@ function StoreHistory() {
     }
   };
 
+  const handleVendorChange = (event) => {
+    setSelectedVendor(event.target.value);
+  };
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleAddressChange = (event) => {
+    setSelectedAddress(event.target.value);
+  };
+
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
+  };
+
+  const handleRequestsChange = (event) => {
+    setSelectedRequest(event.target.value);
+  };
+
+  const filteredVendorHistory = storeHistory.filter((element) => {
+    const vendorMatches = element.name
+      .toLowerCase()
+      .includes(selectedVendor.toLowerCase());
+
+    const categoryMatches = element.category
+      .toLowerCase()
+      .includes(selectedCategory.toLowerCase());
+
+    const addressMatches = element.address
+      .toLowerCase()
+      .includes(selectedAddress.toLowerCase());
+
+    const cityMatches = element.city
+      .toLowerCase()
+      .includes(selectedCity.toLowerCase());
+
+    const requestMatches = element.requestType.includes(selectedRequest);
+
+    return (
+      vendorMatches &&
+      categoryMatches &&
+      addressMatches &&
+      cityMatches &&
+      requestMatches
+    );
+  });
+
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
@@ -70,9 +128,128 @@ function StoreHistory() {
 
         {/* Store History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+          <div className="flex gap-4 justify-center items-center ">
+            <span className="font-bold pt-2">Vendor History</span>
+          </div>
           <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Vendor History</span>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedVendor}
+                onChange={handleVendorChange}
+              >
+                <option value={""}>Select Vendor</option>
+                {storeHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueVendors.add(element.name);
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueVendors).map((vendor, index) => (
+                  <option key={index} value={vendor}>
+                    {vendor}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value={""}>Select Category</option>
+                {storeHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueCategory.add(element.category);
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueCategory).map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedAddress}
+                onChange={handleAddressChange}
+              >
+                <option value={""}>Select Address</option>
+                {
+                  // Add unique item names to the Set
+                  storeHistory.map((element) => {
+                    uniqueAddress.add(element.address);
+                  })
+                }
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueAddress).map((address, index) => (
+                  <option key={index} value={address}>
+                    {address}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedCity}
+                onChange={handleCityChange}
+              >
+                <option value={""}>Select City</option>
+                {
+                  // Add unique item names to the Set
+                  storeHistory.map((element) => {
+                    uniqueCity.add(element.city);
+                  })
+                }
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueCity).map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedRequest}
+                onChange={handleRequestsChange}
+              >
+                <option value={""}>Select Request</option>
+                {storeHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueRequests.add(element.requestType);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueRequests).map((requestType, index) => (
+                  <option key={index} value={requestType}>
+                    {requestType}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <button
+                // onClick={() => generatePDF(filteredItemHistory)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Download PDF
+              </button>
             </div>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
@@ -100,7 +277,7 @@ function StoreHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {storeHistory.map((element, index) => {
+              {filteredVendorHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">

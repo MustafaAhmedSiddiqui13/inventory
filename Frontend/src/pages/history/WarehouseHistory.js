@@ -8,6 +8,16 @@ function WarehouseHistory() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("Warehouse History");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedArea, setSelectedArea] = useState("");
+  const [selectedWarehouseNumber, setSelectedWarehouseNumber] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const uniqueWarehouseNumbers = new Set();
+  const uniqueAreas = new Set();
+  const uniqueCities = new Set();
+  const uniqueRequests = new Set();
+  const uniqueAddress = new Set();
 
   useEffect(() => {
     // Fetching Data of All Warehouse History items
@@ -46,6 +56,54 @@ function WarehouseHistory() {
     }
   };
 
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
+  };
+
+  const handleAreaChange = (event) => {
+    setSelectedArea(event.target.value);
+  };
+
+  const handleAddressChange = (event) => {
+    setSelectedAddress(event.target.value);
+  };
+
+  const handleWarehouseNumberChange = (event) => {
+    setSelectedWarehouseNumber(event.target.value);
+  };
+
+  const handleRequestsChange = (event) => {
+    setSelectedRequest(event.target.value);
+  };
+
+  const filteredWarehouseHistory = warehouseHistory.filter((element) => {
+    const cityMatches = element.city.includes(selectedCity);
+
+    const areaMatches = element.area.includes(selectedArea);
+
+    const warehouseNumberMatches = element.warehouseNumber.some(
+      (warehouse) =>
+        warehouse.warehouseNumber
+          .toString()
+          .includes(selectedWarehouseNumber) &&
+        warehouse.address.toString().includes(selectedAddress)
+    );
+
+    const addressMatches = element.warehouseNumber.some((warehouse) =>
+      warehouse.address.toString().includes(selectedAddress)
+    );
+
+    const requestMatches = element.requestType.includes(selectedRequest);
+
+    return (
+      cityMatches &&
+      areaMatches &&
+      warehouseNumberMatches &&
+      addressMatches &&
+      requestMatches
+    );
+  });
+
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
@@ -73,10 +131,133 @@ function WarehouseHistory() {
 
         {/* Supplier History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+          <div className="flex gap-4 justify-center items-center ">
+            <span className="font-bold pt-2">Warehouse History</span>
+          </div>
           <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Warehouse History</span>
+            <div className="px-2">
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedCity}
+                onChange={handleCityChange}
+              >
+                <option value={""}>Select City</option>
+                {warehouseHistory.map((element, index) =>
+                  uniqueCities.add(element.city)
+                )}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueCities).map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
             </div>
+            <div className="px-2">
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedArea}
+                onChange={handleAreaChange}
+              >
+                <option value={""}>Select Area</option>
+                {warehouseHistory.map((element, index) =>
+                  uniqueAreas.add(element.area)
+                )}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueAreas).map((area, index) => (
+                  <option key={index} value={area}>
+                    {area}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="px-2">
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedWarehouseNumber}
+                onChange={handleWarehouseNumberChange}
+              >
+                <option value={""}>Warehouse #</option>
+                {
+                  // Add unique item names to the Set
+                  warehouseHistory.map((element) => {
+                    element.warehouseNumber.map((warehouse) => {
+                      uniqueWarehouseNumbers.add(warehouse.warehouseNumber);
+                    });
+                  })
+                }
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueWarehouseNumbers).map(
+                  (warehouseNumber, index) => (
+                    <option key={index} value={warehouseNumber}>
+                      {warehouseNumber}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+            <div className="px-2">
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedAddress}
+                onChange={handleAddressChange}
+              >
+                <option value={""}>Address</option>
+                {
+                  // Add unique item names to the Set
+                  warehouseHistory.map((element) => {
+                    element.warehouseNumber.map((warehouse) => {
+                      uniqueAddress.add(warehouse.address);
+                    });
+                  })
+                }
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueAddress).map((address, index) => (
+                  <option key={index} value={address}>
+                    {address}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="px-2">
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedRequest}
+                onChange={handleRequestsChange}
+              >
+                <option value={""}>Select Request</option>
+                {warehouseHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueRequests.add(element.requestType);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueRequests).map((requestType, index) => (
+                  <option key={index} value={requestType}>
+                    {requestType}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-center pt-4 pb-3 items-center">
+            <button
+              // onClick={generatePDF}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Download PDF
+            </button>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
@@ -100,7 +281,7 @@ function WarehouseHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {warehouseHistory.map((element, index) => {
+              {filteredWarehouseHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">

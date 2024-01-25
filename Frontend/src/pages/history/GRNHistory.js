@@ -8,6 +8,28 @@ function GRNHistory() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("GRN History");
+  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedPackSize, setSelectedPackSize] = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedArea, setSelectedArea] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const [stockFilter, setStockFilter] = useState("");
+  const [priceFilter, setPriceFilter] = useState("");
+  const [selectedWarehouseNumber, setSelectedWarehouseNumber] = useState("");
+  const [startPurchaseDate, setStartPurchaseDate] = useState("");
+  const [endPurchaseDate, setEndPurchaseDate] = useState("");
+  const [startProductionDate, setStartProductionDate] = useState("");
+  const [endProductionDate, setEndProductionDate] = useState("");
+  const [startExpirationDate, setStartExpirationDate] = useState("");
+  const [endExpirationDate, setEndExpirationDate] = useState("");
+  const uniqueRequests = new Set();
+  const uniqueWarehouseNumbers = new Set();
+  const uniqueAreas = new Set();
+  const uniqueCities = new Set();
+  const uniqueSuppliers = new Set();
+  const uniqueItemNames = new Set();
+  const uniquePackSizes = new Set();
 
   useEffect(() => {
     // Fetching Data of All GRN History items
@@ -44,6 +66,135 @@ function GRNHistory() {
     }
   };
 
+  const handleSearchInputChange = (event) => {
+    setSelectedItem(event.target.value);
+  };
+
+  const handlePackSizeChange = (event) => {
+    setSelectedPackSize(event.target.value);
+  };
+
+  const handleStockFilterChange = (event) => {
+    setStockFilter(event.target.value);
+  };
+
+  const handlePriceFilterChange = (event) => {
+    setPriceFilter(event.target.value);
+  };
+
+  const handleSupplierChange = (event) => {
+    setSelectedSupplier(event.target.value);
+  };
+
+  const handleCityChange = (event) => {
+    setSelectedCity(event.target.value);
+  };
+
+  const handleAreaChange = (event) => {
+    setSelectedArea(event.target.value);
+  };
+
+  const handleWarehouseNumberChange = (event) => {
+    setSelectedWarehouseNumber(event.target.value);
+  };
+
+  const handleRequestsChange = (event) => {
+    setSelectedRequest(event.target.value);
+  };
+
+  const handleStartProductionDateChange = (event) => {
+    setStartProductionDate(event.target.value);
+  };
+
+  const handleEndProductionDateChange = (event) => {
+    setEndProductionDate(event.target.value);
+  };
+
+  const handleStartExpirationDateChange = (event) => {
+    setStartExpirationDate(event.target.value);
+  };
+
+  const handleEndExpirationDateChange = (event) => {
+    setEndExpirationDate(event.target.value);
+  };
+
+  const handleStartPurchaseDateChange = (event) => {
+    setStartPurchaseDate(event.target.value);
+  };
+
+  const handleEndPurchaseDateChange = (event) => {
+    setEndPurchaseDate(event.target.value);
+  };
+
+  const filteredGRNHistory = grnHistory.filter((element) => {
+    const itemNameMatches = element.items?.name
+      .toLowerCase()
+      .includes(selectedItem.toLowerCase());
+
+    const packSizeMatches =
+      element.packSize?.packSize.includes(selectedPackSize);
+
+    const stockLessThanFilter =
+      stockFilter !== "" ? element.stock <= parseInt(stockFilter, 10) : true;
+
+    const priceLessThanFilter =
+      priceFilter !== "" ? element.price <= parseInt(priceFilter, 10) : true;
+
+    const supplierMatches = element.supplier.includes(selectedSupplier);
+
+    const cityMatches = element.city.includes(selectedCity);
+
+    const areaMatches = element.area.includes(selectedArea);
+
+    const requestMatches = element.requestType.includes(selectedRequest);
+
+    const warehouseNumberMatches = element.warehouseNumber
+      .toString()
+      .includes(selectedWarehouseNumber);
+
+    let productionDateInRange = true;
+    if (startProductionDate && endProductionDate) {
+      const productionDate = new Date(element.production);
+      const startDateObj = new Date(startProductionDate);
+      const endDateObj = new Date(endProductionDate);
+      productionDateInRange =
+        productionDate >= startDateObj && productionDate <= endDateObj;
+    }
+
+    let expirationDateInRange = true;
+    if (startExpirationDate && endExpirationDate) {
+      const expirationDate = new Date(element.expirationDate);
+      const startDateObj = new Date(startExpirationDate);
+      const endDateObj = new Date(endExpirationDate);
+      expirationDateInRange =
+        expirationDate >= startDateObj && expirationDate <= endDateObj;
+    }
+
+    let purchaseDateInRange = true;
+    if (startPurchaseDate && endPurchaseDate) {
+      const purchaseDate = new Date(element.purchaseDate);
+      const startDateObj = new Date(startPurchaseDate);
+      const endDateObj = new Date(endPurchaseDate);
+      purchaseDateInRange =
+        purchaseDate >= startDateObj && purchaseDate <= endDateObj;
+    }
+
+    return (
+      itemNameMatches &&
+      packSizeMatches &&
+      stockLessThanFilter &&
+      priceLessThanFilter &&
+      supplierMatches &&
+      cityMatches &&
+      areaMatches &&
+      warehouseNumberMatches &&
+      requestMatches &&
+      productionDateInRange &&
+      expirationDateInRange &&
+      purchaseDateInRange
+    );
+  });
+
   return (
     <div className="col-span-12 lg:col-span-10  flex justify-center">
       <div className=" flex flex-col gap-5 w-11/12">
@@ -71,10 +222,254 @@ function GRNHistory() {
 
         {/* Product History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+          <div className="flex gap-4 justify-center items-center ">
+            <span className="font-bold pt-2">GRN History</span>
+          </div>
           <div className="flex justify-between pt-5 pb-3 px-3">
-            <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">GRN History</span>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedItem}
+                onChange={handleSearchInputChange}
+              >
+                <option value={""}>Select Item</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueItemNames.add(element.items?.name);
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueItemNames).map((itemName, index) => (
+                  <option key={index} value={itemName}>
+                    {itemName}
+                  </option>
+                ))}
+              </select>
             </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedPackSize}
+                onChange={handlePackSizeChange}
+              >
+                <option value={""}>Select Pack Size</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniquePackSizes.add(element.packSize?.packSize);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniquePackSizes).map((packSize, index) => (
+                  <option key={index} value={packSize}>
+                    {packSize}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Stock"
+                value={stockFilter}
+                onChange={handleStockFilterChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Price"
+                value={priceFilter}
+                onChange={handlePriceFilterChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedSupplier}
+                onChange={handleSupplierChange}
+              >
+                <option value={""}>Select Supplier</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueSuppliers.add(element.supplier);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueSuppliers).map((supplier, index) => (
+                  <option key={index} value={supplier}>
+                    {supplier}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedCity}
+                onChange={handleCityChange}
+              >
+                <option value={""}>Select City</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueCities.add(element.city);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueCities).map((city, index) => (
+                  <option key={index} value={city}>
+                    {city}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedArea}
+                onChange={handleAreaChange}
+              >
+                <option value={""}>Select Area</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueAreas.add(element.area);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueAreas).map((area, index) => (
+                  <option key={index} value={area}>
+                    {area}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedWarehouseNumber}
+                onChange={handleWarehouseNumberChange}
+              >
+                <option value={""}>Warehouse #</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueWarehouseNumbers.add(element.warehouseNumber);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueWarehouseNumbers).map(
+                  (warehouseNumber, index) => (
+                    <option key={index} value={warehouseNumber}>
+                      {warehouseNumber}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+            <div>
+              <select
+                id="items"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="items"
+                value={selectedRequest}
+                onChange={handleRequestsChange}
+              >
+                <option value={""}>Select Request</option>
+                {grnHistory.map((element, index) => {
+                  // Add unique item names to the Set
+                  uniqueRequests.add(element.requestType);
+
+                  return null; // No need to render anything here
+                })}
+                {/* Render the options for the dropdown */}
+                {Array.from(uniqueRequests).map((requestType, index) => (
+                  <option key={index} value={requestType}>
+                    {requestType}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-4 justify-center items-center">
+            <label htmlFor="startDate">Purchase Date (Start):</label>
+            <input
+              type="date"
+              id="startDate"
+              value={startPurchaseDate}
+              onChange={handleStartPurchaseDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+
+            <label htmlFor="endDate">Purchase Date (End):</label>
+            <input
+              type="date"
+              id="endDate"
+              value={endPurchaseDate}
+              onChange={handleEndPurchaseDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+          </div>
+          <div className="flex gap-4 justify-center items-center pt-2">
+            <label htmlFor="startDate">Production Date (Start):</label>
+            <input
+              type="date"
+              id="startDate"
+              value={startProductionDate}
+              onChange={handleStartProductionDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+
+            <label htmlFor="endDate">Production Date (End):</label>
+            <input
+              type="date"
+              id="endDate"
+              value={endProductionDate}
+              onChange={handleEndProductionDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+          </div>
+          <div className="flex gap-4 pt-2 justify-center items-center">
+            <label htmlFor="startDate">Expiration Date (Start):</label>
+            <input
+              type="date"
+              id="startDate"
+              value={startExpirationDate}
+              onChange={handleStartExpirationDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+
+            <label htmlFor="endDate">Expiration Date (End):</label>
+            <input
+              type="date"
+              id="endDate"
+              value={endExpirationDate}
+              onChange={handleEndExpirationDateChange}
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            />
+          </div>
+          <div className="flex justify-center pt-4 pb-3 items-center">
+            <button
+              // onClick={generatePDF}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Download PDF
+            </button>
           </div>
           <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
             <thead>
@@ -113,7 +508,7 @@ function GRNHistory() {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-              {grnHistory.map((element, index) => {
+              {filteredGRNHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
