@@ -9,10 +9,25 @@ export default function AddOrderDetails({
   handlePageUpdate,
   authContext,
 }) {
+  function generateUniqueKey() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let key = "";
+
+    for (let i = 0; i < 4; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      key += characters.charAt(randomIndex);
+    }
+
+    return key;
+  }
+  const uniqueKey = generateUniqueKey();
+  console.log(uniqueKey);
   const [order, setOrder] = useState({
+    code: uniqueKey,
     userID: authContext.user,
     storeID: "",
     orderDate: "",
+    paymentMethod: "",
     riderName: "",
   });
   const [productAdded, setProductAdded] = useState([]);
@@ -410,6 +425,30 @@ export default function AddOrderDetails({
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Total Amount in Rupees"
                             />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="productID"
+                              className="block mb-2 text-sm font-medium text-gray-900"
+                            >
+                              Payment Method
+                            </label>
+                            <select
+                              id="paymentMethod"
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              name="paymentMethod"
+                              value={order.paymentMethod}
+                              onChange={(e) => {
+                                handleInputChange(
+                                  e.target.name,
+                                  e.target.value
+                                );
+                              }}
+                            >
+                              <option>Payment Method</option>
+                              <option value="Online">Online</option>
+                              <option value="Cash">Cash</option>
+                            </select>
                           </div>
                           <div>
                             <label

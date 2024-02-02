@@ -14,7 +14,6 @@ function OrderDetails() {
   let [isCompleteOpen, setIsCompleteOpen] = useState(false);
   let [isCancelOpen, setIsCancelOpen] = useState(false);
   const [orderId, setOrderId] = useState("");
-
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -124,21 +123,21 @@ function OrderDetails() {
           tableBodyBorder: false,
           header: [
             {
-              title: "#",
+              title: "ID",
               style: {
-                width: 10,
+                width: 15,
               },
             },
             {
               title: "Vendor",
               style: {
-                width: 40,
+                width: 25,
               },
             },
             {
               title: "Item",
               style: {
-                width: 40,
+                width: 30,
               },
             },
             {
@@ -156,7 +155,13 @@ function OrderDetails() {
             {
               title: "Warehouse",
               style: {
-                width: 80,
+                width: 60,
+              },
+            },
+            {
+              title: "Payment Method",
+              style: {
+                width: 30,
               },
             },
             {
@@ -179,12 +184,13 @@ function OrderDetails() {
             },
           ],
           table: element.products?.map((product, index) => [
-            index + 1,
+            element.code,
             element.StoreID?.name,
             product.product.items.name,
             `${product.product.packSize.packSize} ${product.product.items.units}`,
             product.stockOrdered,
             `${product.product.city}, ${product.product.area}, Warehouse ${product.product.warehouseNumber}`,
+            element.paymentMethod,
             element.riderName,
             `${element.userID?.firstName} ${element.userID?.lastName}`,
             product.price,
@@ -406,6 +412,9 @@ function OrderDetails() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  ID
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Vendor
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -430,6 +439,9 @@ function OrderDetails() {
                   Total(Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Payment Method
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Rider
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -446,6 +458,9 @@ function OrderDetails() {
                 return (
                   <tr key={element._id}>
                     {console.log("Element: ", element)}
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.code}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.StoreID?.name}
                     </td>
@@ -492,6 +507,9 @@ function OrderDetails() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.totalAmount}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.paymentMethod}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.riderName}

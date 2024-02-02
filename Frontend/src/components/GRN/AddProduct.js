@@ -21,6 +21,7 @@ export default function AddProduct({
 
   const [city, setCity] = useState({});
   const [sameCityWarehouses, setSameCityWarehouses] = useState({});
+  const [total, setTotal] = useState(0);
 
   const [product, setProduct] = useState({
     userId: authContext.user,
@@ -29,6 +30,9 @@ export default function AddProduct({
     stock: "",
     supplier: "",
     price: "",
+    transportCost: "",
+    laborCost: "",
+    total: total,
     purchaseDate: "",
     production: "",
     expirationDate: "",
@@ -41,7 +45,17 @@ export default function AddProduct({
   const cancelButtonRef = useRef(null);
 
   const handleInputChange = (key, value) => {
-    setProduct({ ...product, [key]: value });
+    setProduct((prevProduct) => {
+      const updatedProduct = { ...prevProduct, [key]: value };
+
+      // Calculate total
+      const { price, transportCost, laborCost } = updatedProduct;
+      const newTotal =
+        Number(price) + Number(transportCost) + Number(laborCost);
+
+      // Update total in the product state
+      return { ...updatedProduct, total: newTotal };
+    });
   };
 
   const addProduct = () => {
@@ -60,6 +74,7 @@ export default function AddProduct({
     ) {
       return alert("Fields cannot be left Empty");
     }
+
     fetch("http://localhost:4000/api/grn/add", {
       method: "POST",
       headers: {
@@ -255,11 +270,79 @@ export default function AddProduct({
                               name="price"
                               id="price"
                               value={product.price}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              onChange={(e) => {
+                                handleInputChange(
+                                  e.target.name,
+                                  e.target.value
+                                );
+                              }}
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               placeholder="Enter Price"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="transportCost"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Transport Cost (Rs)
+                            </label>
+                            <input
+                              type="number"
+                              name="transportCost"
+                              id="transportCost"
+                              value={product.transportCost}
+                              onChange={(e) => {
+                                handleInputChange(
+                                  e.target.name,
+                                  e.target.value
+                                );
+                              }}
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Enter Price"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="laborCost"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Labor Cost (Rs)
+                            </label>
+                            <input
+                              type="number"
+                              name="laborCost"
+                              id="laborCost"
+                              value={product.laborCost}
+                              onChange={(e) => {
+                                handleInputChange(
+                                  e.target.name,
+                                  e.target.value
+                                );
+                              }}
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Enter Price"
+                            />
+                          </div>
+                          <div>
+                            <label
+                              htmlFor="total"
+                              className="block mb-2 text-sm font-medium text-gray-900 "
+                            >
+                              Total (Rs)
+                            </label>
+                            <input
+                              type="number"
+                              disabled
+                              name="total"
+                              id="total"
+                              value={
+                                Number(product.price) +
+                                Number(product.transportCost) +
+                                Number(product.laborCost)
+                              }
+                              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                              placeholder="Total"
                             />
                           </div>
                           <div>
@@ -442,7 +525,9 @@ export default function AddProduct({
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                    onClick={addProduct}
+                    onClick={() => {
+                      addProduct();
+                    }}
                   >
                     Create GRN
                   </button>

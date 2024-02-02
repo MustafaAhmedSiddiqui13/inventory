@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema(
   {
+    code: {
+      type: String,
+      required: true,
+    },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
@@ -23,6 +27,10 @@ const OrderSchema = new mongoose.Schema(
     },
     totalAmount: {
       type: Number,
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
       required: true,
     },
     riderName: {

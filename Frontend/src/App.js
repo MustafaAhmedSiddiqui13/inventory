@@ -25,6 +25,7 @@ import GRN from "./pages/GRN";
 import GRNHistory from "./pages/history/GRNHistory";
 import GRRN from "./pages/GRRN";
 import GRRNHistory from "./pages/history/GRRNHistory";
+import PaymentsReceiving from "./pages/PaymentsReceiving";
 
 const App = () => {
   const [user, setUser] = useState("");
@@ -98,6 +99,7 @@ const App = () => {
             <Route path="/grn" element={<GRN />} />
             <Route path="/grrnHistory" element={<GRRNHistory />} />
             <Route path="/grnHistory" element={<GRNHistory />} />
+            <Route path="/paymentsReceiving" element={<PaymentsReceiving />} />
           </Route>
           <Route path="*" element={<NoPageFound />} />
         </Routes>

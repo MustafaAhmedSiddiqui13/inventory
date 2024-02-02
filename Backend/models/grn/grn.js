@@ -28,6 +28,18 @@ const GRNSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    transportCost: {
+      type: Number,
+      required: true,
+    },
+    laborCost: {
+      type: Number,
+      required: true,
+    },
+    total: {
+      type: Number,
+      required: true,
+    },
     purchaseDate: {
       type: String,
       required: true,

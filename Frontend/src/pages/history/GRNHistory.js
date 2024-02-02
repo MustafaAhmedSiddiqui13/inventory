@@ -16,6 +16,9 @@ function GRNHistory() {
   const [selectedRequest, setSelectedRequest] = useState("");
   const [stockFilter, setStockFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
+  const [transportCostFilter, setTransportCostFilter] = useState("");
+  const [laborCostFilter, setLaborCostFilter] = useState("");
+  const [totalFilter, setTotalFilter] = useState("");
   const [selectedWarehouseNumber, setSelectedWarehouseNumber] = useState("");
   const [startPurchaseDate, setStartPurchaseDate] = useState("");
   const [endPurchaseDate, setEndPurchaseDate] = useState("");
@@ -82,6 +85,18 @@ function GRNHistory() {
     setPriceFilter(event.target.value);
   };
 
+  const handleTransportCostFilterChange = (event) => {
+    setTransportCostFilter(event.target.value);
+  };
+
+  const handleLaborCostFilterChange = (event) => {
+    setLaborCostFilter(event.target.value);
+  };
+
+  const handleTotalFilterChange = (event) => {
+    setTotalFilter(event.target.value);
+  };
+
   const handleSupplierChange = (event) => {
     setSelectedSupplier(event.target.value);
   };
@@ -140,6 +155,19 @@ function GRNHistory() {
     const priceLessThanFilter =
       priceFilter !== "" ? element.price <= parseInt(priceFilter, 10) : true;
 
+    const transportCostLessThanFilter =
+      transportCostFilter !== ""
+        ? element.transportCost <= parseInt(transportCostFilter, 10)
+        : true;
+
+    const laborCostThanFilter =
+      laborCostFilter !== ""
+        ? element.laborCost <= parseInt(laborCostFilter, 10)
+        : true;
+
+    const totalLessThanFilter =
+      totalFilter !== "" ? element.total <= parseInt(totalFilter, 10) : true;
+
     const supplierMatches = element.supplier.includes(selectedSupplier);
 
     const cityMatches = element.city.includes(selectedCity);
@@ -184,6 +212,9 @@ function GRNHistory() {
       packSizeMatches &&
       stockLessThanFilter &&
       priceLessThanFilter &&
+      transportCostLessThanFilter &&
+      laborCostThanFilter &&
+      totalLessThanFilter &&
       supplierMatches &&
       cityMatches &&
       areaMatches &&
@@ -407,6 +438,35 @@ function GRNHistory() {
             </div>
           </div>
           <div className="flex gap-4 justify-center items-center">
+            <div>
+              <input
+                type="number"
+                placeholder="Transport Cost"
+                value={transportCostFilter}
+                onChange={handleTransportCostFilterChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Labor Cost"
+                value={laborCostFilter}
+                onChange={handleLaborCostFilterChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                placeholder="Total"
+                value={totalFilter}
+                onChange={handleTotalFilterChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 justify-center items-center pt-2">
             <label htmlFor="startDate">Purchase Date (Start):</label>
             <input
               type="date"
@@ -490,6 +550,15 @@ function GRNHistory() {
                   Price (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Transport Cost (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Labor Cost (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Total (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -526,6 +595,15 @@ function GRNHistory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.price}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.transportCost}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.laborCost}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.total}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <>

@@ -28,11 +28,13 @@ const addOrder = async (req, res) => {
     }
 
     await Orders.create({
+      code: req.body.code,
       userID: req.body.userID,
       products: req.body.products,
       StoreID: req.body.storeID,
       orderDate: req.body.orderDate,
       totalAmount: req.body.totalAmount,
+      paymentMethod: req.body.paymentMethod,
       riderName: req.body.riderName,
     });
     return res.json({ message: "Order created and stock updated" });
@@ -62,11 +64,13 @@ const resolveOrder = async (req, res) => {
   } else {
     res.send(result);
     await StockHistory.create({
+      code: result.code,
       userID: result.userID,
       products: result.products,
       StoreID: result.StoreID,
       orderDate: result.orderDate,
       totalAmount: result.totalAmount,
+      paymentMethod: result.paymentMethod,
       riderName: result.riderName,
       requestType: "Completed",
     });
@@ -88,11 +92,13 @@ const cancelOrder = async (req, res) => {
     res.send(result);
     const products = result.products;
     await StockHistory.create({
+      code: result.code,
       userID: result.userID,
       products: result.products,
       StoreID: result.StoreID,
       orderDate: result.orderDate,
       totalAmount: result.totalAmount,
+      paymentMethod: result.paymentMethod,
       riderName: result.riderName,
       requestType: "Cancelled",
     });

@@ -163,6 +163,15 @@ function GRN() {
                   Price (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Transport Cost (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Labor Cost (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Total (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -196,6 +205,15 @@ function GRN() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.price}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.transportCost}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.laborCost}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.total}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <>

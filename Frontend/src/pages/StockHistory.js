@@ -9,6 +9,7 @@ function StockHistory() {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
   const [selectedOption, setSelectedOption] = useState("Order History");
+  const [code, setCode] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
   const [selectedPackSize, setSelectedPackSize] = useState("");
@@ -17,6 +18,7 @@ function StockHistory() {
   const [selectedArea, setSelectedArea] = useState("");
   const [selectedWarehouseNumber, setSelectedWarehouseNumber] = useState("");
   const [totalPriceFilter, setTotalPriceFilter] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [selectedRider, setSelectedRider] = useState("");
   const [selectedRequest, setSelectedRequest] = useState("");
   const [startOrderDate, setStartOrderDate] = useState("");
@@ -29,6 +31,7 @@ function StockHistory() {
   const uniqueCities = new Set();
   const uniqueRiders = new Set();
   const uniqueRequests = new Set();
+  const uniquePaymentMethods = new Set();
 
   useEffect(() => {
     // Fetching Data of All Order History items
@@ -193,6 +196,10 @@ function StockHistory() {
     pdf.save("order_history.pdf");
   };
 
+  const handleCodeChange = (event) => {
+    setCode(event.target.value);
+  };
+
   const handleVendorChange = (event) => {
     setSelectedVendor(event.target.value);
   };
@@ -225,6 +232,10 @@ function StockHistory() {
     setTotalPriceFilter(event.target.value);
   };
 
+  const handlePaymentMethodChange = (event) => {
+    setSelectedPaymentMethod(event.target.value);
+  };
+
   const handleRiderChange = (event) => {
     setSelectedRider(event.target.value);
   };
@@ -242,6 +253,12 @@ function StockHistory() {
   };
 
   const filteredOrderHistory = stockHistory.filter((element) => {
+    const filterCode = element.code.toLowerCase().includes(code.toLowerCase());
+
+    const paymentMethodFilter = element.paymentMethod
+      .toLowerCase()
+      .includes(selectedPaymentMethod.toLowerCase());
+
     const vendorMatches = element.StoreID?.name
       .toLowerCase()
       .includes(selectedVendor.toLowerCase());
@@ -311,6 +328,8 @@ function StockHistory() {
     }
 
     return (
+      paymentMethodFilter &&
+      filterCode &&
       vendorMatches &&
       itemNameMatches &&
       packSizeMatches &&
@@ -525,6 +544,37 @@ function StockHistory() {
             </div>
           </div>
           <div className="flex gap-4 justify-center items-center">
+            <div>
+              <input
+                type="String"
+                placeholder="ID"
+                value={code}
+                onChange={handleCodeChange}
+                className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-20" // Adjusted width to w-20
+              />
+            </div>
+            <div>
+              <select
+                id="paymentMethod"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                name="paymentMethod"
+                value={selectedPaymentMethod}
+                onChange={handlePaymentMethodChange}
+              >
+                <option value={""}>Payment Method</option>
+                {stockHistory.map((element, index) =>
+                  uniquePaymentMethods.add(element.paymentMethod)
+                )}
+
+                {Array.from(uniquePaymentMethods).map((methods, index) => (
+                  <option key={index} value={methods}>
+                    {methods}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-4 justify-center items-center pt-2">
             <label htmlFor="startDate">Order Date (Start):</label>
             <input
               type="date"
@@ -600,6 +650,9 @@ function StockHistory() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  ID
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Vendor
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -624,6 +677,9 @@ function StockHistory() {
                   Total(Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Payment Method
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Rider
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -640,6 +696,9 @@ function StockHistory() {
                 return (
                   <tr key={element._id}>
                     {console.log("Element: ", element)}
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.code}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.StoreID?.name}
                     </td>
@@ -686,6 +745,9 @@ function StockHistory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.totalAmount}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.paymentMethod}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.riderName}
