@@ -1,6 +1,7 @@
 const Orders = require("../../models/orders/orders");
 const Product = require("../../models/product/product");
 const StockHistory = require("../../models/orders/stockHistory");
+const amountPayable = require("../../models/ledgers/accountsPayable");
 
 // Add Order Details
 const addOrder = async (req, res) => {
@@ -8,7 +9,8 @@ const addOrder = async (req, res) => {
     console.log(req.body);
     const products = req.body.products;
 
-    for (i = 0; i < products.length; i++) {
+    // Check if there is any product with insufficient stock
+    for (let i = 0; i < products.length; i++) {
       const product = products[i].product;
       const quantityToSubtract = products[i].stockOrdered;
 
@@ -19,7 +21,8 @@ const addOrder = async (req, res) => {
       }
     }
 
-    for (j = 0; j < products.length; j++) {
+    // Update stock for each product
+    for (let j = 0; j < products.length; j++) {
       const product = products[j].product;
       const quantityToSubtract = products[j].stockOrdered;
       const newQuantity = product.stock - quantityToSubtract;
@@ -27,7 +30,8 @@ const addOrder = async (req, res) => {
       await Product.findByIdAndUpdate(product._id, { stock: newQuantity });
     }
 
-    await Orders.create({
+    // Create order
+    const newOrder = await Orders.create({
       code: req.body.code,
       userID: req.body.userID,
       products: req.body.products,
@@ -37,12 +41,26 @@ const addOrder = async (req, res) => {
       paymentMethod: req.body.paymentMethod,
       riderName: req.body.riderName,
     });
+
+    // Create amount payable object
+    const amountPayableData = {
+      amount: req.body.totalAmount, // Assuming total amount is the amount payable
+      paymentType: req.body.paymentMethod, // Assuming payment method is the payment type
+      date: new Date(),
+      orderId: newOrder._id, // Linking to the newly created order
+      totalAmount: req.body.totalAmount,
+      paymentMethod: req.body.paymentMethod,
+    };
+
+    await amountPayable.create(amountPayableData);
+
     return res.json({ message: "Order created and stock updated" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // Get All Orders Data
 const getOrderData = async (req, res) => {
