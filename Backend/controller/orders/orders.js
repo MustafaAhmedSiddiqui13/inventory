@@ -8,7 +8,6 @@ const addOrder = async (req, res) => {
   try {
     console.log(req.body);
     const products = req.body.products;
-
     // Check if there is any product with insufficient stock
     for (let i = 0; i < products.length; i++) {
       const product = products[i].product;
@@ -20,8 +19,6 @@ const addOrder = async (req, res) => {
           .json({ message: "Insufficient quantity to subtract" });
       }
     }
-
-    // Update stock for each product
     for (let j = 0; j < products.length; j++) {
       const product = products[j].product;
       const quantityToSubtract = products[j].stockOrdered;
@@ -30,7 +27,6 @@ const addOrder = async (req, res) => {
       await Product.findByIdAndUpdate(product._id, { stock: newQuantity });
     }
 
-    // Create order
     const newOrder = await Orders.create({
       code: req.body.code,
       userID: req.body.userID,
@@ -41,19 +37,26 @@ const addOrder = async (req, res) => {
       paymentMethod: req.body.paymentMethod,
       riderName: req.body.riderName,
     });
+    await newOrder.create()
 
-    // Create amount payable object
-    const amountPayableData = {
-      amount: req.body.totalAmount, // Assuming total amount is the amount payable
-      paymentType: req.body.paymentMethod, // Assuming payment method is the payment type
-      date: new Date(),
-      orderId: newOrder._id, // Linking to the newly created order
-      totalAmount: req.body.totalAmount,
-      paymentMethod: req.body.paymentMethod,
-    };
-
-    await amountPayable.create(amountPayableData);
-
+    if(StoreID){
+      vendorAccount = await amountPayable.find({name:req.body.storeID})
+      if(vendorAccount){
+        newTransaction = {
+          date: new Date(),
+          amount: req.body.totalAmount,
+          type: 'debit'
+        };
+        vendorAccount.trasactions.push(newTransaction);
+        const transactionAmount = newTransaction.type === 'credit' ? newTransaction.amount : -newTransaction.amount;
+        vendorAccount.total += transactionAmount;
+        await vendorAccount.save()
+      }else{
+        res.json("no vendor account found")
+      }
+    }else{
+      res.send("Store Id not found")
+    }
     return res.json({ message: "Order created and stock updated" });
   } catch (error) {
     console.error(error);
