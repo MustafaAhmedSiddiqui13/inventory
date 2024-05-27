@@ -2,6 +2,7 @@ const Orders = require("../../models/orders/orders");
 const Product = require("../../models/product/product");
 const StockHistory = require("../../models/orders/stockHistory");
 const amountPayable = require("../../models/ledgers/accountsPayable");
+const amountReceivable = require("../../models/ledgers/accountReceivable");
 
 // Add Order Details
 const addOrder = async (req, res) => {
@@ -38,25 +39,6 @@ const addOrder = async (req, res) => {
       riderName: req.body.riderName,
     });
     await newOrder.create()
-
-    if(StoreID){
-      vendorAccount = await amountPayable.find({name:req.body.storeID})
-      if(vendorAccount){
-        newTransaction = {
-          date: new Date(),
-          amount: req.body.totalAmount,
-          type: 'debit'
-        };
-        vendorAccount.trasactions.push(newTransaction);
-        const transactionAmount = newTransaction.type === 'credit' ? newTransaction.amount : -newTransaction.amount;
-        vendorAccount.total += transactionAmount;
-        await vendorAccount.save()
-      }else{
-        res.json("no vendor account found")
-      }
-    }else{
-      res.send("Store Id not found")
-    }
     return res.json({ message: "Order created and stock updated" });
   } catch (error) {
     console.error(error);
@@ -84,17 +66,35 @@ const resolveOrder = async (req, res) => {
     res.send("No order available");
   } else {
     res.send(result);
-    await StockHistory.create({
-      code: result.code,
-      userID: result.userID,
-      products: result.products,
-      StoreID: result.StoreID,
-      orderDate: result.orderDate,
-      totalAmount: result.totalAmount,
-      paymentMethod: result.paymentMethod,
-      riderName: result.riderName,
-      requestType: "Completed",
-    });
+    try{
+      await StockHistory.create({
+        code: result.code,
+        userID: result.userID,
+        products: result.products,
+        StoreID: result.StoreID,
+        orderDate: result.orderDate,
+        totalAmount: result.totalAmount,
+        paymentMethod: result.paymentMethod,
+        riderName: result.riderName,
+        requestType: "Completed",
+      });
+      const account = await amountReceivable.find({name:result.StoreID});
+      if(account){
+        newTransaction = {
+          date: new Date(),
+          amount: result.totalAmount,
+          type: 'credit'
+        };
+        account.transactions.push(newTransaction);
+        const transactionAmount = newTransaction.type === 'credit' ? -newTransaction.amount : newTransaction.amount;
+        account.total += transactionAmount;
+        await account.save()
+      }else{
+        res.json("account not found")
+      }
+    }catch(e){
+      res.json(e)
+    }
   }
   //order should be added to order history table
 };

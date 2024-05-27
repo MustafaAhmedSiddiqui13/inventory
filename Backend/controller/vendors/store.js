@@ -1,5 +1,6 @@
 const Store = require("../../models/vendors/store");
 const StoreHistory = require("../../models/vendors/storeHistory");
+const accountReceivable = require("../../models/ledgers/accountReceivable");
 
 const addStore = async (req, res) => {
   try {
@@ -21,6 +22,12 @@ const addStore = async (req, res) => {
       items: [],
       requestType: "Vendor Created",
     });
+    await accountReceivable.create({
+      name: req.body.name,
+      transactions:[],
+      total: 0
+    })
+
     res.status(200).send({ message: "Vendor and History it's Created" });
   } catch (e) {
     res.status(402).send({ message: e.message });

@@ -1,5 +1,6 @@
 const Supplier = require("../../models/suppliers/supplier");
 const SupplierHistory = require("../../models/suppliers/supplierHistory");
+const accountPayable = require("../../models/ledgers/accountPayable");
 
 // Add Supplier
 const addSupplier = async (req, res) => {
@@ -17,6 +18,12 @@ const addSupplier = async (req, res) => {
       city: req.body.city,
       address: req.body.address,
       requestType: "Supplier Created",
+    });
+
+    await accountPayable.create({
+      name: req.body.name,
+      transactions: [],
+      amount: 0
     });
 
     res.status(200).send({ message: "Supplier and History it's Created" });

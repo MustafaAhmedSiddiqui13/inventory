@@ -2,6 +2,7 @@ const Product = require("../../models/product/product");
 const ProductHistory = require("../../models/product/productHistory");
 const GRN = require("../../models/grn/grn");
 const GRNHistory = require("../../models/grn/grnHistory");
+const amountPayable = require("../../models/ledgers/accountPayable");
 
 // Add GRN
 const addGRN = async (req, res) => {
@@ -69,7 +70,21 @@ const addGRN = async (req, res) => {
       warehouseNumber: req.body.warehouseNumber,
       requestType: "Inventory Added",
     });
-
+    
+    if(req.body.supplier){
+      const account = amountPayable.find({name:req.body.supplier})
+      if(account){
+        newTransaction = {
+          date: new Date(),
+          amount: req.body.total,
+          type:'credit'
+        }
+        account.transactions.push(newTransaction);
+        const transactionAmount = newTransaction.type === 'credit' ? -newTransaction.amount : +newTransaction.amount;
+        account.total += transactionAmount;
+        await vendorAccount.save()
+      }
+    }
     res
       .status(200)
       .send({ message: "Inventory and GRN and their History Created" });
