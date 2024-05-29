@@ -1,8 +1,7 @@
 const Orders = require("../../models/orders/orders");
 const Product = require("../../models/product/product");
 const StockHistory = require("../../models/orders/stockHistory");
-const amountPayable = require("../../models/ledgers/accountsPayable");
-const amountReceivable = require("../../models/ledgers/accountReceivable");
+const accountReceivable = require("../../models/ledgers/accountReceivable");
 
 // Add Order Details
 const addOrder = async (req, res) => {
@@ -38,14 +37,13 @@ const addOrder = async (req, res) => {
       paymentMethod: req.body.paymentMethod,
       riderName: req.body.riderName,
     });
-    await newOrder.create()
+    await newOrder.create();
     return res.json({ message: "Order created and stock updated" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // Get All Orders Data
 const getOrderData = async (req, res) => {
@@ -66,7 +64,7 @@ const resolveOrder = async (req, res) => {
     res.send("No order available");
   } else {
     res.send(result);
-    try{
+    try {
       await StockHistory.create({
         code: result.code,
         userID: result.userID,
@@ -78,22 +76,25 @@ const resolveOrder = async (req, res) => {
         riderName: result.riderName,
         requestType: "Completed",
       });
-      const account = await amountReceivable.find({name:result.StoreID});
-      if(account){
+      const account = await accountReceivable.find({ name: result.StoreID });
+      if (account) {
         newTransaction = {
           date: new Date(),
           amount: result.totalAmount,
-          type: 'credit'
+          type: "credit",
         };
         account.transactions.push(newTransaction);
-        const transactionAmount = newTransaction.type === 'credit' ? -newTransaction.amount : newTransaction.amount;
+        const transactionAmount =
+          newTransaction.type === "credit"
+            ? -newTransaction.amount
+            : newTransaction.amount;
         account.total += transactionAmount;
-        await account.save()
-      }else{
-        res.json("account not found")
+        await account.save();
+      } else {
+        res.json("account not found");
       }
-    }catch(e){
-      res.json(e)
+    } catch (e) {
+      res.json(e);
     }
   }
   //order should be added to order history table

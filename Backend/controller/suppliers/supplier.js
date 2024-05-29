@@ -23,7 +23,7 @@ const addSupplier = async (req, res) => {
     await accountPayable.create({
       name: req.body.name,
       transactions: [],
-      amount: 0
+      amount: 0,
     });
 
     res.status(200).send({ message: "Supplier and History it's Created" });
