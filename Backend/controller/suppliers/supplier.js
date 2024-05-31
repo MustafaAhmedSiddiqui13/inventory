@@ -4,6 +4,7 @@ const accountPayable = require("../../models/ledgers/accountPayable");
 
 // Add Supplier
 const addSupplier = async (req, res) => {
+  console.log(req.body)
   try {
     await Supplier.create({
       userID: req.body.userId,
@@ -17,18 +18,22 @@ const addSupplier = async (req, res) => {
       name: req.body.name,
       city: req.body.city,
       address: req.body.address,
-      requestType: "Supplier Created",
+      requestType: "Supplier Created new",
     });
 
-    await accountPayable.create({
-      name: req.body.name,
-      transactions: [],
-      amount: 0,
-    });
+    try{
+      await accountPayable.create({
+        name: req.body.name,
+        transactions: [],
+        total: 0,
+      });
+    }catch(e){
+      console.log(e)
+    }
 
     res.status(200).send({ message: "Supplier and History it's Created" });
   } catch (e) {
-    res.status(402).send({ message: e.message });
+    res.status(402).send("{ message: e.message }");
   }
 };
 

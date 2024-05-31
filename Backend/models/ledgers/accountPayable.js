@@ -15,7 +15,7 @@ const transactionSchema = new mongoose.Schema({
     required: true,
     enum:['debit','credit']
   },
-});
+},{timestamps:true});
 
 const accountPayableSchema = new mongoose.Schema({
   name: {
@@ -28,7 +28,7 @@ const accountPayableSchema = new mongoose.Schema({
     type: Number,
     required: true,
   }
-})
+},{timestamps:true})
 
 
 
