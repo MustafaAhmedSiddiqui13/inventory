@@ -16,6 +16,9 @@ const itemHistoryRoute = require("./router/items/itemHistory");
 const stockHistoryRoute = require("./router/orders/stockHistory");
 const productHistoryRoute = require("./router/product/productHistory");
 const storeHistoryRoute = require("./router/vendors/storeHistory");
+const accountPayableRoute  = require("./router/ledger/accountPayable");
+const accountReceivableRoute  = require("./router/ledger/accountReceivable");
+
 const cors = require("cors");
 const User = require("./models/users/users");
 
@@ -27,6 +30,9 @@ app.use(cors());
 
 // Store API
 app.use("/api/store", storeRoute);
+
+app.use("/api/account/payable",accountPayableRoute);
+app.use("/api/account/receivable",accountReceivableRoute);
 
 // Products API
 app.use("/api/product", productRoute);
