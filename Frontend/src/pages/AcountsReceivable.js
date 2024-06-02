@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddSupplier from "../components/Supplier/AddSupplier";
 import AuthContext from "../AuthContext";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import AddReceivableEntry from "../components/PaymentsReceiving/AddReceivableEntry";
 
 function AccountsReceivable() {
   const localStorageData = JSON.parse(localStorage.getItem("user"));
@@ -13,6 +16,8 @@ function AccountsReceivable() {
   const [searchTerm, setSearchTerm] = useState();
   const [updatePage, setUpdatePage] = useState(true);
   const [showTable, setShowTable] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const authContext = useContext(AuthContext);
 
@@ -74,12 +79,49 @@ function AccountsReceivable() {
     setSelectedVendor(event.target.value);
   };
 
+  // Filter transactions based on the selected dates
+  const filterTransactionsByDate = () => {
+    if (startDate && endDate) {
+      const filteredTransactions = account[0]?.transactions.filter(
+        (transaction) => {
+          const transactionDate = new Date(transaction.date);
+          return (
+            transactionDate >= new Date(startDate) &&
+            transactionDate <= new Date(endDate)
+          );
+        }
+      );
+      return filteredTransactions;
+    }
+    return account[0]?.transactions;
+  };
+
+  const downloadPDF = () => {
+    const input = document.getElementById("pdf-content");
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("accounts_receivable.pdf");
+    });
+  };
+
   return (
-    <div className="col-span-12 lg:col-span-10  flex justify-center">
-      <div className=" flex flex-col gap-5 w-11/12">
-        {showVendorModal && (
+    <div className="col-span-12 lg:col-span-10 flex justify-center">
+      <div className="flex flex-col gap-5 w-11/12">
+        {/* {showVendorModal && (
           <AddSupplier
             cities={cities}
+            addSupplierModalSetting={addVendorModalSetting}
+            handlePageUpdate={handlePageUpdate}
+          />
+        )} */}
+        {showVendorModal && (
+          <AddReceivableEntry
+            selectedVendor={selectedVendor}
             addSupplierModalSetting={addVendorModalSetting}
             handlePageUpdate={handlePageUpdate}
           />
@@ -87,7 +129,7 @@ function AccountsReceivable() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div className="flex gap-4 justify-center items-center ">
-              <span className="font-bold">Accounts Payable</span>
+              <span className="font-bold">Accounts Receivable</span>
             </div>
             <select
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 w-[60rem]"
@@ -104,7 +146,7 @@ function AccountsReceivable() {
 
             <div className="flex gap-4">
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs rounded"
                 onClick={() => {
                   getSupplier(selectedVendor);
                   setShowTable(true);
@@ -113,14 +155,16 @@ function AccountsReceivable() {
                 Search
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs rounded"
                 onClick={addVendorModalSetting}
+                disabled={!showTable}
               >
                 Add Entry
               </button>
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
-                // onClick={addSupplierModalSetting}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs rounded"
+                onClick={downloadPDF}
+                disabled={!showTable}
               >
                 Download
               </button>
@@ -139,7 +183,24 @@ function AccountsReceivable() {
                 Total: {account[0]?.total}
               </h1>
             </div>
-            <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
+            <div className="flex gap-4">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-2.5"
+              />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 p-2.5"
+              />
+            </div>
+            <div
+              id="pdf-content"
+              className="overflow-x-auto rounded-lg border bg-white border-gray-200 "
+            >
               <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
                 <thead>
                   <tr>
@@ -159,7 +220,7 @@ function AccountsReceivable() {
                 </thead>
 
                 <tbody className="divide-y divide-gray-200">
-                  {account[0]?.transactions.length === 0 ? (
+                  {filterTransactionsByDate()?.length === 0 ? (
                     <tr>
                       <td
                         colSpan="4"
@@ -169,10 +230,10 @@ function AccountsReceivable() {
                       </td>
                     </tr>
                   ) : (
-                    account[0]?.transactions.map((element, index) => (
+                    filterTransactionsByDate()?.map((element, index) => (
                       <tr key={index}>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-                          {element.date}
+                          {new Date(element.date).toLocaleString()}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                           {element._id}
