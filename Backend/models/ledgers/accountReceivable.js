@@ -1,19 +1,26 @@
 const mongoose = require("mongoose");
 
-
 const transactionSchema = new mongoose.Schema({
-  date:{
+  date: {
     type: Date,
     required: true,
   },
   amount: {
     type: Number,
-    required: true
+    required: true,
   },
   type: {
     type: String,
     required: true,
-    enum:['debit','credit']
+    enum: ["debit", "credit"],
+  },
+  debit: {
+    type: Number,
+    required: true,
+  },
+  credit: {
+    type: Number,
+    required: true,
   },
 });
 
@@ -24,13 +31,14 @@ const accountReceivableSchema = new mongoose.Schema({
     unique: true,
   },
   transactions: [transactionSchema],
-  total:{
+  total: {
     type: Number,
     required: true,
-  }
-})
+  },
+});
 
-
-
-const accountReceivable = mongoose.model("accountReceivable", accountReceivableSchema);
+const accountReceivable = mongoose.model(
+  "accountReceivable",
+  accountReceivableSchema
+);
 module.exports = accountReceivable;

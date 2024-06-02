@@ -72,20 +72,22 @@ const addGRN = async (req, res) => {
     });
 
     if (req.body.supplier) {
-      const account = accountPayable.find({ name: req.body.supplier });
+      const account = await accountPayable.findOne({ name: req.body.supplier });
       if (account) {
-        newTransaction = {
+        const newTransaction = {
           date: new Date(),
           amount: req.body.total,
           type: "credit",
+          debit: 0,
+          credit: req.body.total,
         };
         account.transactions.push(newTransaction);
         const transactionAmount =
           newTransaction.type === "credit"
             ? -newTransaction.amount
-            : +newTransaction.amount;
+            : newTransaction.amount;
         account.total += transactionAmount;
-        await vendorAccount.save();
+        await account.save();
       }
     }
     res

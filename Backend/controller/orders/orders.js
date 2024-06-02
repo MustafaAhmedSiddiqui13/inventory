@@ -76,22 +76,29 @@ const resolveOrder = async (req, res) => {
         riderName: result.riderName,
         requestType: "Completed",
       });
-      const account = await accountReceivable.find({ name: result.StoreID });
-      if (account) {
-        newTransaction = {
-          date: new Date(),
-          amount: result.totalAmount,
-          type: "credit",
-        };
-        account.transactions.push(newTransaction);
-        const transactionAmount =
-          newTransaction.type === "credit"
-            ? -newTransaction.amount
-            : newTransaction.amount;
-        account.total += transactionAmount;
-        await account.save();
-      } else {
-        res.json("account not found");
+
+      if (result.StoreID) {
+        const account = await accountReceivable.findOne({
+          name: result.StoreID,
+        });
+        if (account) {
+          const newTransaction = {
+            date: new Date(),
+            amount: req.body.total,
+            type: "debit",
+            debit: req.body.total,
+            credit: 0,
+          };
+          account.transactions.push(newTransaction);
+          const transactionAmount =
+            newTransaction.type === "credit"
+              ? -newTransaction.amount
+              : newTransaction.amount;
+          account.total += transactionAmount;
+          await account.save();
+        } else {
+          res.json("account not found");
+        }
       }
     } catch (e) {
       res.json(e);
