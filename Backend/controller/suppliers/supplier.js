@@ -33,7 +33,7 @@ const addSupplier = async (req, res) => {
 
     res.status(200).send({ message: "Supplier and History it's Created" });
   } catch (e) {
-    res.status(402).send("{ message: e.message }");
+    res.status(402).send({ message: e.message });
   }
 };
 

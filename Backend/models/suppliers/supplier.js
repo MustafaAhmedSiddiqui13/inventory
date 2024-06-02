@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const SupplierSchema = new mongoose.Schema(
   {
     userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      type: String,
       required: true,
     },
     name: {
