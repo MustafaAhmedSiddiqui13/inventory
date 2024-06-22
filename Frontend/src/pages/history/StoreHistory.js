@@ -21,7 +21,9 @@ function StoreHistory() {
   useEffect(() => {
     // Fetching Data of All Store History items
     const fetchStoreHistoryData = () => {
-      fetch(`http://localhost:4000/api/storeHistory/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/storeHistory/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllStoreHistoryData(data);

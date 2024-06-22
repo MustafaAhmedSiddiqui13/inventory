@@ -36,7 +36,9 @@ function StockHistory() {
   useEffect(() => {
     // Fetching Data of All Order History items
     const fetchStockHistoryData = () => {
-      fetch(`http://localhost:4000/api/stockHistory/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/stockHistory/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllStockHistoryData(data);

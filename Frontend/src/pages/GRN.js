@@ -22,7 +22,7 @@ function GRN() {
   useEffect(() => {
     // Fetching Data of All GRNs
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/grn/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/grn/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllGRNs(data);
@@ -32,7 +32,7 @@ function GRN() {
 
     // Fetching Data of All Items
     const fetchItemsData = () => {
-      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/item/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllItems(data);
@@ -41,7 +41,9 @@ function GRN() {
     };
 
     const fetchWarehouseData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllWarehouses(data);
@@ -49,7 +51,9 @@ function GRN() {
     };
 
     const fetchCityData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/city/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllCities(data);
@@ -59,7 +63,7 @@ function GRN() {
 
     // Fetching Data of All Suppliers
     const fetchSuppliersData = () => {
-      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/supplier/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllSuppliers(data);
@@ -75,7 +79,9 @@ function GRN() {
 
   // Fetching Data of Search Products
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/product/search?searchTerm=${searchTerm}`)
+    fetch(
+      `${process.env.REACT_APP_URL}/api/product/search?searchTerm=${searchTerm}`
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllGRNs(data);

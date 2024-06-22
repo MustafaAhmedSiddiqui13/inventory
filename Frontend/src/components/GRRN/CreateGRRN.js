@@ -42,7 +42,7 @@ export default function CreateGRRN({
       return alert("Fields cannot be left Empty");
     }
 
-    fetch("http://localhost:4000/api/grrn/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/grrn/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

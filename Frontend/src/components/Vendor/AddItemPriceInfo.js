@@ -72,7 +72,7 @@ export default function AddItemPriceInfo({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`http://localhost:4000/api/store/update`, {
+    fetch(`${process.env.REACT_APP_URL}/api/store/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

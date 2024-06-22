@@ -31,7 +31,7 @@ export default function AddSupplier({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/supplier/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/supplier/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

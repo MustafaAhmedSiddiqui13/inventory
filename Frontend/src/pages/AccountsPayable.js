@@ -24,7 +24,7 @@ function AccountsPayable() {
   useEffect(() => {
     // Fetching Data of All Suppliers
     const fetchSuppliersData = () => {
-      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/supplier/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllSuppliers(data);
@@ -37,7 +37,9 @@ function AccountsPayable() {
 
   // Fetching Data of Search Suppliers
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/supplier/search?searchTerm=${searchTerm}`)
+    fetch(
+      `${process.env.REACT_APP_URL}/api/supplier/search?searchTerm=${searchTerm}`
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllSuppliers(data);

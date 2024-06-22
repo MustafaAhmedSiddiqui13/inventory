@@ -73,7 +73,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchTotalSaleAmount = () => {
       fetch(
-        `http://localhost:4000/api/sales/get/${authContext.user}/totalsaleamount`
+        `${process.env.REACT_APP_URL}/api/sales/get/${authContext.user}/totalsaleamount`
       )
         .then((response) => response.json())
         .then((datas) => setSaleAmount(datas.totalSaleAmount))
@@ -84,7 +84,7 @@ function Dashboard() {
 
     const fetchTotalPurchaseAmount = () => {
       fetch(
-        `http://localhost:4000/api/purchase/get/${authContext.user}/totalpurchaseamount`
+        `${process.env.REACT_APP_URL}/api/purchase/get/${authContext.user}/totalpurchaseamount`
       )
         .then((response) => response.json())
         .then((datas) => setPurchaseAmount(datas.totalPurchaseAmount))
@@ -94,14 +94,14 @@ function Dashboard() {
     };
 
     const fetchStoresData = () => {
-      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/store/get/${authContext.user}`)
         .then((response) => response.json())
         .then((datas) => setStores(datas))
         .catch((error) => console.error("Error fetching stores data:", error));
     };
 
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/product/get/${authContext.user}`)
         .then((response) => response.json())
         .then((datas) => setProducts(datas))
         .catch((error) =>
@@ -110,7 +110,7 @@ function Dashboard() {
     };
 
     const fetchMonthlySalesData = () => {
-      fetch(`http://localhost:4000/api/sales/getmonthly`)
+      fetch(`${process.env.REACT_APP_URL}/api/sales/getmonthly`)
         .then((response) => response.json())
         .then((datas) => updateChartData(datas.salesAmount))
         .catch((error) =>

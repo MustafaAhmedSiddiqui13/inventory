@@ -24,7 +24,7 @@ function Items() {
   useEffect(() => {
     // Fetching Data of All Items
     const fetchItemsData = () => {
-      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/item/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllItems(data);
@@ -36,7 +36,9 @@ function Items() {
 
   // Fetching Data of Search Items
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/item/search?searchTerm=${searchTerm}`)
+    fetch(
+      `${process.env.REACT_APP_URL}/api/item/search?searchTerm=${searchTerm}`
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllItems(data);
@@ -67,9 +69,7 @@ function Items() {
 
   // Delete item
   const deleteItem = (id) => {
-    console.log("Item ID: ", id);
-    console.log(`http://localhost:4000/api/item/delete/${id}`);
-    fetch(`http://localhost:4000/api/item/delete/${id}`)
+    fetch(`${process.env.REACT_APP_URL}/api/item/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);

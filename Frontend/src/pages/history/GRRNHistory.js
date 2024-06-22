@@ -28,7 +28,9 @@ function GRRNHistory() {
   useEffect(() => {
     // Fetching Data of All GRRN History items
     const fetchGRRNHistoryData = () => {
-      fetch(`http://localhost:4000/api/grrnHistory/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/grrnHistory/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllGRRNHistoryData(data);

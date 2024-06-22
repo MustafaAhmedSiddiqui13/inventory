@@ -26,7 +26,9 @@ function Warehouse() {
   useEffect(() => {
     // Fetching Data of All Warehouses
     const fetchWarehouseData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllWarehouses(data);
@@ -35,7 +37,9 @@ function Warehouse() {
     };
     // Fetching Data of All Cities
     const fetchCityData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/city/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllCities(data);
@@ -48,7 +52,9 @@ function Warehouse() {
 
   // Fetching Data of Search Warehouses
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/warehouse/search?searchTerm=${searchTerm}`)
+    fetch(
+      `${process.env.REACT_APP_URL}/api/warehouse/search?searchTerm=${searchTerm}`
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllWarehouses(data);
@@ -79,9 +85,7 @@ function Warehouse() {
 
   // Delete Warehouse
   const deleteWarehouse = (id) => {
-    console.log("Warehouse ID: ", id);
-    console.log(`http://localhost:4000/api/warehouse/delete/${id}`);
-    fetch(`http://localhost:4000/api/warehouse/delete/${id}`)
+    fetch(`${process.env.REACT_APP_URL}/api/warehouse/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);

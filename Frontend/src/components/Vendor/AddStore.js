@@ -21,7 +21,7 @@ export default function AddStore({ handlePageUpdate }) {
   const cancelButtonRef = useRef(null);
 
   const addProduct = () => {
-    fetch("http://localhost:4000/api/store/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/store/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

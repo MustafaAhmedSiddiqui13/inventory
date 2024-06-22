@@ -26,7 +26,7 @@ function Inventory() {
   useEffect(() => {
     // Fetching Data of All Products
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/product/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllProducts(data);
@@ -35,14 +35,16 @@ function Inventory() {
     };
     // Fetching all stores data
     const fetchStoresData = () => {
-      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/store/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllStores(data);
         });
     };
     const fetchWarehouseData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllWarehouses(data);
@@ -50,7 +52,9 @@ function Inventory() {
     };
 
     const fetchCityData = () => {
-      fetch(`http://localhost:4000/api/warehouse/get/city/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/warehouse/get/city/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllCities(data);
@@ -60,7 +64,7 @@ function Inventory() {
 
     // Fetching Data of All Suppliers
     const fetchSuppliersData = () => {
-      fetch(`http://localhost:4000/api/supplier/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/supplier/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllSuppliers(data);
@@ -76,7 +80,9 @@ function Inventory() {
 
   // Fetching Data of Search Products
   const fetchSearchData = () => {
-    fetch(`http://localhost:4000/api/product/search?searchTerm=${searchTerm}`)
+    fetch(
+      `${process.env.REACT_APP_URL}/api/product/search?searchTerm=${searchTerm}`
+    )
       .then((response) => response.json())
       .then((data) => {
         setAllProducts(data);
@@ -102,9 +108,7 @@ function Inventory() {
 
   // Delete item
   const deleteItem = (id) => {
-    console.log("Product ID: ", id);
-    console.log(`http://localhost:4000/api/product/delete/${id}`);
-    fetch(`http://localhost:4000/api/product/delete/${id}`)
+    fetch(`${process.env.REACT_APP_URL}/api/product/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);

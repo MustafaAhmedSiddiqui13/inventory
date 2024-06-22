@@ -78,9 +78,7 @@ function Supplier() {
 
   // Delete Supplier
   const deleteSupplier = (id) => {
-    console.log("Supplier ID: ", id);
-    console.log(`http://localhost:4000/api/supplier/delete/${id}`);
-    fetch(`http://localhost:4000/api/supplier/delete/${id}`)
+    fetch(`${process.env.REACT_APP_URL}/api/supplier/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);

@@ -34,7 +34,7 @@ export default function Header() {
     setNotificationCount(lowStockProducts.length);
 
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/product/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setProducts(data);

@@ -19,7 +19,7 @@ function Store() {
   useEffect(() => {
     // Fetching all stores data
     const fetchData = () => {
-      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/store/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllStores(data);
@@ -27,7 +27,7 @@ function Store() {
     };
     // Fetching Data of All Items
     const fetchItemsData = () => {
-      fetch(`http://localhost:4000/api/item/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/item/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllItems(data);
@@ -40,7 +40,7 @@ function Store() {
 
   // Delete Store
   const deleteStore = (id) => {
-    fetch(`http://localhost:4000/api/store/delete/${id}`)
+    fetch(`${process.env.REACT_APP_URL}/api/store/delete/${id}`)
       .then((response) => response.json())
       .then((data) => {
         setUpdatePage(!updatePage);

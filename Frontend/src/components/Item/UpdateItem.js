@@ -67,7 +67,7 @@ export default function UpdateItem({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`http://localhost:4000/api/item/update`, {
+    fetch(`${process.env.REACT_APP_URL}/api/item/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

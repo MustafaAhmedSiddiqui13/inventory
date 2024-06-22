@@ -46,7 +46,7 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/item/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/item/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

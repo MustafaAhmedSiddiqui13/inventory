@@ -23,7 +23,7 @@ function WarehouseHistory() {
     // Fetching Data of All Warehouse History items
     const fetchWarehouseHistoryData = () => {
       fetch(
-        `http://localhost:4000/api/warehouseHistory/get/${authContext.user}`
+        `${process.env.REACT_APP_URL}/api/warehouseHistory/get/${authContext.user}`
       )
         .then((response) => response.json())
         .then((data) => {

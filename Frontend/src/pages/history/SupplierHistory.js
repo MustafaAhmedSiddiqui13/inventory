@@ -19,7 +19,9 @@ function SupplierHistory() {
   useEffect(() => {
     // Fetching Data of All Supplier History items
     const fetchSupplierHistoryData = () => {
-      fetch(`http://localhost:4000/api/supplierHistory/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/supplierHistory/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllSupplierHistoryData(data);

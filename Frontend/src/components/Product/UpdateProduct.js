@@ -63,7 +63,7 @@ export default function UpdateProduct({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`http://localhost:4000/api/product/update`, {
+    fetch(`${process.env.REACT_APP_URL}/api/product/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

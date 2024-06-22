@@ -67,7 +67,7 @@ export default function UpdateWarehouse({
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch("http://localhost:4000/api/warehouse/update", {
+    fetch(`${process.env.REACT_APP_URL}/api/warehouse/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

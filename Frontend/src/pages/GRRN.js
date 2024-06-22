@@ -14,7 +14,7 @@ function GRRN() {
   useEffect(() => {
     // Fetching Data of All GRRN entries
     const fetchGRRNData = () => {
-      fetch(`http://localhost:4000/api/grrn/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/grrn/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllGRRNData(data);
@@ -24,7 +24,7 @@ function GRRN() {
 
     // Fetching Data of All Products
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/product/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllProducts(data);
@@ -34,7 +34,7 @@ function GRRN() {
 
     // Fetching Data of All Stores
     const fetchStoresData = () => {
-      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/store/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllStores(data);

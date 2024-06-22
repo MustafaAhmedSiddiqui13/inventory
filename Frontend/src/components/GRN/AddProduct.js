@@ -75,7 +75,7 @@ export default function AddProduct({
       return alert("Fields cannot be left Empty");
     }
 
-    fetch("http://localhost:4000/api/grn/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/grn/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

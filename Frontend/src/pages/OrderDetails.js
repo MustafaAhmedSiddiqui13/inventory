@@ -19,7 +19,7 @@ function OrderDetails() {
   useEffect(() => {
     // Fetching Data of All Order items
     const fetchOrderData = () => {
-      fetch(`http://localhost:4000/api/order/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/order/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllOrdersData(data);
@@ -29,7 +29,7 @@ function OrderDetails() {
 
     // Fetching Data of All Products
     const fetchProductsData = () => {
-      fetch(`http://localhost:4000/api/product/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/product/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllProducts(data);
@@ -39,7 +39,7 @@ function OrderDetails() {
 
     // Fetching Data of All Stores
     const fetchStoresData = () => {
-      fetch(`http://localhost:4000/api/store/get/${authContext.user}`)
+      fetch(`${process.env.REACT_APP_URL}/api/store/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setAllStores(data);
@@ -220,7 +220,7 @@ function OrderDetails() {
   };
 
   const resolveItem = (id) => {
-    fetch(`http://localhost:4000/api/order/post/${id}`, {
+    fetch(`${process.env.REACT_APP_URL}/api/order/post/${id}`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -234,7 +234,7 @@ function OrderDetails() {
   };
 
   const cancelOrder = (id) => {
-    fetch(`http://localhost:4000/api/order/post/cancel/${id}`, {
+    fetch(`${process.env.REACT_APP_URL}/api/order/post/cancel/${id}`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

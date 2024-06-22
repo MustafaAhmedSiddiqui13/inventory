@@ -33,7 +33,9 @@ function ProductHistory() {
   useEffect(() => {
     // Fetching Data of All Product History items
     const fetchProductHistoryData = () => {
-      fetch(`http://localhost:4000/api/productHistory/get/${authContext.user}`)
+      fetch(
+        `${process.env.REACT_APP_URL}/api/productHistory/get/${authContext.user}`
+      )
         .then((response) => response.json())
         .then((data) => {
           setAllProductHistoryData(data);

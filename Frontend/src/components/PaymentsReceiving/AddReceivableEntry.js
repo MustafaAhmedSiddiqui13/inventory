@@ -25,7 +25,7 @@ export default function AddReceivableEntry({
     }
 
     const encodedName = encodeURIComponent(name);
-    const url = `http://localhost:4000/api/account/receivable/add?encodedName=${encodedName}`;
+    const url = `${process.env.REACT_APP_URL}/api/account/receivable/add?encodedName=${encodedName}`;
 
     fetch(url, {
       method: "POST",

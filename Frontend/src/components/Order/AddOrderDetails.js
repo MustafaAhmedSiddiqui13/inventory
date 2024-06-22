@@ -63,7 +63,7 @@ export default function AddOrderDetails({
       return alert("Fields cannot be left Empty");
     }
 
-    fetch("http://localhost:4000/api/order/add", {
+    fetch(`${process.env.REACT_APP_URL}/api/order/add`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
