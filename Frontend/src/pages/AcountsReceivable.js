@@ -55,7 +55,7 @@ function AccountsReceivable() {
   // Get Supplier by Name
   const getSupplier = (name) => {
     const encodedName = encodeURIComponent(name);
-    const url = `http://localhost:4000/api/account/receivable?encodedName=${encodedName}`;
+    const url = `${process.env.REACT_APP_URL}/api/account/receivable?encodedName=${encodedName}`;
 
     fetch(url)
       .then((response) => response.json())
