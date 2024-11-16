@@ -144,60 +144,115 @@ function GRNHistory() {
   };
 
   const filteredGRNHistory = grnHistory.filter((element) => {
-    const itemNameMatches = element.items?.name
-      .toLowerCase()
-      .includes(selectedItem.toLowerCase());
+    // Check if item name matches
+    const itemNameMatches = selectedItem
+      ? element.items.some(
+          (item) => item.item.name.toLowerCase() === selectedItem.toLowerCase()
+        )
+      : true;
 
-    const packSizeMatches =
-      element.packSize?.packSize.includes(selectedPackSize);
+    // Check if pack size matches
+    const packSizeMatches = selectedPackSize
+      ? element.items.some((item) =>
+          item.packSize?.packSize
+            .toLowerCase()
+            .includes(selectedPackSize.toLowerCase())
+        )
+      : true;
 
+    // Check if city matches
+    const cityMatches = selectedCity
+      ? element.items.some(
+          (item) =>
+            item.city &&
+            item.city.toLowerCase().includes(selectedCity.toLowerCase())
+        )
+      : true;
+
+    // Check if area matches
+    const areaMatches = selectedArea
+      ? element.items.some(
+          (item) =>
+            item.area &&
+            item.area.toLowerCase().includes(selectedArea.toLowerCase())
+        )
+      : true;
+
+    // Check if supplier matches
+    const supplierMatches = selectedSupplier
+      ? element.supplier &&
+        element.supplier.toLowerCase().includes(selectedSupplier.toLowerCase())
+      : true;
+
+    // Check if warehouse number matches
+    const warehouseNumberMatches = selectedWarehouseNumber
+      ? element.items.some(
+          (item) =>
+            item.warehouseNumber &&
+            item.warehouseNumber.toString().includes(selectedWarehouseNumber)
+        )
+      : true;
+
+    // Stock filter
     const stockLessThanFilter =
-      stockFilter !== "" ? element.stock <= parseInt(stockFilter, 10) : true;
+      stockFilter !== ""
+        ? element.items.some((item) => item.stock <= parseInt(stockFilter, 10))
+        : true;
 
+    // Price filter
     const priceLessThanFilter =
-      priceFilter !== "" ? element.price <= parseInt(priceFilter, 10) : true;
+      priceFilter !== ""
+        ? element.items.some((item) => item.price <= parseInt(priceFilter, 10))
+        : true;
 
+    // Transport cost filter
     const transportCostLessThanFilter =
       transportCostFilter !== ""
         ? element.transportCost <= parseInt(transportCostFilter, 10)
         : true;
 
+    // Labor cost filter
     const laborCostThanFilter =
       laborCostFilter !== ""
         ? element.laborCost <= parseInt(laborCostFilter, 10)
         : true;
 
+    // Total filter
     const totalLessThanFilter =
       totalFilter !== "" ? element.total <= parseInt(totalFilter, 10) : true;
 
-    const supplierMatches = element.supplier.includes(selectedSupplier);
+    // Request type filter
+    const requestMatches = selectedRequest
+      ? element.requestType
+          .toLowerCase()
+          .includes(selectedRequest.toLowerCase())
+      : true;
 
-    const cityMatches = element.city.includes(selectedCity);
-
-    const areaMatches = element.area.includes(selectedArea);
-
-    const requestMatches = element.requestType.includes(selectedRequest);
-
-    const warehouseNumberMatches = element.warehouseNumber
-      .toString()
-      .includes(selectedWarehouseNumber);
-
+    // Date filters
     let productionDateInRange = true;
     if (startProductionDate && endProductionDate) {
-      const productionDate = new Date(element.production);
+      const productionDates = element.items.map(
+        (item) => new Date(item.production)
+      );
       const startDateObj = new Date(startProductionDate);
       const endDateObj = new Date(endProductionDate);
-      productionDateInRange =
-        productionDate >= startDateObj && productionDate <= endDateObj;
+      productionDateInRange = productionDates.some(
+        (productionDate) =>
+          productionDate >= startDateObj && productionDate <= endDateObj
+      );
     }
 
     let expirationDateInRange = true;
     if (startExpirationDate && endExpirationDate) {
-      const expirationDate = new Date(element.expirationDate);
+      const expirationDates = element.items.map(
+        (item) => new Date(item.expirationDate)
+      );
       const startDateObj = new Date(startExpirationDate);
       const endDateObj = new Date(endExpirationDate);
-      expirationDateInRange =
-        expirationDate >= startDateObj && expirationDate <= endDateObj;
+      expirationDateInRange = expirationDates.some(
+        (expirationDate) =>
+          expirationDate >= startDateObj && expirationDate <= endDateObj
+      );
     }
 
     let purchaseDateInRange = true;
@@ -209,18 +264,19 @@ function GRNHistory() {
         purchaseDate >= startDateObj && purchaseDate <= endDateObj;
     }
 
+    // Combine all the conditions to filter data
     return (
       itemNameMatches &&
       packSizeMatches &&
+      cityMatches &&
+      areaMatches &&
+      supplierMatches &&
+      warehouseNumberMatches &&
       stockLessThanFilter &&
       priceLessThanFilter &&
       transportCostLessThanFilter &&
       laborCostThanFilter &&
       totalLessThanFilter &&
-      supplierMatches &&
-      cityMatches &&
-      areaMatches &&
-      warehouseNumberMatches &&
       requestMatches &&
       productionDateInRange &&
       expirationDateInRange &&
@@ -268,9 +324,10 @@ function GRNHistory() {
                 onChange={handleSearchInputChange}
               >
                 <option value={""}>Select Item</option>
-                {grnHistory.map((element, index) => {
-                  // Add unique item names to the Set
-                  uniqueItemNames.add(element.items?.name);
+                {grnHistory.map((element) => {
+                  element.items.map((item) => {
+                    uniqueItemNames.add(item.item.name);
+                  });
                 })}
                 {/* Render the options for the dropdown */}
                 {Array.from(uniqueItemNames).map((itemName, index) => (
@@ -289,12 +346,12 @@ function GRNHistory() {
                 onChange={handlePackSizeChange}
               >
                 <option value={""}>Select Pack Size</option>
-                {grnHistory.map((element, index) => {
-                  // Add unique item names to the Set
-                  uniquePackSizes.add(element.packSize?.packSize);
-
-                  return null; // No need to render anything here
+                {grnHistory.map((element) => {
+                  element.items.map((item) => {
+                    uniquePackSizes.add(item.packSize.packSize);
+                  });
                 })}
+
                 {/* Render the options for the dropdown */}
                 {Array.from(uniquePackSizes).map((packSize, index) => (
                   <option key={index} value={packSize}>
@@ -353,12 +410,12 @@ function GRNHistory() {
                 onChange={handleCityChange}
               >
                 <option value={""}>Select City</option>
-                {grnHistory.map((element, index) => {
-                  // Add unique item names to the Set
-                  uniqueCities.add(element.city);
-
-                  return null; // No need to render anything here
+                {grnHistory.map((element) => {
+                  element.items.map((item) => {
+                    uniqueCities.add(item.city);
+                  });
                 })}
+
                 {/* Render the options for the dropdown */}
                 {Array.from(uniqueCities).map((city, index) => (
                   <option key={index} value={city}>
@@ -376,12 +433,12 @@ function GRNHistory() {
                 onChange={handleAreaChange}
               >
                 <option value={""}>Select Area</option>
-                {grnHistory.map((element, index) => {
-                  // Add unique item names to the Set
-                  uniqueAreas.add(element.area);
-
-                  return null; // No need to render anything here
+                {grnHistory.map((element) => {
+                  element.items.map((item) => {
+                    uniqueAreas.add(item.area);
+                  });
                 })}
+
                 {/* Render the options for the dropdown */}
                 {Array.from(uniqueAreas).map((area, index) => (
                   <option key={index} value={area}>
@@ -399,12 +456,12 @@ function GRNHistory() {
                 onChange={handleWarehouseNumberChange}
               >
                 <option value={""}>Warehouse #</option>
-                {grnHistory.map((element, index) => {
-                  // Add unique item names to the Set
-                  uniqueWarehouseNumbers.add(element.warehouseNumber);
-
-                  return null; // No need to render anything here
+                {grnHistory.map((element) => {
+                  element.items.map((item) => {
+                    uniqueWarehouseNumbers.add(item.warehouseNumber);
+                  });
                 })}
+
                 {/* Render the options for the dropdown */}
                 {Array.from(uniqueWarehouseNumbers).map(
                   (warehouseNumber, index) => (
@@ -545,11 +602,21 @@ function GRNHistory() {
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Stock
                 </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Supplier
-                </th>
+
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Price (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Production Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Expiration Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Supplier
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Transport Cost (Rs)
@@ -561,19 +628,10 @@ function GRNHistory() {
                   Total (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Warehouse
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Purchase Date
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Production Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Expiration Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Request
+                  Request Type
                 </th>
               </tr>
             </thead>
@@ -583,20 +641,52 @@ function GRNHistory() {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.items?.name}
+                      {element.items.map((item) => {
+                        return <p>{item.item.name}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.packSize?.packSize}
-                      {element.items?.units}
+                      {element.items.map((item) => {
+                        return (
+                          <p>
+                            {item.packSize.packSize}
+                            {item.item.units}
+                          </p>
+                        );
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.items.map((item) => {
+                        return <p>{item.stock}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
+                      {element.items.map((item) => {
+                        return <p>{item.price}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return (
+                          <p>
+                            {item.city}, {item.area}, Warehouse{" "}
+                            {item.warehouseNumber}
+                          </p>
+                        );
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return <p>{item.production}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return <p>{item.expirationDate}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <LineBreak text={element.supplier} n={1} />
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.price}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.transportCost}
@@ -607,21 +697,9 @@ function GRNHistory() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.total}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <>
-                        <p>{element.city},</p>
-                        <p>{element.area},</p>
-                        <p>Warehouse {element.warehouseNumber}</p>
-                      </>
-                    </td>
+
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.purchaseDate}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.production}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.expirationDate}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.requestType}

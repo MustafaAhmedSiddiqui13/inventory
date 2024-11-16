@@ -8,24 +8,11 @@ const GRNHistorySchema = new mongoose.Schema(
       required: true,
     },
     items: {
-      type: Object,
-      ref: "item",
-      required: true,
-    },
-    packSize: {
-      type: Object,
-      required: true,
-    },
-    stock: {
-      type: Number,
+      type: Array,
       required: true,
     },
     supplier: {
       type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
       required: true,
     },
     transportCost: {
@@ -44,28 +31,8 @@ const GRNHistorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    production: {
-      type: String,
-      required: true,
-    },
-    expirationDate: {
-      type: String,
-      required: true,
-    },
     requestType: {
       type: String,
-      requried: true,
-    },
-    city: {
-      type: String,
-      required: true,
-    },
-    area: {
-      type: String,
-      required: true,
-    },
-    warehouseNumber: {
-      type: Number,
       required: true,
     },
   },

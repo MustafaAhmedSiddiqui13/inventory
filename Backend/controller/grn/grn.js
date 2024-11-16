@@ -7,70 +7,73 @@ const accountPayable = require("../../models/ledgers/accountPayable");
 // Add GRN
 const addGRN = async (req, res) => {
   try {
+    // Create GRN record
     await GRN.create({
       userID: req.body.userId,
       items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
       supplier: req.body.supplier,
-      price: req.body.price,
       transportCost: req.body.transportCost,
       laborCost: req.body.laborCost,
       total: req.body.total,
       purchaseDate: req.body.purchaseDate,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
     });
 
+    // Create GRNHistory record
     await GRNHistory.create({
       userID: req.body.userId,
       items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
       supplier: req.body.supplier,
-      price: req.body.price,
       transportCost: req.body.transportCost,
       laborCost: req.body.laborCost,
       total: req.body.total,
       purchaseDate: req.body.purchaseDate,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
       requestType: "GRN Created",
     });
 
-    await Product.create({
-      userID: req.body.userId,
-      items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
-      supplier: req.body.supplier,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
-    });
+    // Loop over each item in the GRN request
+    for (const item of req.body.items) {
+      const productData = {
+        items: item.item,
+        packSize: item.packSize,
+        stock: item.stock,
+        supplier: req.body.supplier,
+        production: item.production,
+        expirationDate: item.expirationDate,
+        city: item.city,
+        area: item.area,
+        warehouseNumber: item.warehouseNumber,
+      };
 
-    await ProductHistory.create({
-      userID: req.body.userId,
-      items: req.body.items,
-      packSize: req.body.packSize,
-      stock: req.body.stock,
-      supplier: req.body.supplier,
-      production: req.body.production,
-      expirationDate: req.body.expirationDate,
-      city: req.body.city,
-      area: req.body.area,
-      warehouseNumber: req.body.warehouseNumber,
-      requestType: "Inventory Added",
-    });
+      // Check if the product already exists
+      const existingProduct = await Product.findOne({
+        items: productData.items,
+        packSize: productData.packSize,
+        supplier: productData.supplier,
+        production: productData.production,
+        expirationDate: productData.expirationDate,
+        city: productData.city,
+        area: productData.area,
+        warehouseNumber: productData.warehouseNumber,
+      });
 
+      if (existingProduct) {
+        existingProduct.stock += productData.stock;
+        await existingProduct.save();
+        await ProductHistory.create({
+          ...productData,
+          requestType: "Inventory Updated",
+        });
+      } else {
+        await Product.create(productData);
+
+        await ProductHistory.create({
+          ...productData,
+          requestType: "Inventory Added",
+        });
+      }
+    }
+
+    // Handle supplier account transactions if a supplier exists
     if (req.body.supplier) {
       const account = await accountPayable.findOne({ name: req.body.supplier });
       if (account) {
@@ -90,6 +93,7 @@ const addGRN = async (req, res) => {
         await account.save();
       }
     }
+
     res
       .status(200)
       .send({ message: "Inventory and GRN and their History Created" });
@@ -102,6 +106,41 @@ const addGRN = async (req, res) => {
 const getAllGRNs = async (req, res) => {
   const findAllGRNs = await GRN.find().sort({ expirationDate: 1 }); // -1 for descending;
   res.json(findAllGRNs);
+};
+
+const updateGRN = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const updatedResult = await GRN.findByIdAndUpdate(
+      { _id: req.body.id },
+      {
+        userID: req.body.userId,
+        items: req.body.items,
+        supplier: req.body.supplier,
+        transportCost: req.body.transportCost,
+        laborCost: req.body.laborCost,
+        total: req.body.total,
+        purchaseDate: req.body.purchaseDate,
+      },
+      { new: true }
+    );
+    await GRNHistory.create({
+      userID: userId,
+      items: updatedResult.items,
+      supplier: updatedResult.supplier,
+      transportCost: updatedResult.transportCost,
+      laborCost: updatedResult.laborCost,
+      total: updatedResult.total,
+      purchaseDate: updatedResult.purchaseDate,
+      requestType: "GRN Updated",
+    });
+
+    console.log(updatedResult);
+    res.json(updatedResult);
+  } catch (error) {
+    console.log(error);
+    res.status(402).send("Error");
+  }
 };
 
 // Search GRNs

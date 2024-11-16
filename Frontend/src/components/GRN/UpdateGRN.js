@@ -3,7 +3,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import AuthContext from "../../AuthContext";
 
-export default function AddProduct({
+export default function UpdateGRN({
+  updateGRNData,
   suppliers,
   cities,
   warehouses,
@@ -25,22 +26,24 @@ export default function AddProduct({
   const [sameCityWarehouses, setSameCityWarehouses] = useState({});
   const [total, setTotal] = useState(0);
 
+  // const [item, setItem] = useState({
+  //   userId: authContext.user,
+  //   itemID: _id,
+  //   name: name,
+  //   category: category,
+  //   units: units,
+  //   packSize: packSize,
+  // });
+
   const [product, setProduct] = useState({
     userId: authContext.user,
-    items: "",
-    packSize: "",
-    stock: "",
-    supplier: "",
-    price: "",
-    transportCost: "",
-    laborCost: "",
-    total: total,
-    purchaseDate: "",
-    production: "",
-    expirationDate: "",
-    city: "",
-    area: "",
-    warehouseNumber: "",
+    id: updateGRNData._id,
+    items: updateGRNData.items,
+    supplier: updateGRNData.supplier,
+    transportCost: updateGRNData.transportCost,
+    laborCost: updateGRNData.laborCost,
+    total: updateGRNData.total,
+    purchaseDate: updateGRNData.purchaseDate,
   });
   console.log("----", product);
   const [open, setOpen] = useState(true);

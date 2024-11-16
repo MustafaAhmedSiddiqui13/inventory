@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddProduct from "../components/GRN/AddProduct";
+import UpdateGRN from "../components/GRN/UpdateGRN";
 import AuthContext from "../AuthContext";
 import LineBreak from "../components/LineBreak";
 
 function GRN() {
+  const localStorageData = JSON.parse(localStorage.getItem("user"));
+
   const [showProductModal, setShowProductModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [updateGRRN, setUpdateGRRN] = useState([]);
 
   const [grn, setAllGRNs] = useState([]);
   const [items, setAllItems] = useState([]);
@@ -94,6 +99,12 @@ function GRN() {
     setShowProductModal(!showProductModal);
   };
 
+  const updateGRNModalSetting = (selectedGRRNData) => {
+    console.log("Clicked: edit");
+    setUpdateGRRN(selectedGRRNData);
+    setShowUpdateModal(!showUpdateModal);
+  };
+
   // Handle Page Update
   const handlePageUpdate = () => {
     setUpdatePage(!updatePage);
@@ -117,6 +128,18 @@ function GRN() {
             items={items}
             addProductModalSetting={addProductModalSetting}
             handlePageUpdate={handlePageUpdate}
+          />
+        )}
+        {showUpdateModal && (
+          <UpdateGRN
+            updateGRNData={updateGRRN}
+            suppliers={suppliers}
+            cities={cities}
+            warehouses={warehouses}
+            products={grn}
+            items={items}
+            handlePageUpdate={handlePageUpdate}
+            updateModalSetting={updateGRNModalSetting}
           />
         )}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
@@ -162,11 +185,21 @@ function GRN() {
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Stock
                 </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Supplier
-                </th>
+
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Price (Rs)
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Warehouse
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Production Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Expiration Date
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  Supplier
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Transport Cost (Rs)
@@ -178,17 +211,11 @@ function GRN() {
                   Total (Rs)
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Warehouse
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Purchase Date
                 </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Production Date
-                </th>
-                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Expiration Date
-                </th>
+                {/* <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  More
+                </th> */}
               </tr>
             </thead>
 
@@ -197,20 +224,52 @@ function GRN() {
                 return (
                   <tr key={element._id}>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.items?.name}
+                      {element.items.map((item) => {
+                        return <p>{item.item.name}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
-                      {element.packSize?.packSize}
-                      {element.items?.units}
+                      {element.items.map((item) => {
+                        return (
+                          <p>
+                            {item.packSize.packSize}
+                            {item.item.units}
+                          </p>
+                        );
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                      {element.items.map((item) => {
+                        return <p>{item.stock}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.stock}
+                      {element.items.map((item) => {
+                        return <p>{item.price}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return (
+                          <p>
+                            {item.city}, {item.area}, Warehouse{" "}
+                            {item.warehouseNumber}
+                          </p>
+                        );
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return <p>{item.production}</p>;
+                      })}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.items.map((item) => {
+                        return <p>{item.expirationDate}</p>;
+                      })}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       <LineBreak text={element.supplier} n={1} />
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.price}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.transportCost}
@@ -221,22 +280,24 @@ function GRN() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.total}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      <>
-                        <p>{element.city},</p>
-                        <p>{element.area},</p>
-                        <p>Warehouse {element.warehouseNumber}</p>
-                      </>
-                    </td>
+
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.purchaseDate}
                     </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.production}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                      {element.expirationDate}
-                    </td>
+                    {/* <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      <span
+                        className="text-green-700 cursor-pointer"
+                        onClick={() => updateGRNModalSetting(element)}
+                      >
+                        {localStorageData.firstName === "Azhar" ? "Edit" : ""}
+                      </span>
+                      <span
+                        className="text-red-600 px-2 cursor-pointer"
+                        onClick={() => openModal(element._id)}
+                      >
+                        {localStorageData.firstName === "Azhar" ? "Delete" : ""}
+                      </span>
+                    </td> */}
                   </tr>
                 );
               })}
