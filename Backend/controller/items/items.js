@@ -9,7 +9,6 @@ const addItem = async (req, res) => {
       name: req.body.name,
       category: req.body.category,
       packSize: req.body.packSize,
-      units: req.body.units,
     });
 
     await ItemHistory.create({
@@ -17,7 +16,6 @@ const addItem = async (req, res) => {
       name: req.body.name,
       category: req.body.category,
       packSize: req.body.packSize,
-      units: req.body.units,
       requestType: "Item Created",
     });
 
@@ -46,7 +44,6 @@ const deleteSelectedItem = async (req, res) => {
       name: result.name,
       category: result.category,
       packSize: result.packSize,
-      units: result.units,
       requestType: "Item Deleted",
     });
   } catch (e) {
@@ -65,7 +62,6 @@ const updateSelectedItem = async (req, res) => {
         name: req.body.name,
         category: req.body.category,
         packSize: req.body.packSize,
-        units: req.body.units,
       },
       { new: true }
     );
@@ -74,7 +70,6 @@ const updateSelectedItem = async (req, res) => {
       name: updatedResult.name,
       category: updatedResult.category,
       packSize: updatedResult.packSize,
-      units: updatedResult.units,
       requestType: "Item Updated",
     });
 

@@ -14,7 +14,6 @@ export default function AddItemPriceInfo({
   const [item, setItem] = useState([]);
   const [packSize, setPackSize] = useState([]);
   const [packPrice, setPackPrice] = useState(0);
-  const [units, setUnits] = useState("");
   const [fullItem, setFullItem] = useState([]);
   const [store, setStore] = useState({
     userId: authContext.user,
@@ -64,12 +63,7 @@ export default function AddItemPriceInfo({
       items: mergedItems,
     };
 
-    if (
-      myStore.category === "" ||
-      myStore.name === "" ||
-      myStore.units === "" ||
-      fullItem.length === 0
-    ) {
+    if (store.items.length === 0 && fullItem.length === 0) {
       return alert("Fields cannot be left Empty");
     }
     fetch(`${process.env.REACT_APP_URL}/api/store/update`, {
@@ -172,7 +166,7 @@ export default function AddItemPriceInfo({
                                 );
 
                                 setItem(item || {});
-                                setUnits(item?.units);
+                                // setUnits(item?.units);
                               }}
                             >
                               <option>Select Item</option>
@@ -210,7 +204,7 @@ export default function AddItemPriceInfo({
                                 return (
                                   <option key={element.id} value={element.id}>
                                     {element.packSize}
-                                    {item?.units}
+                                    {element.units}
                                   </option>
                                 );
                               })}
@@ -256,7 +250,7 @@ export default function AddItemPriceInfo({
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize.packSize}
-                                      {element.name.units}
+                                      {element.packSize.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       Rs {element.packPrice}
@@ -296,7 +290,7 @@ export default function AddItemPriceInfo({
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize.packSize}
-                                      {units}
+                                      {element.packSize.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       Rs {element.packPrice}

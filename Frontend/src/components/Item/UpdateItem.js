@@ -8,18 +8,18 @@ export default function UpdateItem({
   updateModalSetting,
   handlePageUpdate,
 }) {
-  const { _id, name, category, units, packSize } = updateItemData;
+  const { _id, name, category, packSize } = updateItemData;
   const authContext = useContext(AuthContext);
   const [item, setItem] = useState({
     userId: authContext.user,
     itemID: _id,
     name: name,
     category: category,
-    units: units,
     packSize: packSize,
   });
   const [open, setOpen] = useState(true);
   const [newPackSize, setNewPackSize] = useState(0);
+  const [newUnits, setNewUnits] = useState("");
   const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
 
@@ -29,13 +29,14 @@ export default function UpdateItem({
   };
 
   const addPackSize = () => {
-    if (newPackSize < 1) {
+    if (newPackSize < 1 || newUnits === "") {
       return alert("Fields cannot be left Empty");
     }
     setAddPacks((prev) => {
       return prev.concat({
         id: "packsize" + Date.now(),
         packSize: newPackSize,
+        units: newUnits,
       });
     });
   };
@@ -62,12 +63,11 @@ export default function UpdateItem({
     if (
       myItem.category === "" ||
       myItem.name === "" ||
-      myItem.units === "" ||
       mergedItems.length === 0
     ) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`${process.env.REACT_APP_URL}/api/item/update`, {
+    fetch(`http://localhost:4000/api/item/update`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -200,10 +200,8 @@ export default function UpdateItem({
                               id="units"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="units"
-                              value={item.units}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              value={newUnits}
+                              onChange={(e) => setNewUnits(e.target.value)}
                             >
                               <option>eg. Kg, g, L, mL</option>
                               <option value="Kg">Kg</option>
@@ -218,6 +216,9 @@ export default function UpdateItem({
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                                   Pack Size(s)
                                 </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Units
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -226,6 +227,9 @@ export default function UpdateItem({
                                   <tr key={index}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2 text-gray-900">
                                       <button
@@ -259,6 +263,9 @@ export default function UpdateItem({
                                   <tr key={index}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2 text-gray-900">
                                       <button

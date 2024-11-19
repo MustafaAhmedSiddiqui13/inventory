@@ -594,6 +594,9 @@ function GRNHistory() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                  ID
+                </th>
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Item's Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -640,6 +643,9 @@ function GRNHistory() {
               {filteredGRNHistory.map((element, index) => {
                 return (
                   <tr key={element._id}>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      {element.code}
+                    </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.items.map((item) => {
                         return <p>{item.item.name}</p>;
@@ -650,7 +656,7 @@ function GRNHistory() {
                         return (
                           <p>
                             {item.packSize.packSize}
-                            {item.item.units}
+                            {item.packSize.units}
                           </p>
                         );
                       })}

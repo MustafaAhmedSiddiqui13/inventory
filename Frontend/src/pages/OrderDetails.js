@@ -187,7 +187,7 @@ function OrderDetails() {
             element.code,
             element.StoreID?.name,
             product.product.items.name,
-            `${product.product.packSize.packSize} ${product.product.items.units}`,
+            `${product.product.packSize.packSize} ${product.product.packSize.units}`,
             product.stockOrdered,
             `${product.product.city}, ${product.product.area}, Warehouse ${product.product.warehouseNumber}`,
             element.paymentMethod,
@@ -474,7 +474,7 @@ function OrderDetails() {
                         return (
                           <p>
                             {product.product.packSize.packSize}
-                            {product.product.items.units}
+                            {product.product.packSize.units}
                           </p>
                         );
                       })}

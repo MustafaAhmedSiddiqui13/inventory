@@ -176,7 +176,7 @@ export default function CreateGRRN({
                               <option>
                                 {productName.items?.name === undefined
                                   ? `Select Products`
-                                  : `${productName.items?.name} - ${productName.packSize?.packSize}${productName.items?.units}`}
+                                  : `${productName.items?.name} - ${productName.packSize?.packSize}${productName.packSize?.units}`}
                               </option>
                               {[
                                 ...new Set(
@@ -199,7 +199,7 @@ export default function CreateGRRN({
                                     >
                                       {product.items.name} -{" "}
                                       {product.packSize.packSize}
-                                      {product.items.units}
+                                      {product.packSize.units}
                                     </option>
                                   );
                                 }
@@ -297,7 +297,7 @@ export default function CreateGRRN({
                                       {productAdd.product.items.name}
                                       {" - "}
                                       {productAdd.product.packSize.packSize}
-                                      {productAdd.product.items.units}
+                                      {productAdd.product.packSize.units}
                                     </td>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       <>

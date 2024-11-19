@@ -130,7 +130,7 @@ function StockHistory() {
           uniqueOrderIndices.has(orderIndex) ? "" : orderIndex + 1,
           element.StoreID?.name,
           itemName,
-          `${product.product.packSize?.packSize} ${product.product.items?.units}`,
+          `${product.product.packSize?.packSize} ${product.product.packSize?.units}`,
           product.stockOrdered,
           product.price,
           `${product.product.city}, ${product.product.area}, Warehouse ${product.product.warehouseNumber}`,
@@ -714,7 +714,7 @@ function StockHistory() {
                         return (
                           <p>
                             {product.product.packSize?.packSize}
-                            {product.product.items?.units}
+                            {product.product.packSize?.units}
                           </p>
                         );
                       })}

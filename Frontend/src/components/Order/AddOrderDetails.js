@@ -225,7 +225,7 @@ export default function AddOrderDetails({
                               <option>
                                 {productName.items?.name === undefined
                                   ? `Select Products`
-                                  : `${productName.items?.name} - ${productName.packSize?.packSize}${productName.items?.units}`}
+                                  : `${productName.items?.name} - ${productName.packSize?.packSize}${productName.packSize?.units}`}
                               </option>
                               {[
                                 ...new Set(
@@ -248,7 +248,7 @@ export default function AddOrderDetails({
                                     >
                                       {product.items.name} -{" "}
                                       {product.packSize.packSize}
-                                      {product.items.units}
+                                      {product.packSize.units}
                                     </option>
                                   );
                                 }
@@ -367,7 +367,7 @@ export default function AddOrderDetails({
                                         <p>
                                           {" - "}
                                           {productAdd.product.packSize.packSize}
-                                          {productAdd.product.items.units}
+                                          {productAdd.product.packSize.units}
                                         </p>
                                       </>
                                     </td>

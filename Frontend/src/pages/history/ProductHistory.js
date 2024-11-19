@@ -147,7 +147,7 @@ function ProductHistory() {
       const rowData = [
         index + 1, // Row number
         element.items?.name,
-        `${element.packSize?.packSize} ${element.items?.units}`,
+        `${element.packSize?.packSize} ${element.packSize?.units}`,
         element.stock,
         element.supplier,
         `${element.city}, ${element.area}, Warehouse ${element.warehouseNumber}`,
@@ -525,7 +525,7 @@ function ProductHistory() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                       {element.packSize?.packSize}
-                      {element.items?.units}
+                      {element.packSize?.units}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.stock}

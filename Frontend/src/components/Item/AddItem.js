@@ -9,10 +9,10 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
     userId: authContext.user,
     name: "",
     category: "",
-    units: "",
   });
   const [open, setOpen] = useState(true);
   const [packSize, setPackSize] = useState(0);
+  const [units, setUnits] = useState("");
   const [addPacks, setAddPacks] = useState([]);
   const cancelButtonRef = useRef(null);
 
@@ -21,13 +21,14 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
   };
 
   const addPackSize = () => {
-    if (packSize < 1) {
+    if (packSize < 1 || units === "") {
       return alert("Fields cannot be left Empty");
     }
     setAddPacks((prev) => {
       return prev.concat({
         id: "packsize" + Date.now(),
         packSize: packSize,
+        units: units,
       });
     });
   };
@@ -38,15 +39,10 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
       packSize: addPacks,
     };
 
-    if (
-      myItem.category === "" ||
-      myItem.name === "" ||
-      myItem.units === "" ||
-      addPacks.length === 0
-    ) {
+    if (myItem.category === "" || myItem.name === "" || addPacks.length === 0) {
       return alert("Fields cannot be left Empty");
     }
-    fetch(`${process.env.REACT_APP_URL}/api/item/add`, {
+    fetch("http://localhost:4000/api/item/add", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -179,10 +175,8 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                               id="units"
                               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                               name="units"
-                              value={item.units}
-                              onChange={(e) =>
-                                handleInputChange(e.target.name, e.target.value)
-                              }
+                              value={units}
+                              onChange={(e) => setUnits(e.target.value)}
                             >
                               <option>eg. Kg, g, L, mL</option>
                               <option value="Kg">Kg</option>
@@ -197,6 +191,9 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                                   Pack Size(s)
                                 </th>
+                                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                                  Units
+                                </th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -205,6 +202,9 @@ export default function AddItem({ addItemModalSetting, handlePageUpdate }) {
                                   <tr key={index}>
                                     <td className="whitespace-nowrap px-4 py-2  text-gray-900">
                                       {element.packSize}
+                                    </td>
+                                    <td className="whitespace-nowrap px-4 py-2  text-gray-900">
+                                      {element.units}
                                     </td>
                                   </tr>
                                 );

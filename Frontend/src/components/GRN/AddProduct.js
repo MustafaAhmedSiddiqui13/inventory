@@ -13,6 +13,18 @@ export default function AddProduct({
   handlePageUpdate,
 }) {
   // console.log("warehouses: ", warehouses);
+  function generateUniqueKey() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let key = "";
+
+    for (let i = 0; i < 4; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      key += characters.charAt(randomIndex);
+    }
+
+    return key;
+  }
+  const uniqueKey = generateUniqueKey();
 
   const authContext = useContext(AuthContext);
   const [itemsArray, setItemsArray] = useState([]);
@@ -26,6 +38,7 @@ export default function AddProduct({
   const [total, setTotal] = useState(0);
 
   const [product, setProduct] = useState({
+    code: uniqueKey,
     userId: authContext.user,
     items: "",
     packSize: "",
@@ -146,6 +159,7 @@ export default function AddProduct({
 
   const addProduct = () => {
     let myGRN = {
+      code: product.code,
       userId: product.userId,
       items: itemsArray,
       supplier: product.supplier,
@@ -293,7 +307,7 @@ export default function AddProduct({
                                 return (
                                   <option key={element.id} value={element.id}>
                                     {element.packSize}
-                                    {item?.units}
+                                    {element.units}
                                   </option>
                                 );
                               })}
@@ -540,7 +554,7 @@ export default function AddProduct({
                                   <td className="whitespace-nowrap px-4 py-2 text-gray-900">
                                     <p>
                                       {item.packSize.packSize}
-                                      {item.item.units}
+                                      {item.packSize.units}
                                     </p>
                                   </td>
                                   <td className="whitespace-nowrap px-4 py-2 text-gray-900">

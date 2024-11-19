@@ -115,7 +115,7 @@ export default function Header() {
                                     <span className="font-semibold text-lg">
                                       {product.items?.name} -{" "}
                                       {product.packSize?.packSize}
-                                      {product.items?.units}
+                                      {product.packSize?.units}
                                     </span>
                                     <span className="text-gray-500 text-sm">
                                       {product.city}, {product.area}, Warehouse{" "}

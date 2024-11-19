@@ -206,7 +206,7 @@ function Store() {
                             return (
                               <p>
                                 {i.packSize.packSize}
-                                {i.name.units}
+                                {i.packSize.units}
                               </p>
                             );
                           })}

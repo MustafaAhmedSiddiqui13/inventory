@@ -29,9 +29,9 @@ export default function UpdateSupplier({
 
   const updateSupplier = () => {
     if (
-      supplier.category === "" ||
+      supplier.address === "" ||
       supplier.name === "" ||
-      supplier.units === ""
+      supplier.city === ""
     ) {
       return alert("Fields cannot be left Empty");
     }

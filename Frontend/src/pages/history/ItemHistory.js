@@ -21,9 +21,7 @@ function ItemHistory() {
   useEffect(() => {
     // Fetching Data of All Order History items
     const fetchItemHistoryData = () => {
-      fetch(
-        `${process.env.REACT_APP_URL}/api/itemHistory/get/${authContext.user}`
-      )
+      fetch(`http://localhost:4000/api/itemHistory/get/${authContext.user}`)
         .then((response) => response.json())
         .then((data) => {
           setItems(data);
@@ -81,7 +79,7 @@ function ItemHistory() {
         element.name,
         element.category,
         element.packSize
-          .map((packSize) => `${packSize.packSize} ${element.units}`)
+          .map((packSize) => `${packSize.packSize} ${packSize.units}`)
           .join(", "),
         element.requestType,
       ];
@@ -308,7 +306,7 @@ function ItemHistory() {
                         return (
                           <p>
                             {packSize.packSize}
-                            {element.units}
+                            {packSize.units}
                           </p>
                         );
                       })}

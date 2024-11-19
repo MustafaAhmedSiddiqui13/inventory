@@ -11,4 +11,7 @@ app.get("/get/:userId", grn.getAllGRNs);
 // Search GRN
 app.get("/search", grn.searchGRN);
 
+// Delete Selected GRN
+app.get("/delete/:id", grn.deleteSelectedGRN);
+
 module.exports = app;

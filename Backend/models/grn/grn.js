@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const GRNSchema = new mongoose.Schema(
   {
+    code: {
+      type: String,
+      required: true,
+    },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",

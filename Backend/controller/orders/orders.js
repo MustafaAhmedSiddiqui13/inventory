@@ -37,7 +37,7 @@ const addOrder = async (req, res) => {
       paymentMethod: req.body.paymentMethod,
       riderName: req.body.riderName,
     });
-    console.log("ORDER CREATED")
+    console.log("ORDER CREATED");
     return res.json({ message: "Order created and stock updated" });
   } catch (error) {
     console.error(error);
@@ -62,7 +62,7 @@ const resolveOrder = async (req, res) => {
     console.log("results empty");
     res.send("No order available");
   } else {
-    console.log(result)
+    console.log(result);
     try {
       await StockHistory.create({
         code: result.code,
@@ -82,18 +82,18 @@ const resolveOrder = async (req, res) => {
             name: result.StoreID.name,
           });
           console.log("Account: ", account);
-      
+
           if (account) {
             console.log("Received total (raw):", result.totalAmount); // Log the received total value
             console.log("Type of total:", typeof result.totalAmount); // Log the type of received total value
 
             const total = Number(result.totalAmount);
-            
+
             // Check if total is a valid number
             if (isNaN(total)) {
-              throw new Error('Total amount is not a valid number');
+              throw new Error("Total amount is not a valid number");
             }
-      
+
             const newTransaction = {
               date: new Date(),
               amount: total,
@@ -102,16 +102,19 @@ const resolveOrder = async (req, res) => {
               credit: 0,
             };
             account.transactions.push(newTransaction);
-      
+
             // Update the account total based on the transaction type
-            const transactionAmount = newTransaction.type === "credit"
-              ? -newTransaction.amount
-              : newTransaction.amount;
+            const transactionAmount =
+              newTransaction.type === "credit"
+                ? -newTransaction.amount
+                : newTransaction.amount;
             account.total += transactionAmount;
-      
+
             await account.save();
-      
-            res.status(200).json({ message: "Transaction added to account", account });
+
+            res
+              .status(200)
+              .json({ message: "Transaction added to account", account });
           } else {
             res.status(404).json({ message: "Account not found" });
           }

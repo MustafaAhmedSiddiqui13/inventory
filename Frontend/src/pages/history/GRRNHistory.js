@@ -459,7 +459,7 @@ function GRRNHistory() {
                         return (
                           <p>
                             {product.product.packSize?.packSize}
-                            {product.product.items?.units}
+                            {product.product.packSize?.units}
                           </p>
                         );
                       })}

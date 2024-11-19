@@ -19,10 +19,6 @@ const ItemHistorySchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    units: {
-      type: String,
-      required: true,
-    },
     requestType: {
       type: String,
       requried: true,
