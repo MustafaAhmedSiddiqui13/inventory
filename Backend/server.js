@@ -28,6 +28,9 @@ main();
 app.use(express.json());
 app.use(cors());
 
+app.get("/",(req,res)=>{
+  res.send("hello vercel");
+})
 // Store API
 app.use("/api/store", storeRoute);
 
