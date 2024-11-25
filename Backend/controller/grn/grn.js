@@ -82,7 +82,10 @@ const addGRN = async (req, res) => {
       const account = await accountPayable.findOne({ name: req.body.supplier });
       if (account) {
         const newTransaction = {
-          date: new Date(),
+          Date: format(new Date(), 'yyyy-MM-dd'),
+          Id:req.body.code,
+          Products:req.body.items, 
+          UserId:req.body.userId ,
           amount: req.body.total,
           type: "credit",
           debit: 0,

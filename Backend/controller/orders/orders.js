@@ -2,6 +2,9 @@ const Orders = require("../../models/orders/orders");
 const Product = require("../../models/product/product");
 const StockHistory = require("../../models/orders/stockHistory");
 const accountReceivable = require("../../models/ledgers/accountReceivable");
+const { format } = require('date-fns');
+
+
 
 // Add Order Details
 const addOrder = async (req, res) => {
@@ -95,7 +98,10 @@ const resolveOrder = async (req, res) => {
             }
 
             const newTransaction = {
-              date: new Date(),
+              Date : format(new Date(), 'yyyy-MM-dd'),
+              Id: result.code,
+              Products: result.products,
+              UserId: result.userID,
               amount: total,
               type: "debit",
               debit: total,

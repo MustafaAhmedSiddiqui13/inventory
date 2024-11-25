@@ -28,7 +28,7 @@ const addTransaction = async (req, res) => {
         .status(404)
         .json({ message: "Account not found for the specified supplier" });
     }
-
+    //add new id, date only not time, item, quantity
     const newTransaction = {
       date: new Date(),
       amount: 0,
