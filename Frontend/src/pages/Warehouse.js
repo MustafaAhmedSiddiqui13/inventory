@@ -228,7 +228,7 @@ function Warehouse() {
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Area
                 </th>
-                <th className="flex flex-col items-center whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Warehouse Number
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -253,10 +253,8 @@ function Warehouse() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.warehouseNumber.map((warehouseNumber) => {
                         return (
-                          <div className="py-8">
-                            <p className="flex flex-col justify-start items-center">
-                              {warehouseNumber.warehouseNumber}
-                            </p>
+                          <div>
+                            <p>{warehouseNumber.warehouseNumber}</p>
                           </div>
                         );
                       })}
@@ -264,7 +262,7 @@ function Warehouse() {
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {element.warehouseNumber.map((address) => {
                         return (
-                          <div className=" py-2">
+                          <div>
                             <LineBreak text={address.address} n={5} />
                           </div>
                         );

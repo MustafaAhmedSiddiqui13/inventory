@@ -1,4 +1,5 @@
 const accountPayable = require("../../models/ledgers/accountPayable");
+const { format } = require("date-fns");
 
 const getAccountPayable = async (req, res) => {
   try {
@@ -30,7 +31,7 @@ const addTransaction = async (req, res) => {
     }
     //add new id, date only not time, item, quantity
     const newTransaction = {
-      date: new Date(),
+      Date: format(new Date(), "yyyy-MM-dd"),
       amount: 0,
       type: "debit",
       debit: req.body.debit,

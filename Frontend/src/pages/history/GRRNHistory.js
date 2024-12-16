@@ -49,7 +49,7 @@ function GRRNHistory() {
       navigate("/itemHistory");
     } else if (selectedValue === "Order History") {
       navigate("/history");
-    } else if (selectedValue === "Vendor History") {
+    } else if (selectedValue === "Customer History") {
       navigate("/storeHistory");
     } else if (selectedValue === "Supplier History") {
       navigate("/supplierHistory");
@@ -191,7 +191,7 @@ function GRRNHistory() {
               <option>GRRN History</option>
               <option value="Item History">Item History</option>
               <option value="Order History">Order History</option>
-              <option value="Vendor History">Vendor History</option>
+              <option value="Customer History">Customer History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="Product History">Product History</option>
@@ -419,7 +419,7 @@ function GRRNHistory() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Vendor
+                  Customer
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Name

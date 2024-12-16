@@ -57,7 +57,7 @@ function StockHistory() {
       navigate("/itemHistory");
     } else if (selectedValue === "Product History") {
       navigate("/productHistory");
-    } else if (selectedValue === "Vendor History") {
+    } else if (selectedValue === "Customer History") {
       navigate("/storeHistory");
     } else if (selectedValue === "Supplier History") {
       navigate("/supplierHistory");
@@ -81,7 +81,7 @@ function StockHistory() {
     const tableData = [];
     const tableHeaders = [
       "Row Number",
-      "Vendor",
+      "Customer",
       "Item",
       "Pack Size",
       "Quantity",
@@ -362,7 +362,7 @@ function StockHistory() {
               <option>Order History</option>
               <option value="Item History">Item History</option>
               <option value="Product History">Product History</option>
-              <option value="Vendor History">Vendor History</option>
+              <option value="Customer History">Customer History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="GRN History">GRN History</option>
@@ -385,7 +385,7 @@ function StockHistory() {
                 value={selectedVendor}
                 onChange={handleVendorChange}
               >
-                <option value={""}>Select Vendor</option>
+                <option value={""}>Select Customer</option>
                 {stockHistory.map((element, index) =>
                   uniqueVendors.add(element.StoreID?.name)
                 )}
@@ -655,7 +655,7 @@ function StockHistory() {
                   ID
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Vendor
+                  Customer
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Name

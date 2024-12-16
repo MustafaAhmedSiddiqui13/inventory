@@ -3,6 +3,7 @@ const ProductHistory = require("../../models/product/productHistory");
 const GRN = require("../../models/grn/grn");
 const GRNHistory = require("../../models/grn/grnHistory");
 const accountPayable = require("../../models/ledgers/accountPayable");
+const { format } = require("date-fns");
 
 // Add GRN
 const addGRN = async (req, res) => {
@@ -82,10 +83,10 @@ const addGRN = async (req, res) => {
       const account = await accountPayable.findOne({ name: req.body.supplier });
       if (account) {
         const newTransaction = {
-          Date: format(new Date(), 'yyyy-MM-dd'),
-          Id:req.body.code,
-          Products:req.body.items, 
-          UserId:req.body.userId ,
+          Date: format(new Date(), "yyyy-MM-dd"),
+          Id: req.body.code,
+          Products: req.body.items,
+          UserId: req.body.userId,
           amount: req.body.total,
           type: "credit",
           debit: 0,
@@ -114,41 +115,6 @@ const getAllGRNs = async (req, res) => {
   const findAllGRNs = await GRN.find().sort({ expirationDate: 1 }); // -1 for descending;
   res.json(findAllGRNs);
 };
-
-// const updateGRN = async (req, res) => {
-//   try {
-//     const userId = req.body.userId;
-//     const updatedResult = await GRN.findByIdAndUpdate(
-//       { _id: req.body.id },
-//       {
-//         userID: req.body.userId,
-//         items: req.body.items,
-//         supplier: req.body.supplier,
-//         transportCost: req.body.transportCost,
-//         laborCost: req.body.laborCost,
-//         total: req.body.total,
-//         purchaseDate: req.body.purchaseDate,
-//       },
-//       { new: true }
-//     );
-//     await GRNHistory.create({
-//       userID: userId,
-//       items: updatedResult.items,
-//       supplier: updatedResult.supplier,
-//       transportCost: updatedResult.transportCost,
-//       laborCost: updatedResult.laborCost,
-//       total: updatedResult.total,
-//       purchaseDate: updatedResult.purchaseDate,
-//       requestType: "GRN Updated",
-//     });
-
-//     console.log(updatedResult);
-//     res.json(updatedResult);
-//   } catch (error) {
-//     console.log(error);
-//     res.status(402).send("Error");
-//   }
-// };
 
 // Search GRNs
 
@@ -213,25 +179,32 @@ const deleteSelectedGRN = async (req, res) => {
     }
     console.log("Supplier:", result.supplier);
 
-    // Handle supplier account transactions if a supplier exists
-    if (result.supplier) {
-      const account = await accountPayable.findOne({ name: result.supplier });
-      if (account) {
-        const newTransaction = {
-          date: new Date(),
-          amount: result.total,
-          type: "debit",
-          debit: result.total,
-          credit: 0,
-        };
-        account.transactions.push(newTransaction);
-        const transactionAmount =
-          newTransaction.type === "credit"
-            ? -newTransaction.amount
-            : newTransaction.amount;
-        account.total += transactionAmount;
-        await account.save();
+    try {
+      // Handle supplier account transactions if a supplier exists
+      if (result.supplier) {
+        const account = await accountPayable.findOne({ name: result.supplier });
+        if (account) {
+          const newTransaction = {
+            Date: format(new Date(), "yyyy-MM-dd"),
+            Id: result.code,
+            Products: result.items,
+            UserId: result.userID,
+            amount: result.total,
+            type: "debit",
+            debit: result.total,
+            credit: 0,
+          };
+          account.transactions.push(newTransaction);
+          const transactionAmount =
+            newTransaction.type === "credit"
+              ? -newTransaction.amount
+              : newTransaction.amount;
+          account.total += transactionAmount;
+          await account.save();
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
 
     // Send the response after all operations

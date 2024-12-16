@@ -106,7 +106,7 @@ export default function AddOrderDetails({
       // Check the flag after the loop
       if (!nameAndSizeMatch) {
         window.location.href = "/order-details";
-        alert("This item is not being sold by this Vendor!");
+        alert("This item is not being sold by this Customer!");
       }
     }
     setProductAdded((prev) => {
@@ -311,7 +311,7 @@ export default function AddOrderDetails({
                               htmlFor="storeID"
                               className="block mb-2 text-sm font-medium text-gray-900"
                             >
-                              Vendor's Name
+                              Customer's Name
                             </label>
                             <select
                               id="storeID"
@@ -326,7 +326,7 @@ export default function AddOrderDetails({
                                 handleInputChange(e.target.name, store);
                               }}
                             >
-                              <option>Select Vendor</option>
+                              <option>Select Customer</option>
                               {stores.map((element, index) => {
                                 return (
                                   <option key={element._id} value={element._id}>
@@ -448,6 +448,7 @@ export default function AddOrderDetails({
                               <option>Payment Method</option>
                               <option value="Online">Online</option>
                               <option value="Cash">Cash</option>
+                              <option value="Credit">Credit</option>
                             </select>
                           </div>
                           <div>

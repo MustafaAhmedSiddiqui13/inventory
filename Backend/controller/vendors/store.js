@@ -20,15 +20,15 @@ const addStore = async (req, res) => {
       address: req.body.address,
       city: req.body.city,
       items: [],
-      requestType: "Vendor Created",
+      requestType: "Customer Created",
     });
     await accountReceivable.create({
       name: req.body.name,
-      transactions:[],
-      total: 0
-    })
+      transactions: [],
+      total: 0,
+    });
 
-    res.status(200).send({ message: "Vendor and History it's Created" });
+    res.status(200).send({ message: "Customer and History it's Created" });
   } catch (e) {
     res.status(402).send({ message: e.message });
   }
@@ -47,7 +47,7 @@ const deleteStore = async (req, res) => {
       address: result.address,
       city: result.city,
       items: result.items,
-      requestType: "Vendor Deleted",
+      requestType: "Customer Deleted",
     });
   } catch (e) {
     res.status(402).send(e);

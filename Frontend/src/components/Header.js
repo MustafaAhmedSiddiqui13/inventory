@@ -14,7 +14,7 @@ const navigation = [
   { name: "Order Details", href: "/order-details", current: false },
   { name: "GRRN", href: "/grrn", current: false },
   { name: "History", href: "/history", current: false },
-  { name: "Manage Vendors", href: "/vendor", current: false },
+  { name: "Manage Customers", href: "/vendor", current: false },
 ];
 
 const userNavigation = [{ name: "Sign out", href: "./login" }];

@@ -138,7 +138,7 @@ function AccountsReceivable() {
               value={selectedVendor}
               onChange={handleVendorChange}
             >
-              <option>Select Vendor</option>
+              <option>Select Customer</option>
               {vendors.map((vendor, index) => (
                 <option key={index} value={vendor.name}>
                   {vendor.name}
@@ -213,6 +213,18 @@ function AccountsReceivable() {
                       Bill ID
                     </th>
                     <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                      Item
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                      Pack Size
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                      Stock
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                      Price
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                       Debit
                     </th>
                     <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -225,26 +237,49 @@ function AccountsReceivable() {
                   {filterTransactionsByDate()?.length === 0 ? (
                     <tr>
                       <td
-                        colSpan="4"
+                        colSpan="8"
                         className="whitespace-nowrap px-4 py-2 text-center text-gray-900"
                       >
                         No Records Found!
                       </td>
                     </tr>
                   ) : (
-                    filterTransactionsByDate()?.map((element, index) => (
+                    filterTransactionsByDate()?.map((transaction, index) => (
                       <tr key={index}>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-                          {new Date(element.date).toLocaleString()}
+                          {new Date(transaction.Date).toLocaleDateString()}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                          {element._id}
+                          {transaction.Id}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                          {element.debit}
+                          {transaction.Products?.map((product, idx) => (
+                            <div key={idx}>{product.product.items?.name}</div>
+                          ))}
                         </td>
                         <td className="whitespace-nowrap px-4 py-2 text-gray-700">
-                          {element.credit}
+                          {transaction.Products?.map((product, idx) => (
+                            <div key={idx}>
+                              {product.product.packSize?.packSize}{" "}
+                              {product.product.packSize?.units}
+                            </div>
+                          ))}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {transaction.Products?.map((product, idx) => (
+                            <div key={idx}>{product.stockOrdered}</div>
+                          ))}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {transaction.Products?.map((product, idx) => (
+                            <div key={idx}>{product.price}</div>
+                          ))}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {transaction.debit}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                          {transaction.credit}
                         </td>
                       </tr>
                     ))

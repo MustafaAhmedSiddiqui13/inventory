@@ -58,7 +58,7 @@ function GRNHistory() {
       navigate("/itemHistory");
     } else if (selectedValue === "Order History") {
       navigate("/history");
-    } else if (selectedValue === "Vendor History") {
+    } else if (selectedValue === "Customer History") {
       navigate("/storeHistory");
     } else if (selectedValue === "Supplier History") {
       navigate("/supplierHistory");
@@ -300,7 +300,7 @@ function GRNHistory() {
               <option>GRN History</option>
               <option value="Item History">Item History</option>
               <option value="Order History">Order History</option>
-              <option value="Vendor History">Vendor History</option>
+              <option value="Customer History">Customer History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="Product History">Product History</option>

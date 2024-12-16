@@ -2,9 +2,19 @@ const mongoose = require("mongoose");
 
 const transactionSchema = new mongoose.Schema(
   {
-    date: {
+    Date: {
       type: Date,
       required: true,
+    },
+    Id: {
+      type: String,
+    },
+    Products: {
+      type: Array,
+    },
+    UserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
     },
     amount: {
       type: Number,

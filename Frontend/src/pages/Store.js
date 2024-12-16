@@ -85,14 +85,14 @@ function Store() {
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200">
           <div className="flex justify-between pt-5 pb-3 px-3 items-center">
             <div className="flex gap-4 justify-center items-center">
-              <span className="font-bold">Manage Vendors</span>
+              <span className="font-bold">Manage Customers</span>
             </div>
             <div className="flex gap-4">
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 text-xs  rounded"
                 onClick={modalSetting}
               >
-                Add Vendor
+                Add Customer
               </button>
             </div>
           </div>
@@ -127,11 +127,11 @@ function Store() {
                       as="h3"
                       className="text-lg font-medium leading-6 text-gray-900"
                     >
-                      Delete Vendor
+                      Delete Customer
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Are you sure you want to delete this Vendor?
+                        Are you sure you want to delete this Customer?
                       </p>
                     </div>
 
@@ -232,7 +232,7 @@ function Store() {
                     onClick={() => openModal(element._id)}
                   >
                     {localStorageData.firstName === "Azhar"
-                      ? "Remove Vendor"
+                      ? "Remove Customer"
                       : ""}
                   </span>
                 </div>

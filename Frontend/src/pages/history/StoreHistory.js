@@ -6,7 +6,7 @@ function StoreHistory() {
   const [storeHistory, setAllStoreHistoryData] = useState([]);
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
-  const [selectedOption, setSelectedOption] = useState("Vendor History");
+  const [selectedOption, setSelectedOption] = useState("Customer History");
   const [selectedVendor, setSelectedVendor] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedAddress, setSelectedAddress] = useState("");
@@ -116,7 +116,7 @@ function StoreHistory() {
               value={selectedOption}
               onChange={handleSelectChange}
             >
-              <option>Vendor History</option>
+              <option>Customer History</option>
               <option value="Item History">Item History</option>
               <option value="Product History">Product History</option>
               <option value="Order History">Order History</option>
@@ -131,7 +131,7 @@ function StoreHistory() {
         {/* Store History Table  */}
         <div className="overflow-x-auto rounded-lg border bg-white border-gray-200 ">
           <div className="flex gap-4 justify-center items-center ">
-            <span className="font-bold pt-2">Vendor History</span>
+            <span className="font-bold pt-2">Customer History</span>
           </div>
           <div className="flex justify-between pt-5 pb-3 px-3">
             <div>
@@ -142,7 +142,7 @@ function StoreHistory() {
                 value={selectedVendor}
                 onChange={handleVendorChange}
               >
-                <option value={""}>Select Vendor</option>
+                <option value={""}>Select Customer</option>
                 {storeHistory.map((element, index) => {
                   // Add unique item names to the Set
                   uniqueVendors.add(element.name);
@@ -258,7 +258,7 @@ function StoreHistory() {
             <thead>
               <tr>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
-                  Vendor Name
+                  Customer Name
                 </th>
                 <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                   Category

@@ -1,4 +1,5 @@
 const accountReceivable = require("../../models/ledgers/accountReceivable");
+const { format } = require("date-fns");
 
 const getAccountReceivable = async (req, res) => {
   try {
@@ -18,7 +19,7 @@ const addTransaction = async (req, res) => {
     const decodedName = decodeURIComponent(name);
 
     if (!decodedName) {
-      return res.status(400).json({ message: "Vendor name is required" });
+      return res.status(400).json({ message: "Customer name is required" });
     }
 
     const account = await accountReceivable.findOne({ name: decodedName });
@@ -30,7 +31,7 @@ const addTransaction = async (req, res) => {
     }
 
     const newTransaction = {
-      date: new Date(),
+      Date: format(new Date(), "yyyy-MM-dd"),
       amount: 0,
       type: "credit",
       debit: 0,

@@ -40,7 +40,7 @@ function ItemHistory() {
       navigate("/history");
     } else if (selectedValue === "Product History") {
       navigate("/productHistory");
-    } else if (selectedValue === "Vendor History") {
+    } else if (selectedValue === "Customer History") {
       navigate("/storeHistory");
     } else if (selectedValue === "Supplier History") {
       navigate("/supplierHistory");
@@ -159,7 +159,7 @@ function ItemHistory() {
               <option>Item History</option>
               <option value="Order History">Order History</option>
               <option value="Product History">Product History</option>
-              <option value="Vendor History">Vendor History</option>
+              <option value="Customer History">Customer History</option>
               <option value="Supplier History">Supplier History</option>
               <option value="Warehouse History">Warehouse History</option>
               <option value="GRN History">GRN History</option>
